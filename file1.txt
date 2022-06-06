@@ -1,2 +1,2 @@
 <h1>Git tutorial</h1>
-<p>Git</p>
+<p>Git status check</p>
