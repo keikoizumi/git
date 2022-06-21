@@ -54,7 +54,7 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-    
+
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 playerX_change = -1.5
@@ -101,7 +101,7 @@ while running:
 
     if bullet_state is 'fire':
         fire_bullet(bulletX, bulletY)
-        bulletY -= bulletY_change  
+        bulletY -= bulletY_change
 
     # Score
     font = pygame.font.SysFont(None, 32) # フォントの作成　Noneはデフォルトのfreesansbold.ttf
