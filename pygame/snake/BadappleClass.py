@@ -2,12 +2,12 @@ import pygame
 import random
 import const as CONST
 
-class Apple:
+class Badapple:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load(CONST.APPLE_IMG_PATH).convert()
-        self.x = 40
-        self.y = 340
+        self.image = pygame.image.load(CONST.BAD_APPLE_PATH).convert()
+        self.x = 840
+        self.y = 540
 
     #りんごの描画
     def draw(self):

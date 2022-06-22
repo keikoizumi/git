@@ -4,12 +4,15 @@ import const as CONST
 class Snake:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load("resources/block.jpg").convert()
+        self.image = pygame.image.load(CONST.SNAKE_IMG_PATH).convert()
+        self.face = pygame.image.load(CONST.SNAKE_FACE_IMG_PATH).convert()
         self.direction = 'down'
 
         self.length = 1
         self.x = [40]
         self.y = [40]
+
+        self.draw()
 
     def move_left(self):
         self.direction = 'left'
@@ -29,7 +32,6 @@ class Snake:
             self.x[i] = self.x[i-1]
             self.y[i] = self.y[i-1]
 
-        # update head
         if self.direction == 'left':
             self.x[0] -= CONST.SIZE
         if self.direction == 'right':
@@ -42,9 +44,9 @@ class Snake:
         self.draw()
 
     def draw(self):
-        for i in range(self.length):
-            self.parent_screen.blit(self.image, (self.x[i], self.y[i]))
-
+        for i in range(self.length - 1):
+            self.parent_screen.blit(self.face, (self.x[0], self.y[0]))
+            self.parent_screen.blit(self.image, (self.x[i + 1], self.y[i + 1]))
         pygame.display.flip()
 
     def increase_length(self):
