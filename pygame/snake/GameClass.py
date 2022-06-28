@@ -41,6 +41,7 @@ class Game:
         self.apple = AppleClass.Apple(self.surface)
         self.badapple = BadappleClass.Badapple(self.surface)
         self.goldapple = GoldappleClass.Goldapple(self.surface)
+        self.score = ScoreClass.Score()
 
     def is_collision(self, x1, y1, x2, y2):
         if x1 >= x2 and x1 < x2 + CONST.SIZE:
@@ -124,7 +125,9 @@ class Game:
 
     def display_score(self):
         font = pygame.font.SysFont(CONST.G_OVER_FONT,CONST.G_OVER_FONT_SIZE)
+        best_score = font.render(f"Best Score: {self.score.b_score}",True,(200,200,200))
         score = font.render(f"Score: {self.snake.length}",True,(200,200,200))
+        self.surface.blit(best_score,(650,10))
         self.surface.blit(score,(850,10))
 
     def show_game_over(self):
@@ -133,8 +136,12 @@ class Game:
 
         font = pygame.font.SysFont(CONST.G_OVER_FONT, CONST.G_OVER_FONT_SIZE)
 
-        line0 = font.render(CONST.G_BEST + str(self.score.b_score), True, (255, 255, 255))
-        self.surface.blit(line0, (CONST.DIP_W/4, CONST.DIP_H/3 - 20,))
+        if int(self.score.b_score) < int(self.score.n_score):
+            line0 = font.render(CONST.G_BEST , True, (255, 255, 255))
+            self.surface.blit(line0, (CONST.DIP_W/4, CONST.DIP_H/3 - 20,))
+            self.score.write(self.score.n_score)
+        else:
+            self.score.write(self.score.b_score)
 
         line1 = font.render(CONST.G_OVER + str(self.snake.length), True, (255, 255, 255))
         self.surface.blit(line1, (CONST.DIP_W/4, CONST.DIP_H/2 - 20,))

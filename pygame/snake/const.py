@@ -35,6 +35,6 @@ SPEED = .08
 #game over display
 G_OVER_FONT_SIZE = 30
 G_OVER_FONT = 'arial'
-G_BEST = 'Your best score is '
+G_BEST = 'Congratulation!! You got best score!! '
 G_OVER = 'Game is over! Your score is '
 G_OVER_OP = 'To play again press Enter. To exit press Escape!'
