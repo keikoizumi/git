@@ -1,4 +1,6 @@
 from operator import eq
+from random import Random
+import random
 import pygame
 import time
 from pygame.locals import *
@@ -16,7 +18,7 @@ class Game:
 
         pygame.mixer.init()
         self.play_background_music()
-
+        #インスタンスの初期化
         self.surface = pygame.display.set_mode((CONST.DIP_W, CONST.DIP_H))
         self.snake = SnakeClass.Snake(self.surface)
         self.apple = AppleClass.Apple(self.surface)
@@ -25,7 +27,13 @@ class Game:
         self.score = ScoreClass.Score()
 
     def play_background_music(self):
-        pygame.mixer.music.load(CONST.B_MUSIC_PATH)
+        v = random.randint(1,3)
+        if v == 1:
+            pygame.mixer.music.load(CONST.B_MUSIC_PATH)
+        elif v == 2:
+            pygame.mixer.music.load(CONST.B_RAIN_PATH)
+        else:
+            pygame.mixer.music.load(CONST.B_SUMMER_PATH)
         pygame.mixer.music.play(-1, 0)
 
     def play_sound(self, sound_name):
@@ -33,9 +41,12 @@ class Game:
             sound = pygame.mixer.Sound(CONST.CRASH_SOUND_PATH)
         elif sound_name == 'ding':
             sound = pygame.mixer.Sound(CONST.DING_SOUND_PATH)
+        elif sound_name == 'gold':
+            sound = pygame.mixer.Sound(CONST.GET_GOLD_SOUND_PATH)
 
         pygame.mixer.Sound.play(sound)
 
+    #インスタンスのリセット
     def reset(self):
         self.snake = SnakeClass.Snake(self.surface)
         self.apple = AppleClass.Apple(self.surface)
@@ -43,6 +54,7 @@ class Game:
         self.goldapple = GoldappleClass.Goldapple(self.surface)
         self.score = ScoreClass.Score()
 
+    #衝突判定
     def is_collision(self, x1, y1, x2, y2):
         if x1 >= x2 and x1 < x2 + CONST.SIZE:
             if y1 >= y2 and y1 < y2 + CONST.SIZE:
@@ -64,6 +76,7 @@ class Game:
             self.goldapple.mkapple()
         cnt += 1
 
+    #背景
     def render_background(self):
         bg = pygame.image.load(CONST.B_IMG_PATH)
         self.surface.blit(bg, (0,0))
@@ -72,15 +85,14 @@ class Game:
         self.render_background()
         # snake eating apple scenario
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
-            self.play_sound("ding")
+            self.play_sound('ding')
             self.snake.increase_length()
             self.apple.move()
             self.badapple.mkapple()
-            #self.badapple.move()
 
         # snake eating gold apple
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.goldapple.x, self.goldapple.y):
-            self.play_sound("ding")
+            self.play_sound('gold')
             self.badapple = BadappleClass.Badapple(self.surface)
             self.goldapple = GoldappleClass.Goldapple(self.surface)
             self.goldapple.cnt = 1
@@ -116,13 +128,12 @@ class Game:
         if self.snake.length%10 == 0 and self.goldapple.cnt == 1:
             self.goldapple.mkapple()
             self.goldapple.cnt+=1
-            print(f"snake: { self.snake.length }")
-            print(f"cnt: { self.goldapple.cnt } ")
         self.goldapple.draw()
 
         self.display_score()
         pygame.display.flip()
 
+    #スコアの画面表示
     def display_score(self):
         font = pygame.font.SysFont(CONST.G_OVER_FONT,CONST.G_OVER_FONT_SIZE)
         best_score = font.render(f"Best Score: {self.score.b_score}",True,(200,200,200))
@@ -130,12 +141,14 @@ class Game:
         self.surface.blit(best_score,(650,10))
         self.surface.blit(score,(850,10))
 
+    #Game Over画面
     def show_game_over(self):
         self.score.write(self.snake.length)
         self.render_background()
 
         font = pygame.font.SysFont(CONST.G_OVER_FONT, CONST.G_OVER_FONT_SIZE)
 
+        #NEW RECORD達成時
         if int(self.score.b_score) < int(self.score.n_score):
             line0 = font.render(CONST.G_BEST , True, (255, 255, 255))
             self.surface.blit(line0, (CONST.DIP_W/4, CONST.DIP_H/3 - 20,))
@@ -143,6 +156,7 @@ class Game:
         else:
             self.score.write(self.score.b_score)
 
+        #結果スコア
         line1 = font.render(CONST.G_OVER + str(self.snake.length), True, (255, 255, 255))
         self.surface.blit(line1, (CONST.DIP_W/4, CONST.DIP_H/2 - 20,))
 
@@ -190,6 +204,7 @@ class Game:
             except Exception as e:
                 self.show_game_over()
                 self.reset()
+                self.play_background_music()
                 pause = True
 
             time.sleep(CONST.SPEED)

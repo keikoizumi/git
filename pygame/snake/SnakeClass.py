@@ -9,8 +9,8 @@ class Snake:
         self.direction = 'down'
 
         self.length = 1
-        self.x = [40]
-        self.y = [40]
+        self.x = [CONST.SIZE]
+        self.y = [CONST.SIZE]
 
         self.draw()
 
