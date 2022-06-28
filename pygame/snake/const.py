@@ -12,7 +12,8 @@ B_IMG_PATH = 'resources/background.jpg'
 SNAKE_IMG_PATH = 'resources/block.jpg'
 SNAKE_FACE_IMG_PATH = 'resources/face.png'
 APPLE_IMG_PATH = 'resources/apple.jpg'
-BAD_APPLE_PATH = 'resources/badapple.jpg'
+BAD_APPLE_IMG_PATH = 'resources/badapple.jpg'
+GOLD_APPLE_IMG_PATH = 'resources/goldapple.jpg'
 
 #sound
 B_MUSIC_PATH = 'resources/bg_music_1.mp3'
@@ -23,7 +24,7 @@ DING_SOUND_PATH = 'resources/ding.mp3'
 SIZE = 40
 
 #snake
-SPEED = .1
+SPEED = .08
 
 #apple
 
@@ -34,5 +35,6 @@ SPEED = .1
 #game over display
 G_OVER_FONT_SIZE = 30
 G_OVER_FONT = 'arial'
+G_BEST = 'Your best score is '
 G_OVER = 'Game is over! Your score is '
 G_OVER_OP = 'To play again press Enter. To exit press Escape!'

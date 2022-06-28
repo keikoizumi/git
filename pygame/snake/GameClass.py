@@ -1,9 +1,12 @@
+from operator import eq
 import pygame
 import time
 from pygame.locals import *
 import AppleClass
 import BadappleClass
+import GoldappleClass
 import SnakeClass
+import ScoreClass
 import const as CONST
 
 class Game:
@@ -18,6 +21,8 @@ class Game:
         self.snake = SnakeClass.Snake(self.surface)
         self.apple = AppleClass.Apple(self.surface)
         self.badapple = BadappleClass.Badapple(self.surface)
+        self.goldapple = GoldappleClass.Goldapple(self.surface)
+        self.score = ScoreClass.Score()
 
     def play_background_music(self):
         pygame.mixer.music.load(CONST.B_MUSIC_PATH)
@@ -35,6 +40,7 @@ class Game:
         self.snake = SnakeClass.Snake(self.surface)
         self.apple = AppleClass.Apple(self.surface)
         self.badapple = BadappleClass.Badapple(self.surface)
+        self.goldapple = GoldappleClass.Goldapple(self.surface)
 
     def is_collision(self, x1, y1, x2, y2):
         if x1 >= x2 and x1 < x2 + CONST.SIZE:
@@ -42,28 +48,44 @@ class Game:
                 return True
         return False
 
+    def had_badapple(self, x1, y1):
+        for i in self.badapple.badapples:
+            x2 = i[0]
+            y2 = i[1]
+            if x1 >= x2 and x1 < x2 + CONST.SIZE:
+                if y1 >= y2 and y1 < y2 + CONST.SIZE:
+                    return True
+        return False
+
+    def goldapple(self):
+        cnt = 1
+        if cnt == 1:
+            self.goldapple.mkapple()
+        cnt += 1
+
     def render_background(self):
         bg = pygame.image.load(CONST.B_IMG_PATH)
         self.surface.blit(bg, (0,0))
 
     def play(self):
         self.render_background()
-
-        self.snake.walk()
-        self.apple.draw()
-        self.badapple.draw()
-        self.display_score()
-        pygame.display.flip()
-
         # snake eating apple scenario
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.play_sound("ding")
             self.snake.increase_length()
             self.apple.move()
-            self.badapple.move()
+            self.badapple.mkapple()
+            #self.badapple.move()
+
+        # snake eating gold apple
+        if self.is_collision(self.snake.x[0], self.snake.y[0], self.goldapple.x, self.goldapple.y):
+            self.play_sound("ding")
+            self.badapple = BadappleClass.Badapple(self.surface)
+            self.goldapple = GoldappleClass.Goldapple(self.surface)
+            self.goldapple.cnt = 1
 
         # snake eating bad apple scenario
-        if self.is_collision(self.snake.x[0], self.snake.y[0], self.badapple.x, self.badapple.y):
+        if self.had_badapple(self.snake.x[0], self.snake.y[0]):
             self.play_sound('crash')
             raise "Snake had a bad apple"
 
@@ -86,18 +108,40 @@ class Game:
             elif self.snake.direction == 'down':
                 self.snake.move_up()
 
+        self.snake.walk()
+        self.apple.draw()
+        self.badapple.draw()
+        #make golden apple
+        if self.snake.length%10 == 0 and self.goldapple.cnt == 1:
+            self.goldapple.mkapple()
+            self.goldapple.cnt+=1
+            print(f"snake: { self.snake.length }")
+            print(f"cnt: { self.goldapple.cnt } ")
+        self.goldapple.draw()
+
+        self.display_score()
+        pygame.display.flip()
+
     def display_score(self):
         font = pygame.font.SysFont(CONST.G_OVER_FONT,CONST.G_OVER_FONT_SIZE)
         score = font.render(f"Score: {self.snake.length}",True,(200,200,200))
         self.surface.blit(score,(850,10))
 
     def show_game_over(self):
+        self.score.write(self.snake.length)
         self.render_background()
+
         font = pygame.font.SysFont(CONST.G_OVER_FONT, CONST.G_OVER_FONT_SIZE)
+
+        line0 = font.render(CONST.G_BEST + str(self.score.b_score), True, (255, 255, 255))
+        self.surface.blit(line0, (CONST.DIP_W/4, CONST.DIP_H/3 - 20,))
+
         line1 = font.render(CONST.G_OVER + str(self.snake.length), True, (255, 255, 255))
         self.surface.blit(line1, (CONST.DIP_W/4, CONST.DIP_H/2 - 20,))
+
         line2 = font.render(CONST.G_OVER_OP , True, (255, 255, 255))
         self.surface.blit(line2, (CONST.DIP_W/4, CONST.DIP_H/2 + 10))
+
         pygame.mixer.music.pause()
         pygame.display.flip()
 

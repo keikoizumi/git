@@ -5,14 +5,24 @@ import const as CONST
 class Badapple:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load(CONST.BAD_APPLE_PATH).convert()
-        self.x = 840
-        self.y = 540
+        self.image = pygame.image.load(CONST.BAD_APPLE_IMG_PATH).convert()
+        #二次元配列にバッドアップルを格納する
+        self.badapples = [[840,540]]
+        #self.x = self.badapples[0]['x']
+        #self.y = self.badapples[0]['y']
+    def mkapple(self):
+        self.x = random.randint(1,24)*CONST.SIZE
+        self.y = random.randint(1,14)*CONST.SIZE
+        self.badapples.append([self.x,self.y])
 
     #りんごの描画
     def draw(self):
         #配列の数分描画
-        self.parent_screen.blit(self.image, (self.x, self.y))
+        for i in self.badapples:
+            self.x = i[0]
+            self.y = i[1]
+            self.parent_screen.blit(self.image, (self.x, self.y))
+        #self.parent_screen.blit(self.image, (self.x, self.y))
         pygame.display.flip()
 
     #りんごの移動
