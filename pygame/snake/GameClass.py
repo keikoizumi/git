@@ -85,13 +85,23 @@ class Game:
 
     def play(self):
         self.render_background()
+        self.snake.walk()
+        self.apple.draw()
+        self.badapple.draw()
+
+        #make golden apple
+        if self.snake.length%10 == 0 and self.goldapple.cnt == 1:
+            self.goldapple.mkapple()
+            self.goldapple.cnt+=1
+        self.goldapple.draw()
+
         # snake eating apple scenario
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.play_sound('ding')
             self.snake.increase_length()
             #すでにりんごがある場所に配置しない
             self.badapple.mkapple(self.apple.x, self.apple.y)
-            self.apple.move()
+            self.apple.move(self.badapple.badapples)
 
         # snake eating gold apple
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.goldapple.x, self.goldapple.y):
@@ -123,15 +133,6 @@ class Game:
                 self.snake.move_down()
             elif self.snake.direction == 'down':
                 self.snake.move_up()
-
-        self.snake.walk()
-        self.apple.draw()
-        self.badapple.draw()
-        #make golden apple
-        if self.snake.length%10 == 0 and self.goldapple.cnt == 1:
-            self.goldapple.mkapple()
-            self.goldapple.cnt+=1
-        self.goldapple.draw()
 
         #スコアの表示
         self.display_score()
