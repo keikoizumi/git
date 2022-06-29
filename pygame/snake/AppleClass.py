@@ -1,6 +1,6 @@
 import pygame
 import random
-import const as CONST
+import CONST
 
 class Apple:
     def __init__(self, parent_screen):
@@ -18,8 +18,10 @@ class Apple:
     #りんごの移動
     def move(self, badapples):
         #りんごの新しい座標
-        self.x = random.randint(1,24)*CONST.SIZE
-        self.y = random.randint(1,14)*CONST.SIZE
+        self.x = abs(random.randint(1,CONST.DIP_W) - CONST.SIZE)
+        #self.x = random.randint(1,24)*CONST.SIZE
+        self.y = abs(random.randint(1,CONST.DIP_H) - CONST.SIZE)
+        #self.y = random.randint(1,14)*CONST.SIZE
         for i in badapples:
             self.bx = i[0]
             self.by = i[1]

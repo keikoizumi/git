@@ -1,6 +1,6 @@
 import pygame
 import random
-import const as CONST
+import CONST
 
 class Badapple:
     def __init__(self, parent_screen):

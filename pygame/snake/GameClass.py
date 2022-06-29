@@ -1,5 +1,3 @@
-from operator import eq
-from random import Random
 import random
 import pygame
 import time
@@ -9,7 +7,7 @@ import BadappleClass
 import GoldappleClass
 import SnakeClass
 import ScoreClass
-import const as CONST
+import CONST
 
 class Game:
     def __init__(self):
@@ -27,24 +25,26 @@ class Game:
         self.score = ScoreClass.Score()
 
     def play_background_music(self):
-        v = random.randint(1,3)
-        if v == 1:
-            pygame.mixer.music.load(CONST.B_MUSIC_PATH)
-        elif v == 2:
-            pygame.mixer.music.load(CONST.B_RAIN_PATH)
-        else:
-            pygame.mixer.music.load(CONST.B_SUMMER_PATH)
-        pygame.mixer.music.play(-1, 0)
+        if CONST.SOUND:
+            m = random.randint(1,3)
+            if m == 1:
+                pygame.mixer.music.load(CONST.B_MUSIC_PATH)
+            elif m == 2:
+                pygame.mixer.music.load(CONST.B_RAIN_PATH)
+            else:
+                pygame.mixer.music.load(CONST.B_SUMMER_PATH)
+            pygame.mixer.music.play(-1, 0)
 
     def play_sound(self, sound_name):
-        if sound_name == "crash":
-            sound = pygame.mixer.Sound(CONST.CRASH_SOUND_PATH)
-        elif sound_name == 'ding':
-            sound = pygame.mixer.Sound(CONST.DING_SOUND_PATH)
-        elif sound_name == 'gold':
-            sound = pygame.mixer.Sound(CONST.GET_GOLD_SOUND_PATH)
+        if CONST.SOUND:
+            if sound_name == "crash":
+                sound = pygame.mixer.Sound(CONST.CRASH_SOUND_PATH)
+            elif sound_name == 'ding':
+                sound = pygame.mixer.Sound(CONST.DING_SOUND_PATH)
+            elif sound_name == 'gold':
+                sound = pygame.mixer.Sound(CONST.GET_GOLD_SOUND_PATH)
 
-        pygame.mixer.Sound.play(sound)
+            pygame.mixer.Sound.play(sound)
 
     #インスタンスのリセット
     def reset(self):
@@ -71,12 +71,6 @@ class Game:
                 if y1 >= y2 and y1 < y2 + CONST.SIZE:
                     return True
         return False
-
-    def goldapple(self):
-        cnt = 1
-        if cnt == 1:
-            self.goldapple.mkapple()
-        cnt += 1
 
     #背景
     def render_background(self):
@@ -143,8 +137,8 @@ class Game:
         font = pygame.font.SysFont(CONST.G_OVER_FONT,CONST.G_OVER_FONT_SIZE)
         best_score = font.render(f"Best Score: {self.score.b_score}",True,(200,200,200))
         score = font.render(f"Score: {self.snake.length}",True,(200,200,200))
-        self.surface.blit(best_score,(650,10))
-        self.surface.blit(score,(850,10))
+        self.surface.blit(best_score,(CONST.DIP_W - CONST.DIP_W/3,10))
+        self.surface.blit(score,(CONST.DIP_W - CONST.DIP_W/2,10))
 
     #Game Over画面
     def show_game_over(self):
@@ -185,6 +179,7 @@ class Game:
                     if event.key == K_RETURN:
                         pygame.mixer.music.unpause()
                         pause = False
+                        self.play_background_music()
 
                     if not pause:
                         if event.key == K_LEFT:
@@ -213,7 +208,6 @@ class Game:
             except Exception as e:
                 self.show_game_over()
                 self.reset()
-                self.play_background_music()
                 pause = True
 
             time.sleep(CONST.SPEED)

@@ -14,9 +14,12 @@ DIP_H = 600
 
 #image
 B_IMG_PATH = os.path.join(PATH,'resources/images/background.jpg')
-SNAKE_YELLOW_IMG_PATH = os.path.join(PATH,'resources/images/block.jpg')
+SNAKE_YELLOW_IMG_PATH = os.path.join(PATH,'resources/images/yellow_block.jpg')
 SNAKE_RED_IMG_PATH = os.path.join(PATH,'resources/images/red_block.jpg')
-SNAKE_FACE_IMG_PATH = os.path.join(PATH,'resources/images/face.png')
+SNAKE_GREEN_IMG_PATH = os.path.join(PATH,'resources/images/green_block.jpg')
+SNAKE_YELLOW_FACE_IMG_PATH = os.path.join(PATH,'resources/images/yellow_face.png')
+SNAKE_RED_FACE_IMG_PATH = os.path.join(PATH,'resources/images/red_face.png')
+SNAKE_GREEN_FACE_IMG_PATH = os.path.join(PATH,'resources/images/green_face.png')
 APPLE_IMG_PATH = os.path.join(PATH,'resources/images/apple.jpg')
 BAD_APPLE_IMG_PATH = os.path.join(PATH,'resources/images/badapple.jpg')
 GOLD_APPLE_IMG_PATH = os.path.join(PATH,'resources/images/goldapple.jpg')
@@ -29,11 +32,14 @@ CRASH_SOUND_PATH = os.path.join(PATH,'resources/sounds/crash.mp3')
 DING_SOUND_PATH = os.path.join(PATH,'resources/sounds/eatapple.mp3')
 GET_GOLD_SOUND_PATH = os.path.join(PATH,'resources/sounds/gold.mp3')
 
+SOUND = False
+
+
 #apple snake size
 SIZE = 40
 
 #snake
-SPEED = .1
+SPEED = .2
 
 #apple
 
