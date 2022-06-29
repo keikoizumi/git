@@ -58,7 +58,9 @@ class Game:
     def is_collision(self, x1, y1, x2, y2):
         if x1 >= x2 and x1 < x2 + CONST.SIZE:
             if y1 >= y2 and y1 < y2 + CONST.SIZE:
-                return True
+                #蛇が切り返したときに死なない
+                if self.snake.direction != self.snake.b_direction:
+                    return True
         return False
 
     def had_badapple(self, x1, y1):
@@ -87,8 +89,9 @@ class Game:
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.play_sound('ding')
             self.snake.increase_length()
+            #すでにりんごがある場所に配置しない
+            self.badapple.mkapple(self.apple.x, self.apple.y)
             self.apple.move()
-            self.badapple.mkapple()
 
         # snake eating gold apple
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.goldapple.x, self.goldapple.y):
@@ -109,8 +112,8 @@ class Game:
                 raise "Collision Occurred"
 
         # 枠を出たらUターン
-        if (self.snake.x[0] >= CONST.DIP_W or self.snake.x[0] < 0
-            or self.snake.y[0] >= CONST.DIP_H or self.snake.y[0] < 0):
+        if (self.snake.x[0] + CONST.SIZE > CONST.DIP_W or self.snake.x[0] < 0
+            or self.snake.y[0] + CONST.SIZE > CONST.DIP_H or self.snake.y[0] < 0):
 
             if self.snake.direction == 'left':
                 self.snake.move_right()
@@ -130,6 +133,7 @@ class Game:
             self.goldapple.cnt+=1
         self.goldapple.draw()
 
+        #スコアの表示
         self.display_score()
         pygame.display.flip()
 
@@ -184,15 +188,19 @@ class Game:
                     if not pause:
                         if event.key == K_LEFT:
                             self.snake.move_left()
+                            self.snake.b_direction ='right'
 
                         if event.key == K_RIGHT:
                             self.snake.move_right()
+                            self.snake.b_direction ='left'
 
                         if event.key == K_UP:
                             self.snake.move_up()
+                            self.snake.b_direction ='down'
 
                         if event.key == K_DOWN:
                             self.snake.move_down()
+                            self.snake.b_direction ='up'
 
                 elif event.type == QUIT:
                     running = False

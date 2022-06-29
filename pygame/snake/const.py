@@ -13,20 +13,21 @@ DIP_W = 1000
 DIP_H = 600
 
 #image
-B_IMG_PATH = os.path.join(PATH,'resources/background.jpg')
-SNAKE_IMG_PATH = os.path.join(PATH,'resources/block.jpg')
-SNAKE_FACE_IMG_PATH = os.path.join(PATH,'resources/face.png')
-APPLE_IMG_PATH = os.path.join(PATH,'resources/apple.jpg')
-BAD_APPLE_IMG_PATH = os.path.join(PATH,'resources/badapple.jpg')
-GOLD_APPLE_IMG_PATH = os.path.join(PATH,'resources/goldapple.jpg')
+B_IMG_PATH = os.path.join(PATH,'resources/images/background.jpg')
+SNAKE_YELLOW_IMG_PATH = os.path.join(PATH,'resources/images/block.jpg')
+SNAKE_RED_IMG_PATH = os.path.join(PATH,'resources/images/red_block.jpg')
+SNAKE_FACE_IMG_PATH = os.path.join(PATH,'resources/images/face.png')
+APPLE_IMG_PATH = os.path.join(PATH,'resources/images/apple.jpg')
+BAD_APPLE_IMG_PATH = os.path.join(PATH,'resources/images/badapple.jpg')
+GOLD_APPLE_IMG_PATH = os.path.join(PATH,'resources/images/goldapple.jpg')
 
 #sound
-B_MUSIC_PATH = os.path.join(PATH,'resources/bg_music_1.mp3')
-B_RAIN_PATH = os.path.join(PATH, 'resources/bg_rain.mp3')
-B_SUMMER_PATH = os.path.join(PATH,'resources/bg_summer.mp3')
-CRASH_SOUND_PATH = os.path.join(PATH,'resources/crash.mp3')
-DING_SOUND_PATH = os.path.join(PATH,'resources/eatapple.mp3')
-GET_GOLD_SOUND_PATH = os.path.join(PATH,'resources/gold.mp3')
+B_MUSIC_PATH = os.path.join(PATH,'resources/sounds/bg_music_1.mp3')
+B_RAIN_PATH = os.path.join(PATH, 'resources/sounds/bg_rain.mp3')
+B_SUMMER_PATH = os.path.join(PATH,'resources/sounds/bg_summer.mp3')
+CRASH_SOUND_PATH = os.path.join(PATH,'resources/sounds/crash.mp3')
+DING_SOUND_PATH = os.path.join(PATH,'resources/sounds/eatapple.mp3')
+GET_GOLD_SOUND_PATH = os.path.join(PATH,'resources/sounds/gold.mp3')
 
 #apple snake size
 SIZE = 40

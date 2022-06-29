@@ -17,6 +17,13 @@ class Apple:
 
     #りんごの移動
     def move(self):
+        #りんごの新しい座標
         self.x = random.randint(1,24)*CONST.SIZE
         self.y = random.randint(1,14)*CONST.SIZE
+        #for i in self.badapples:
+        #    self.bx = i[0]
+        #    self.by = i[1]
+        #    if self.bx == self.x and self.by == self.y:
+        #        #座標がすでに作成済みであるか確認
+        #        self.move(self.badapples)
         self.draw()

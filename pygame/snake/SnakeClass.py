@@ -1,12 +1,14 @@
+from tkinter import W
 import pygame
 import const as CONST
 
 class Snake:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
-        self.image = pygame.image.load(CONST.SNAKE_IMG_PATH).convert()
+        self.image = pygame.image.load(CONST.SNAKE_YELLOW_IMG_PATH).convert()
         self.face = pygame.image.load(CONST.SNAKE_FACE_IMG_PATH).convert()
         self.direction = 'down'
+        self.b_direction = 'down'
 
         self.length = 1
         self.x = [CONST.SIZE]
@@ -46,6 +48,8 @@ class Snake:
     def draw(self):
         for i in range(self.length - 1):
             self.parent_screen.blit(self.face, (self.x[0], self.y[0]))
+            #スキンカラー変更対応
+            self.chc()
             self.parent_screen.blit(self.image, (self.x[i + 1], self.y[i + 1]))
         pygame.display.flip()
 
@@ -53,3 +57,8 @@ class Snake:
         self.length += 1
         self.x.append(-1)
         self.y.append(-1)
+
+    #スキンカラーの変更
+    def chc(self):
+        if self.length >= 20:
+            self.image = pygame.image.load(CONST.SNAKE_RED_IMG_PATH)
