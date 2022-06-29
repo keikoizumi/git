@@ -56,10 +56,15 @@ class Game:
 
     #衝突判定
     def is_collision(self, x1, y1, x2, y2):
-        if x1 >= x2 and x1 < x2 + CONST.SIZE:
-            if y1 >= y2 and y1 < y2 + CONST.SIZE:
+        if x1 + CONST.SIZE/2 >= x2 and x1 < x2 + CONST.SIZE:
+            if y1 + CONST.SIZE/2 >= y2 and y1 < y2 + CONST.SIZE:
                 #蛇が切り返したときに死なない
-                if self.snake.direction != self.snake.b_direction:
+                if (((self.snake.directions[0] == 'up' and self.snake.directions[1] == 'down')
+                    or (self.snake.directions[0] == 'down' and self.snake.directions[1] == 'up'))
+                    or (self.snake.directions[0] == 'left' and self.snake.directions[1] == 'right')
+                    or (self.snake.directions[0] == 'right' and self.snake.directions[1] == 'left')):
+                    return False
+                else:
                     return True
         return False
 
@@ -119,13 +124,13 @@ class Game:
         if (self.snake.x[0] + CONST.SIZE > CONST.DIP_W or self.snake.x[0] < 0
             or self.snake.y[0] + CONST.SIZE > CONST.DIP_H or self.snake.y[0] < 0):
 
-            if self.snake.direction == 'left':
+            if self.snake.directions[-1] == 'left':
                 self.snake.move_right()
-            elif self.snake.direction == 'right':
+            elif self.snake.directions[-1] == 'right':
                 self.snake.move_left()
-            elif self.snake.direction == 'up':
+            elif self.snake.directions[-1] == 'up':
                 self.snake.move_down()
-            elif self.snake.direction == 'down':
+            elif self.snake.directions[-1] == 'down':
                 self.snake.move_up()
 
         #スコアの表示
@@ -138,7 +143,7 @@ class Game:
         best_score = font.render(f"Best Score: {self.score.b_score}",True,(200,200,200))
         score = font.render(f"Score: {self.snake.length}",True,(200,200,200))
         self.surface.blit(best_score,(CONST.DIP_W - CONST.DIP_W/3,10))
-        self.surface.blit(score,(CONST.DIP_W - CONST.DIP_W/2,10))
+        self.surface.blit(score,(CONST.DIP_W - CONST.DIP_W/7,10))
 
     #Game Over画面
     def show_game_over(self):
@@ -184,19 +189,15 @@ class Game:
                     if not pause:
                         if event.key == K_LEFT:
                             self.snake.move_left()
-                            self.snake.b_direction ='right'
 
                         if event.key == K_RIGHT:
                             self.snake.move_right()
-                            self.snake.b_direction ='left'
 
                         if event.key == K_UP:
                             self.snake.move_up()
-                            self.snake.b_direction ='down'
 
                         if event.key == K_DOWN:
                             self.snake.move_down()
-                            self.snake.b_direction ='up'
 
                 elif event.type == QUIT:
                     running = False

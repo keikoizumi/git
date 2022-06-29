@@ -32,7 +32,7 @@ CRASH_SOUND_PATH = os.path.join(PATH,'resources/sounds/crash.mp3')
 DING_SOUND_PATH = os.path.join(PATH,'resources/sounds/eatapple.mp3')
 GET_GOLD_SOUND_PATH = os.path.join(PATH,'resources/sounds/gold.mp3')
 
-SOUND = False
+SOUND = True
 
 
 #apple snake size
