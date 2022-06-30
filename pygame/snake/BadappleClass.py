@@ -8,8 +8,11 @@ class Badapple:
         self.image = pygame.image.load(CONST.BAD_APPLE_IMG_PATH).convert()
         #二次元配列にバッドアップルを格納する
         self.badapples = [[-50,-50]]
+        self.cnt = 0
 
     def mkapple(self, bx, by):
+        #腐ったりんごの数
+        self.cnt += 1
         #新しいりんごの座標
         self.x = random.randint(1,24)*CONST.SIZE
         self.y = random.randint(1,14)*CONST.SIZE

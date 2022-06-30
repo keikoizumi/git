@@ -1,6 +1,8 @@
+from pickle import FALSE
 import random
 import pygame
 import time
+import datetime
 from pygame.locals import *
 import AppleClass
 import BadappleClass
@@ -85,14 +87,15 @@ class Game:
         self.surface.blit(bg, (0,0))
 
     def play(self):
-
+        #背景の描画
         self.render_background()
+
         self.snake.walk()
         self.apple.draw()
         self.badapple.draw()
 
         #golden appleを作る
-        if self.snake.length%10 == 0 and self.goldapple.cnt == 1:
+        if ((self.snake.length%10 == 0 and self.goldapple.cnt == 1) and self.badapple.cnt >= 10):
             self.goldapple.mkapple()
             self.goldapple.cnt+=1
             self.play_background_music()
@@ -119,8 +122,11 @@ class Game:
         if self.had_badapple(self.snake.x[0], self.snake.y[0]):
             self.play_sound('bad')
             self.snake.had_badapple()
+            self.snake.scnt = 1
+            self.snake.speedup()
             if self.snake.length == 1:
                 raise "Snake had too many bad apples and R.I.P"
+        print(CONST.SPEED)
 
         # 蛇が自分自身にぶつかった！
         for i in range(3, self.snake.length):
@@ -144,6 +150,17 @@ class Game:
         #スコアの表示
         self.display_score()
 
+        #SPEED 確認
+        if self.snake.scnt == 1:
+            if datetime.datetime.now() < self.snake.d:
+                CONST.SPEED = .1
+                self.snake.face = pygame.image.load(CONST.SNAKE_BLUE_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+            else:
+                self.snake.face = self.snake.iniface
+                self.snake.scnt = 0
+                CONST.SPEED = .2
+
+        #画面の更新
         pygame.display.flip()
 
     #スコアの画面表示
@@ -227,5 +244,6 @@ class Game:
                 self.show_game_over()
                 self.reset()
                 pause = True
+                CONST.SPEED = .2
 
             time.sleep(CONST.SPEED)

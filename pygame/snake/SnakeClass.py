@@ -1,6 +1,7 @@
-from ctypes.wintypes import SIZE
-from tkinter import W
+#from ctypes.wintypes import SIZE
+#from tkinter import W
 from numpy import append
+import datetime
 import random
 import pygame
 import CONST
@@ -9,18 +10,45 @@ class Snake:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
         #スキンカラーの設定
-        self.chccnt = 0
-        self.chc()
+        v = random.randint(1,3)
+        #v = 3
+        if v == 1:
+            self.skincolor = 'red'
+            self.image = pygame.image.load(CONST.SNAKE_RED_IMG_PATH).convert()
+            self.face = pygame.image.load(CONST.SNAKE_RED_FACE_IMG_PATH).convert()
+        elif v == 2:
+            self.skincolor = 'green'
+            self.image = pygame.image.load(CONST.SNAKE_GREEN_IMG_PATH).convert()
+            self.face = pygame.image.load(CONST.SNAKE_GREEN_FACE_IMG_PATH).convert()
+        else:
+            self.skincolor = 'yellow'
+            self.image = pygame.image.load(CONST.SNAKE_YELLOW_IMG_PATH).convert()
+            self.face = pygame.image.load(CONST.SNAKE_YELLOW_FACE_IMG_PATH).convert()
+            #self.tail = pygame.image.load(CONST.SNAKE_YELLOW_TAIL_IMG_PATH).convert()
+
+        self.face = pygame.transform.rotate(self.face,180)
+        #最初のお顔を保存
+        self.iniface = self.face
+        #self.tail = pygame.transform.rotate(self.tail,180
+
+        #初期方向
         self.directions = ['down','down']
         self.get_gold_apple = False
-
+        #初期長
         self.length = 1
+        #初期位置
         self.x = [CONST.SIZE]
         self.y = [CONST.SIZE]
         #self.x.append(-1)
         #self.y.append(-1)
         #self.x.append(-2)
         #self.y.append(-2)
+
+        #時間
+        self.d = datetime.datetime.now() + datetime.timedelta(days=-7)
+
+        #speed はノーマル
+        self.scnt = 0
 
         self.draw()
 
@@ -172,11 +200,10 @@ class Snake:
 
         #for i in range(len(self.x)-1):
             #スキンカラー変更対応
-            self.chc()
+            #self.chc()
             self.parent_screen.blit(self.face, (self.x[0], self.y[0]))
             self.parent_screen.blit(self.image, (self.x[i + 1], self.y[i + 1]))
             #self.parent_screen.blit(self.tail, (self.x[-1], self.y[-1]))
-        #pygame.display.flip()
 
     def increase_length(self):
         self.length += 1
@@ -188,25 +215,6 @@ class Snake:
             self.length -= 1
             del self.x[-1]
             del self.y[-1]
-
-    #スキンカラーの変更
-    def chc(self):
-        if self.chccnt == 0:
-            self.chccnt =+ 1
-            v = random.randint(1,3)
-            #v = 3
-            if v == 1:
-                self.image = pygame.image.load(CONST.SNAKE_RED_IMG_PATH).convert()
-                self.face = pygame.image.load(CONST.SNAKE_RED_FACE_IMG_PATH).convert()
-            elif v == 2:
-                self.image = pygame.image.load(CONST.SNAKE_GREEN_IMG_PATH).convert()
-                self.face = pygame.image.load(CONST.SNAKE_GREEN_FACE_IMG_PATH).convert()
-            else:
-                self.image = pygame.image.load(CONST.SNAKE_YELLOW_IMG_PATH).convert()
-                self.face = pygame.image.load(CONST.SNAKE_YELLOW_FACE_IMG_PATH).convert()
-                #self.tail = pygame.image.load(CONST.SNAKE_YELLOW_TAIL_IMG_PATH).convert()
-            self.face = pygame.transform.rotate(self.face,180)
-            #self.tail = pygame.transform.rotate(self.tail,180)
 
     #goldを食べたときのスキンエフェクト
     def chcg(self):
@@ -233,7 +241,16 @@ class Snake:
         #スキンエフェクト
         cnt = 0
         self.imgbk = self.image
+        self.facebk = self.face
         while cnt < 100:
+            #bad face 表示
+            if self.skincolor == 'red':
+                self.face = pygame.image.load(CONST.SNAKE_RED_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+            elif self.skincolor == 'green':
+                self.face = pygame.image.load(CONST.SNAKE_GREEN_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+            else:
+                self.face = pygame.image.load(CONST.SNAKE_YELLOW_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+            #スキンエフェクト 青色
             self.image = pygame.image.load(CONST.SNAKE_BLUE_IMG_PATH).convert()
             self.draw()
             pygame.display.flip()
@@ -243,4 +260,10 @@ class Snake:
             cnt += 1
         self.get_gold_apple = False
         self.image = self.imgbk
+        self.face = self.facebk
         pygame.display.flip()
+
+    def speedup(self):
+        #30秒間speed up
+        if self.scnt == 1:
+            self.d = datetime.datetime.now() + datetime.timedelta(seconds=30)
