@@ -1,5 +1,6 @@
 from pickle import FALSE
 import random
+from telnetlib import COM_PORT_OPTION
 import pygame
 import time
 import datetime
@@ -60,11 +61,11 @@ class Game:
 
     #衝突判定
     def is_collision(self, x1, y1, x2, y2):
-        if x1 + CONST.SIZE/2 >= x2 and x1 < x2 + CONST.SIZE:
-            if y1 + CONST.SIZE/2 >= y2 and y1 < y2 + CONST.SIZE:
+        if (x1 >= x2 and x1 < x2 + CONST.SIZE) or (x1 + CONST.SIZE >= x2 and x1 + CONST.SIZE < x2 + CONST.SIZE):
+            if (y1 >= y2 and y1 < y2 + CONST.SIZE) or (y1 + CONST.SIZE >= y2 and y1 + CONST.SIZE < y2 + CONST.SIZE):
                 #蛇が切り返したときに死なない
-                if (((self.snake.directions[0] == 'up' and self.snake.directions[1] == 'down')
-                    or (self.snake.directions[0] == 'down' and self.snake.directions[1] == 'up'))
+                if ((self.snake.directions[0] == 'up' and self.snake.directions[1] == 'down')
+                    or (self.snake.directions[0] == 'down' and self.snake.directions[1] == 'up')
                     or (self.snake.directions[0] == 'left' and self.snake.directions[1] == 'right')
                     or (self.snake.directions[0] == 'right' and self.snake.directions[1] == 'left')):
                     return False
@@ -87,12 +88,23 @@ class Game:
         self.surface.blit(bg, (0,0))
 
     def play(self):
+        print(f"x: {self.snake.x[0]}")
+        print(f"y: {self.snake.y[0]}")
+        print(self.snake.directions)
         #背景の描画
         self.render_background()
 
         self.snake.walk()
         self.apple.draw()
         self.badapple.draw()
+
+        #舌を出す・出さない
+        if self.snake.out:
+            self.snake.out = False
+            self.snake.tongue()
+        else:
+            self.snake.out = True
+            self.snake.tongue()
 
         #golden appleを作る
         if ((self.snake.length%10 == 0 and self.goldapple.cnt == 1) and self.badapple.cnt >= 10):
@@ -103,6 +115,7 @@ class Game:
 
         # 蛇がりんごを食べた！
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
+
             self.play_sound('ding')
             self.snake.increase_length()
             #すでにりんごがある場所に配置しない
@@ -125,19 +138,31 @@ class Game:
             self.snake.scnt = 1
             self.snake.speedup()
             if self.snake.length == 1:
+                print("Snake had too many bad apples and R.I.P")
                 raise "Snake had too many bad apples and R.I.P"
-        print(CONST.SPEED)
 
         # 蛇が自分自身にぶつかった！
         for i in range(3, self.snake.length):
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
                 self.play_sound('crash')
+                print("Collision Occurred")
                 raise "Collision Occurred"
 
         # 枠を出たらUターン
-        if (self.snake.x[0] + CONST.SIZE > CONST.DIP_W or self.snake.x[0] < 0
-            or self.snake.y[0] + CONST.SIZE > CONST.DIP_H or self.snake.y[0] < 0):
+        if ((self.snake.x[0] + CONST.SIZE > CONST.DIP_W) or (self.snake.x[0] < 0)
+            or (self.snake.y[0] + CONST.SIZE > CONST.DIP_H) or (self.snake.y[0] < 0)):
 
+            #画面超えたら軸を初期化
+            if self.snake.x[0] > CONST.DIP_W:
+                self.snake.x[0] = CONST.DIP_W
+            if self.snake.x[0] < 0:
+                self.snake.x[0] = 0
+            if self.snake.y[0] >= CONST.DIP_H:
+                self.snake.y[0] = CONST.DIP_H - CONST.SIZE
+            if self.snake.y[0] < 0:
+                self.snake.y[0] = 0
+
+            #一つ前の方向と反対方向へすすめ
             if self.snake.directions[-1] == 'left':
                 self.snake.move_right()
             elif self.snake.directions[-1] == 'right':
@@ -153,11 +178,32 @@ class Game:
         #SPEED 確認
         if self.snake.scnt == 1:
             if datetime.datetime.now() < self.snake.d:
-                CONST.SPEED = .1
+                #スピードのパラメータ変更
+                CONST.SPEED = .08
+                #顔色を変える
+                #お顔を整える
                 self.snake.face = pygame.image.load(CONST.SNAKE_BLUE_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+                if self.snake.directions[1] == 'up':
+                    self.snake.face = pygame.transform.rotate(self.snake.face,0)
+                elif self.snake.directions[1] == 'down':
+                    self.snake.face = pygame.transform.rotate(self.snake.face,180)
+                elif self.snake.directions[1] == 'right':
+                    self.snake.face = pygame.transform.rotate(self.snake.face,-90)
+                else:
+                    self.snake.face = pygame.transform.rotate(self.snake.face,90)
             else:
+                #お顔をもとに戻す
                 self.snake.face = self.snake.iniface
+                if self.snake.directions[1] == 'up':
+                    self.snake.face = pygame.transform.rotate(self.snake.face,180)
+                elif self.snake.directions[1] == 'down':
+                    self.snake.face = pygame.transform.rotate(self.snake.face,0)
+                elif self.snake.directions[1] == 'right':
+                    self.snake.face = pygame.transform.rotate(self.snake.face,90)
+                else:
+                    self.snake.face = pygame.transform.rotate(self.snake.face,-90)
                 self.snake.scnt = 0
+                #スピードをもとに戻す
                 CONST.SPEED = .2
 
         #画面の更新
@@ -221,15 +267,13 @@ class Game:
                             pygame.mixer.music.pause()
 
                     if not pause:
+
                         if event.key == K_LEFT:
                             self.snake.move_left()
-
                         if event.key == K_RIGHT:
                             self.snake.move_right()
-
                         if event.key == K_UP:
                             self.snake.move_up()
-
                         if event.key == K_DOWN:
                             self.snake.move_down()
 

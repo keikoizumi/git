@@ -25,6 +25,9 @@ SNAKE_YELLOW_HAD_BAD_APPLE_FACE_IMG_PATH = os.path.join(PATH,'resources/images/y
 SNAKE_RED_HAD_BAD_APPLE_FACE_IMG_PATH = os.path.join(PATH,'resources/images/red_had_bad_apple_face.png')
 SNAKE_GREEN_HAD_BAD_APPLE_FACE_IMG_PATH = os.path.join(PATH,'resources/images/green_had_bad_apple_face.png')
 SNAKE_BLUE_HAD_BAD_APPLE_FACE_IMG_PATH = os.path.join(PATH,'resources/images/blue_had_bad_apple_face.png')
+SNAKE_YELLOW_EATING_FACE_IMG_PATH = os.path.join(PATH,'resources/images/yellow_eating_face.png')
+SNAKE_RED_EATING_FACE_IMG_PATH = os.path.join(PATH,'resources/images/red_eating_face.png')
+SNAKE_GREEN_EATING_FACE_IMG_PATH = os.path.join(PATH,'resources/images/green_eating_face.png')
 #SNAKE_YELLOW_TAIL_IMG_PATH = os.path.join(PATH,'resources/images/yellow_tail.png')
 APPLE_IMG_PATH = os.path.join(PATH,'resources/images/apple.jpg')
 BAD_APPLE_IMG_PATH = os.path.join(PATH,'resources/images/badapple.jpg')
@@ -46,7 +49,7 @@ SOUND = True
 SIZE = 40
 
 #snake
-SPEED = .2
+SPEED = .15
 
 #apple
 

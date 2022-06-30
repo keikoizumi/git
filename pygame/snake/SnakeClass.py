@@ -1,6 +1,6 @@
 #from ctypes.wintypes import SIZE
 #from tkinter import W
-from numpy import append
+from numpy import append, outer
 import datetime
 import random
 import pygame
@@ -50,6 +50,9 @@ class Snake:
         #speed はノーマル
         self.scnt = 0
 
+        #舌を出さない
+        self.out = False
+
         self.draw()
 
     def move_left(self):
@@ -82,8 +85,7 @@ class Snake:
             #self.tail = pygame.transform.rotate(self.tail,180)
         else:
             self.face = pygame.transform.rotate(self.face,0)
-            #self.tail = pygame.transform.rotate(self.tail,0)
-
+            #self.tail = pygame.transform.rotate(self.tail,0)#
         self.directions.pop(0)
         self.directions.append('right')
 
@@ -100,7 +102,6 @@ class Snake:
         else:
             self.face = pygame.transform.rotate(self.face,0)
             #self.tail = pygame.transform.rotate(self.tail,0)
-
         self.directions.pop(0)
         self.directions.append('up')
 
@@ -117,7 +118,6 @@ class Snake:
         else:
             self.face = pygame.transform.rotate(self.face,0)
             #self.tail = pygame.transform.rotate(self.tail,0)
-
         self.directions.pop(0)
         self.directions.append('down')
 
@@ -250,6 +250,16 @@ class Snake:
                 self.face = pygame.image.load(CONST.SNAKE_GREEN_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
             else:
                 self.face = pygame.image.load(CONST.SNAKE_YELLOW_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+
+            if self.directions[1] == 'up':
+                self.face = pygame.transform.rotate(self.face,0)
+            elif self.directions[1] == 'down':
+                self.face = pygame.transform.rotate(self.face,180)
+            elif self.directions[1] == 'right':
+                self.face = pygame.transform.rotate(self.face,-90)
+            else:
+                self.face = pygame.transform.rotate(self.face,90)
+
             #スキンエフェクト 青色
             self.image = pygame.image.load(CONST.SNAKE_BLUE_IMG_PATH).convert()
             self.draw()
@@ -263,7 +273,38 @@ class Snake:
         self.face = self.facebk
         pygame.display.flip()
 
+    def tongue(self):
+        #舌を出すフェクト
+        if self.out:
+            if self.skincolor == 'red':
+                self.face = pygame.image.load(CONST.SNAKE_RED_EATING_FACE_IMG_PATH).convert()
+            elif self.skincolor == 'green':
+                self.face = pygame.image.load(CONST.SNAKE_GREEN_EATING_FACE_IMG_PATH).convert()
+            else:
+                self.face = pygame.image.load(CONST.SNAKE_YELLOW_EATING_FACE_IMG_PATH).convert()
+
+            if self.directions[1] == 'up':
+                self.face = pygame.transform.rotate(self.face,0)
+            elif self.directions[1] == 'down':
+                self.face = pygame.transform.rotate(self.face,180)
+            elif self.directions[1] == 'right':
+                self.face = pygame.transform.rotate(self.face,-90)
+            else:
+                self.face = pygame.transform.rotate(self.face,90)
+            #pygame.display.flip()
+        else:
+            self.face = self.iniface
+            if self.directions[1] == 'up':
+                self.face = pygame.transform.rotate(self.face,180)
+            elif self.directions[1] == 'down':
+                self.face = pygame.transform.rotate(self.face,0)
+            elif self.directions[1] == 'right':
+                self.face = pygame.transform.rotate(self.face,90)
+            else:
+                self.face = pygame.transform.rotate(self.face,-90)
+            #pygame.display.flip()
+
     def speedup(self):
-        #30秒間speed up
+        #10秒間speed up
         if self.scnt == 1:
-            self.d = datetime.datetime.now() + datetime.timedelta(seconds=30)
+            self.d = datetime.datetime.now() + datetime.timedelta(seconds=10)
