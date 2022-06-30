@@ -8,6 +8,7 @@ class Snake:
         self.parent_screen = parent_screen
         self.image = pygame.image.load(CONST.SNAKE_YELLOW_IMG_PATH).convert()
         self.face = pygame.image.load(CONST.SNAKE_YELLOW_FACE_IMG_PATH).convert()
+        self.face = pygame.transform.rotate(self.face,180)
         #self.direction = 'down'
         self.directions = ['down','down']
 
@@ -18,24 +19,57 @@ class Snake:
         self.draw()
 
     def move_left(self):
+        #お顔の向きを整える
+        if self.directions[-1] == 'up':
+            self.face = pygame.transform.rotate(self.face,90)
+        elif self.directions[-1] == 'down':
+            self.face = pygame.transform.rotate(self.face,-90)
+        elif self.directions[-1] == 'right':
+            self.face = pygame.transform.rotate(self.face,180)
+        else:
+            self.face = pygame.transform.rotate(self.face,0)
+
         self.directions.pop(0)
         self.directions.append('left')
-        self.face = pygame.transform.rotate(self.face,90)
 
     def move_right(self):
+        if self.directions[-1] == 'up':
+            self.face = pygame.transform.rotate(self.face,-90)
+        elif self.directions[-1] == 'down':
+            self.face = pygame.transform.rotate(self.face,90)
+        elif self.directions[-1] == 'left':
+            self.face = pygame.transform.rotate(self.face,180)
+        else:
+            self.face = pygame.transform.rotate(self.face,0)
+
         self.directions.pop(0)
         self.directions.append('right')
-        self.face = pygame.transform.rotate(self.face,-90)
 
     def move_up(self):
+        if self.directions[-1] == 'down':
+            self.face = pygame.transform.rotate(self.face,180)
+        elif self.directions[-1] == 'left':
+            self.face = pygame.transform.rotate(self.face,-90)
+        elif self.directions[-1] == 'right':
+            self.face = pygame.transform.rotate(self.face,90)
+        else:
+            self.face = pygame.transform.rotate(self.face,0)
+
         self.directions.pop(0)
         self.directions.append('up')
-        self.face = pygame.transform.rotate(self.face,0)
 
     def move_down(self):
+        if self.directions[-1] == 'up':
+            self.face = pygame.transform.rotate(self.face,180)
+        elif self.directions[-1] == 'left':
+            self.face = pygame.transform.rotate(self.face,90)
+        elif self.directions[-1] == 'right':
+            self.face = pygame.transform.rotate(self.face,-90)
+        else:
+            self.face = pygame.transform.rotate(self.face,0)
+
         self.directions.pop(0)
         self.directions.append('down')
-        self.face = pygame.transform.rotate(self.face,180)
 
     def walk(self):
         # update body
@@ -51,8 +85,7 @@ class Snake:
             self.y[0] -= CONST.SIZE
         if self.directions[-1] == 'down':
             self.y[0] += CONST.SIZE
-        print(self.directions[-1])
-        print(self.directions)
+
         self.draw()
 
     def draw(self):
@@ -73,6 +106,8 @@ class Snake:
         if self.length >= 20:
             self.image = pygame.image.load(CONST.SNAKE_RED_IMG_PATH)
             self.face = pygame.image.load(CONST.SNAKE_RED_FACE_IMG_PATH)
+            self.face = pygame.transform.rotate(self.face,180)
         elif self.length >= 30:
             self.image = pygame.image.load(CONST.SNAKE_GREEN_IMG_PATH)
             self.face = pygame.image.load(CONST.SNAKE_GREEN_FACE_IMG_PATH)
+            self.face = pygame.transform.rotate(self.face,180)
