@@ -20,6 +20,7 @@ SNAKE_GREEN_IMG_PATH = os.path.join(PATH,'resources/images/green_block.jpg')
 SNAKE_YELLOW_FACE_IMG_PATH = os.path.join(PATH,'resources/images/yellow_face.png')
 SNAKE_RED_FACE_IMG_PATH = os.path.join(PATH,'resources/images/red_face.png')
 SNAKE_GREEN_FACE_IMG_PATH = os.path.join(PATH,'resources/images/green_face.png')
+SNAKE_YELLOW_TAIL_IMG_PATH = os.path.join(PATH,'resources/images/yellow_tail.png')
 APPLE_IMG_PATH = os.path.join(PATH,'resources/images/apple.jpg')
 BAD_APPLE_IMG_PATH = os.path.join(PATH,'resources/images/badapple.jpg')
 GOLD_APPLE_IMG_PATH = os.path.join(PATH,'resources/images/goldapple.jpg')
@@ -31,6 +32,7 @@ B_SUMMER_PATH = os.path.join(PATH,'resources/sounds/bg_summer.mp3')
 CRASH_SOUND_PATH = os.path.join(PATH,'resources/sounds/crash.mp3')
 DING_SOUND_PATH = os.path.join(PATH,'resources/sounds/eatapple.mp3')
 GET_GOLD_SOUND_PATH = os.path.join(PATH,'resources/sounds/gold.mp3')
+GET_BAD_SOUND_PATH = os.path.join(PATH,'resources/sounds/bad.mp3')
 
 SOUND = True
 

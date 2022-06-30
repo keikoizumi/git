@@ -43,6 +43,8 @@ class Game:
                 sound = pygame.mixer.Sound(CONST.DING_SOUND_PATH)
             elif sound_name == 'gold':
                 sound = pygame.mixer.Sound(CONST.GET_GOLD_SOUND_PATH)
+            elif sound_name == 'bad':
+                sound = pygame.mixer.Sound(CONST.GET_BAD_SOUND_PATH)
 
             pygame.mixer.Sound.play(sound)
 
@@ -83,6 +85,9 @@ class Game:
         self.surface.blit(bg, (0,0))
 
     def play(self):
+        #print(f'x: {self.snake.x}')
+        #print(f'y: {self.snake.y}')
+
         self.render_background()
         self.snake.walk()
         self.apple.draw()
@@ -92,6 +97,7 @@ class Game:
         if self.snake.length%10 == 0 and self.goldapple.cnt == 1:
             self.goldapple.mkapple()
             self.goldapple.cnt+=1
+            self.play_background_music()
         self.goldapple.draw()
 
         # snake eating apple scenario
@@ -108,10 +114,12 @@ class Game:
             self.badapple = BadappleClass.Badapple(self.surface)
             self.goldapple = GoldappleClass.Goldapple(self.surface)
             self.goldapple.cnt = 1
+            self.snake.get_gold_apple = True
+            self.snake.chcg()
 
         # snake eating bad apple scenario
         if self.had_badapple(self.snake.x[0], self.snake.y[0]):
-            self.play_sound('crash')
+            self.play_sound('bad')
             raise "Snake had a bad apple"
 
         # snake colliding with itself
@@ -185,6 +193,12 @@ class Game:
                         pygame.mixer.music.unpause()
                         pause = False
                         self.play_background_music()
+
+                    if event.key == K_SPACE:
+                        if pause == True:
+                            pause = False
+                        else:
+                            pause = True
 
                     if not pause:
                         if event.key == K_LEFT:
