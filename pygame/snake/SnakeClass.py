@@ -99,7 +99,7 @@ class Snake:
         #for i in range(len(self.x)-1,0,-1):
             self.x[i] = self.x[i-1]
             self.y[i] = self.y[i-1]
-            #しっぽの配列
+            #しっぽの配列 しっぽはあきらめる！
             #if self.length > 1:
             #    self.x[-1] = self.x[-2]
             #    self.y[-1] = self.y[-2]
@@ -176,12 +176,18 @@ class Snake:
             self.parent_screen.blit(self.face, (self.x[0], self.y[0]))
             self.parent_screen.blit(self.image, (self.x[i + 1], self.y[i + 1]))
             #self.parent_screen.blit(self.tail, (self.x[-1], self.y[-1]))
-        pygame.display.flip()
+        #pygame.display.flip()
 
     def increase_length(self):
         self.length += 1
         self.x.append(-1)
         self.y.append(-1)
+
+    def decrease_length(self):
+        if self.length != 1:
+            self.length -= 1
+            del self.x[-1]
+            del self.y[-1]
 
     #スキンカラーの変更
     def chc(self):
@@ -210,10 +216,31 @@ class Snake:
             while cnt < 100:
                 self.image = pygame.image.load(CONST.SNAKE_RED_IMG_PATH).convert()
                 self.draw()
+                pygame.display.flip()
                 self.image = pygame.image.load(CONST.SNAKE_GREEN_IMG_PATH).convert()
                 self.draw()
+                pygame.display.flip()
                 self.image = pygame.image.load(CONST.SNAKE_YELLOW_IMG_PATH).convert()
                 self.draw()
+                pygame.display.flip()
                 cnt += 1
             self.get_gold_apple = False
             self.image = self.imgbk
+            pygame.display.flip()
+
+    def had_badapple(self):
+        self.decrease_length()
+        #スキンエフェクト
+        cnt = 0
+        self.imgbk = self.image
+        while cnt < 100:
+            self.image = pygame.image.load(CONST.SNAKE_BLUE_IMG_PATH).convert()
+            self.draw()
+            pygame.display.flip()
+            self.image = self.imgbk
+            self.draw()
+            pygame.display.flip()
+            cnt += 1
+        self.get_gold_apple = False
+        self.image = self.imgbk
+        pygame.display.flip()

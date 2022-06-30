@@ -18,4 +18,4 @@ class Goldapple:
     def draw(self):
         #配列の数分描画
         self.parent_screen.blit(self.image, (self.x, self.y))
-        pygame.display.flip()
+        #pygame.display.flip()

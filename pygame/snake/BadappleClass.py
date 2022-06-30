@@ -27,7 +27,7 @@ class Badapple:
             self.x = i[0]
             self.y = i[1]
             self.parent_screen.blit(self.image, (self.x, self.y))
-        pygame.display.flip()
+        #pygame.display.flip()
 
     #りんごの移動
     def move(self):

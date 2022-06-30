@@ -85,22 +85,20 @@ class Game:
         self.surface.blit(bg, (0,0))
 
     def play(self):
-        #print(f'x: {self.snake.x}')
-        #print(f'y: {self.snake.y}')
 
         self.render_background()
         self.snake.walk()
         self.apple.draw()
         self.badapple.draw()
 
-        #make golden apple
+        #golden appleを作る
         if self.snake.length%10 == 0 and self.goldapple.cnt == 1:
             self.goldapple.mkapple()
             self.goldapple.cnt+=1
             self.play_background_music()
         self.goldapple.draw()
 
-        # snake eating apple scenario
+        # 蛇がりんごを食べた！
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.play_sound('ding')
             self.snake.increase_length()
@@ -108,7 +106,7 @@ class Game:
             self.badapple.mkapple(self.apple.x, self.apple.y)
             self.apple.move(self.badapple.badapples)
 
-        # snake eating gold apple
+        # 蛇がgold appleを食べた！
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.goldapple.x, self.goldapple.y):
             self.play_sound('gold')
             self.badapple = BadappleClass.Badapple(self.surface)
@@ -117,12 +115,14 @@ class Game:
             self.snake.get_gold_apple = True
             self.snake.chcg()
 
-        # snake eating bad apple scenario
+        # 蛇がbad appleを食べた！
         if self.had_badapple(self.snake.x[0], self.snake.y[0]):
             self.play_sound('bad')
-            raise "Snake had a bad apple"
+            self.snake.had_badapple()
+            if self.snake.length == 1:
+                raise "Snake had too many bad apples and R.I.P"
 
-        # snake colliding with itself
+        # 蛇が自分自身にぶつかった！
         for i in range(3, self.snake.length):
             if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
                 self.play_sound('crash')
@@ -143,6 +143,7 @@ class Game:
 
         #スコアの表示
         self.display_score()
+
         pygame.display.flip()
 
     #スコアの画面表示
@@ -197,8 +198,10 @@ class Game:
                     if event.key == K_SPACE:
                         if pause == True:
                             pause = False
+                            pygame.mixer.music.unpause()
                         else:
                             pause = True
+                            pygame.mixer.music.pause()
 
                     if not pause:
                         if event.key == K_LEFT:
