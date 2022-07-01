@@ -49,7 +49,10 @@ SOUND = True
 SIZE = 40
 
 #snake
-SPEED = .15
+NORMAL_SPEED = .15
+FAST_SPEED = .05
+PANIC_SPEED = .01
+SPEED = NORMAL_SPEED
 
 #apple
 
@@ -58,8 +61,11 @@ SPEED = .15
 
 
 #game over display
-G_OVER_FONT_SIZE = 30
+G_OVER_FONT_SIZE = 25
 G_OVER_FONT = 'arial'
-G_BEST = 'Congratulation!! You got best score!! '
-G_OVER = 'Game is over! Your score is '
+G_BEST = 'Congratulation!! You got best body length!! '
+G_OVER = 'Game is over! Your MAX body length is '
 G_OVER_OP = 'To play again press Enter. To exit press Escape!'
+G_OVER_CAUSE_BAD_APPLE = 'Your snake had a lot of bad apples.'
+G_OVER_CAUSE_COLLISION = 'Collision happen.'
+G_OVER_UNKNOWN = 'Unknown'

@@ -26,6 +26,10 @@ class Game:
         self.badapple = BadappleClass.Badapple(self.surface)
         self.goldapple = GoldappleClass.Goldapple(self.surface)
         self.score = ScoreClass.Score()
+        #取得した体
+        self.max = 1
+        #死因
+        self.causeofdeath = 'unknown'
 
     def play_background_music(self):
         if CONST.SOUND:
@@ -87,6 +91,10 @@ class Game:
         bg = pygame.image.load(CONST.B_IMG_PATH)
         self.surface.blit(bg, (0,0))
 
+    #fast move
+    def fastmove(self):
+        CONST.SPEED = CONST.FAST_SPEED
+
     def play(self):
         print(f"x: {self.snake.x[0]}")
         print(f"y: {self.snake.y[0]}")
@@ -115,17 +123,20 @@ class Game:
 
         # 蛇がりんごを食べた！
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
-
             self.play_sound('ding')
+            #体を減らす
             self.snake.increase_length()
             #すでにりんごがある場所に配置しない
-            self.badapple.mkapple(self.apple.x, self.apple.y)
+            for i in range(random.randint(1,2)):
+                self.badapple.mkapple(self.apple.x, self.apple.y)
+            #for i in range(random.randint(1,2)):
             self.apple.move(self.badapple.badapples)
 
         # 蛇がgold appleを食べた！
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.goldapple.x, self.goldapple.y):
             self.play_sound('gold')
-            self.badapple = BadappleClass.Badapple(self.surface)
+            #self.badapple = BadappleClass.Badapple(self.surface)
+            self.badapple.delapples(10)
             self.goldapple = GoldappleClass.Goldapple(self.surface)
             self.goldapple.cnt = 1
             self.snake.get_gold_apple = True
@@ -135,26 +146,31 @@ class Game:
         if self.had_badapple(self.snake.x[0], self.snake.y[0]):
             self.play_sound('bad')
             self.snake.had_badapple()
+            self.badapple.delapples(1)
+            #体の数を減らす
+            self.snake.decrease_length()
             self.snake.scnt = 1
             self.snake.speedup()
             if self.snake.length == 1:
+                self.causeofdeath = 'bad apple'
                 print("Snake had too many bad apples and R.I.P")
                 raise "Snake had too many bad apples and R.I.P"
 
         # 蛇が自分自身にぶつかった！
-        for i in range(3, self.snake.length):
-            if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
-                self.play_sound('crash')
-                print("Collision Occurred")
-                raise "Collision Occurred"
+        #for i in range(5, self.snake.length):
+        #    if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
+        #        self.play_sound('crash')
+        #        self.causeofdeath = 'Collision'
+        #        print("Collision Occurred")
+        #        raise "Collision Occurred"
 
         # 枠を出たらUターン
         if ((self.snake.x[0] + CONST.SIZE > CONST.DIP_W) or (self.snake.x[0] < 0)
             or (self.snake.y[0] + CONST.SIZE > CONST.DIP_H) or (self.snake.y[0] < 0)):
 
             #画面超えたら軸を初期化
-            if self.snake.x[0] > CONST.DIP_W:
-                self.snake.x[0] = CONST.DIP_W
+            if self.snake.x[0] >= CONST.DIP_W:
+                self.snake.x[0] = CONST.DIP_W - CONST.SIZE
             if self.snake.x[0] < 0:
                 self.snake.x[0] = 0
             if self.snake.y[0] >= CONST.DIP_H:
@@ -175,11 +191,11 @@ class Game:
         #スコアの表示
         self.display_score()
 
-        #SPEED 確認
+        #SPEED PANIC 確認
         if self.snake.scnt == 1:
             if datetime.datetime.now() < self.snake.d:
                 #スピードのパラメータ変更
-                CONST.SPEED = .08
+                CONST.SPEED = CONST.PANIC_SPEED
                 #顔色を変える
                 #お顔を整える
                 self.snake.face = pygame.image.load(CONST.SNAKE_BLUE_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
@@ -191,7 +207,20 @@ class Game:
                     self.snake.face = pygame.transform.rotate(self.snake.face,-90)
                 else:
                     self.snake.face = pygame.transform.rotate(self.snake.face,90)
+
+                #スキンエフェクト 青色
+                self.snake.paniccnt += 1
+                if self.snake.paniccnt%2 == 0:
+                    self.snake.image = pygame.image.load(CONST.SNAKE_BLUE_IMG_PATH).convert()
+                    self.snake.draw()
+                    pygame.display.flip()
+                else:
+                    self.snake.image = self.snake.inibody
+                    self.snake.draw()
+                    pygame.display.flip()
             else:
+                #お体をもとに戻す
+                self.snake.image = self.snake.inibody
                 #お顔をもとに戻す
                 self.snake.face = self.snake.iniface
                 if self.snake.directions[1] == 'up':
@@ -204,7 +233,11 @@ class Game:
                     self.snake.face = pygame.transform.rotate(self.snake.face,-90)
                 self.snake.scnt = 0
                 #スピードをもとに戻す
-                CONST.SPEED = .2
+                CONST.SPEED = CONST.NORMAL_SPEED
+
+        #最大長を保持
+        if self.max <= self.snake.length:
+            self.max = self.snake.length
 
         #画面の更新
         pygame.display.flip()
@@ -212,14 +245,26 @@ class Game:
     #スコアの画面表示
     def display_score(self):
         font = pygame.font.SysFont(CONST.G_OVER_FONT,CONST.G_OVER_FONT_SIZE)
-        best_score = font.render(f"Best Score: {self.score.b_score}",True,(200,200,200))
-        score = font.render(f"Score: {self.snake.length}",True,(200,200,200))
-        self.surface.blit(best_score,(CONST.DIP_W - CONST.DIP_W/3,10))
-        self.surface.blit(score,(CONST.DIP_W - CONST.DIP_W/7,10))
+
+        if CONST.SPEED == CONST.NORMAL_SPEED:
+            speed = font.render("speed: normal",True,(200,200,200))
+        elif CONST.SPEED == CONST.FAST_SPEED:
+            speed = font.render("speed: fast",True,(200,200,200))
+        else:
+            speed = font.render("speed: panic",True,(200,200,200))
+        count_bad = font.render(f"number of bad apples: {self.badapple.cnt}",True,(200,200,200))
+        score = font.render(f"body length: {self.snake.length}",True,(200,200,200))
+        best_score = font.render(f"best record: {self.score.b_score}",True,(200,200,200))
+
+        self.surface.blit(speed,(30,10))
+        self.surface.blit(count_bad,(180,10))
+        self.surface.blit(score,(420,10))
+        self.surface.blit(best_score,(570,10))
 
     #Game Over画面
     def show_game_over(self):
-        self.score.write(self.snake.length)
+        #スコアをファイルに書込む
+        self.score.write(self.max)
         self.render_background()
 
         font = pygame.font.SysFont(CONST.G_OVER_FONT, CONST.G_OVER_FONT_SIZE)
@@ -233,11 +278,20 @@ class Game:
             self.score.write(self.score.b_score)
 
         #結果スコア
-        line1 = font.render(CONST.G_OVER + str(self.snake.length), True, (255, 255, 255))
+        line1 = font.render(f'{CONST.G_OVER + str(self.max)}.', True, (255, 255, 255))
         self.surface.blit(line1, (CONST.DIP_W/4, CONST.DIP_H/2 - 20,))
 
         line2 = font.render(CONST.G_OVER_OP , True, (255, 255, 255))
-        self.surface.blit(line2, (CONST.DIP_W/4, CONST.DIP_H/2 + 10))
+        self.surface.blit(line2, (CONST.DIP_W/4, CONST.DIP_H/2 + 40))
+
+        if self.causeofdeath == 'bad apple':
+            line3 = font.render(f'Cause of death: {CONST.G_OVER_CAUSE_BAD_APPLE}' , True, (255, 255, 255))
+        elif self.causeofdeath == 'Collision':
+            line3 = font.render(f'Cause of death: {CONST.G_OVER_CAUSE_COLLISION}' , True, (255, 255, 255))
+        else:
+            line3 = font.render(f'Cause of death: {CONST.G_OVER_UNKNOWN}' , True, (255, 255, 255))
+
+        self.surface.blit(line3, (CONST.DIP_W/4, CONST.DIP_H/2 + 10))
 
         pygame.mixer.music.pause()
         pygame.display.flip()
@@ -277,6 +331,15 @@ class Game:
                         if event.key == K_DOWN:
                             self.snake.move_down()
 
+                        if event.key == K_RCTRL or event.key == K_LCTRL :
+
+                            if self.snake.fastmove:
+                                self.snake.fastmove = False
+                                self.fastmove()
+                            else:
+                                self.snake.fastmove = True
+                                CONST.SPEED = CONST.NORMAL_SPEED
+
                 elif event.type == QUIT:
                     running = False
             try:
@@ -288,6 +351,6 @@ class Game:
                 self.show_game_over()
                 self.reset()
                 pause = True
-                CONST.SPEED = .2
-
+                CONST.SPEED = CONST.NORMAL_SPEED
+            print(CONST.SPEED)
             time.sleep(CONST.SPEED)

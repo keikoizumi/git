@@ -37,3 +37,9 @@ class Badapple:
         self.x = random.randint(1,24)*CONST.SIZE
         self.y = random.randint(1,14)*CONST.SIZE
         self.draw()
+
+    #りんごの削除
+    def delapples(self,cntapple):
+        self.cnt -= cntapple
+        for i in range(cntapple):
+            del self.badapples[-1]

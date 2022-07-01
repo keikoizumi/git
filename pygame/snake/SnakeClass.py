@@ -29,6 +29,9 @@ class Snake:
         self.face = pygame.transform.rotate(self.face,180)
         #最初のお顔を保存
         self.iniface = self.face
+
+        #最初の体を保存
+        self.inibody = self.image
         #self.tail = pygame.transform.rotate(self.tail,180
 
         #初期方向
@@ -52,6 +55,11 @@ class Snake:
 
         #舌を出さない
         self.out = False
+
+        #速く動く
+        self.fastmove = False
+
+        self.paniccnt = 0
 
         self.draw()
 
@@ -212,15 +220,31 @@ class Snake:
 
     def decrease_length(self):
         if self.length != 1:
-            self.length -= 1
-            del self.x[-1]
-            del self.y[-1]
+            if self.length > 1 and self.length <= 5:
+                self.length -= 1
+                del self.x[-1]
+                del self.y[-1]
+            elif self.length > 5 and self.length <= 10:
+                self.length -= 3
+                del self.x[-3]
+                del self.y[-3]
+            elif self.length > 10 and self.length <= 15:
+                self.length -= 5
+                del self.x[-5]
+                del self.y[-5]
+            elif self.length > 15 and self.length <= 30:
+                self.length -= 5
+                del self.x[-5]
+                del self.y[-5]
+            elif self.length > 30:
+                self.length -= 10
+                del self.x[-10]
+                del self.y[-10]
 
     #goldを食べたときのスキンエフェクト
     def chcg(self):
         if self.get_gold_apple:
             cnt = 0
-            self.imgbk = self.image
             while cnt < 100:
                 self.image = pygame.image.load(CONST.SNAKE_RED_IMG_PATH).convert()
                 self.draw()
@@ -233,15 +257,13 @@ class Snake:
                 pygame.display.flip()
                 cnt += 1
             self.get_gold_apple = False
-            self.image = self.imgbk
+            self.image = self.inibody
             pygame.display.flip()
 
     def had_badapple(self):
-        self.decrease_length()
+
         #スキンエフェクト
         cnt = 0
-        self.imgbk = self.image
-        self.facebk = self.face
         while cnt < 100:
             #bad face 表示
             if self.skincolor == 'red':
@@ -264,13 +286,14 @@ class Snake:
             self.image = pygame.image.load(CONST.SNAKE_BLUE_IMG_PATH).convert()
             self.draw()
             pygame.display.flip()
-            self.image = self.imgbk
+            self.image = self.inibody
             self.draw()
             pygame.display.flip()
             cnt += 1
         self.get_gold_apple = False
-        self.image = self.imgbk
-        self.face = self.facebk
+        #体は青色にする
+        self.image = pygame.image.load(CONST.SNAKE_BLUE_IMG_PATH).convert()
+        self.face = self.iniface
         pygame.display.flip()
 
     def tongue(self):
@@ -305,6 +328,6 @@ class Snake:
             #pygame.display.flip()
 
     def speedup(self):
-        #10秒間speed up
+        #秒間speed up
         if self.scnt == 1:
             self.d = datetime.datetime.now() + datetime.timedelta(seconds=10)
