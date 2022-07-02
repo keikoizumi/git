@@ -23,7 +23,9 @@ class BadApple:
         self.y = random.randint(1, 14) * const.SIZE
         self.bx = bx
         self.by = by
-        if self.x == self.bx and self.y == self.by:
+        #if self.x == self.bx and self.y == self.by:
+        if ((self.x < self.bx and self.bx < self.x + const.SIZE)
+            and (self.y < self.by and self.by < self.y + const.SIZE)):
             self.mkapple(self, self.bx, self.by)
         else:
             self.bad_apples.append([self.x, self.y])

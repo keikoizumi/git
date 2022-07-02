@@ -1,5 +1,7 @@
 #Standard module
 import datetime
+from logging import exception
+from tkinter import Y
 import pygame
 import random
 import time
@@ -12,8 +14,10 @@ import apple_class
 import bad_apple_class
 import const
 import gold_apple_class
-import snake_class
 import score_class
+import snake_class
+import snake_poop_class
+
 
 
 class Game:
@@ -29,6 +33,7 @@ class Game:
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.Goldapple(self.surface)
+        self.snake_poop =  snake_poop_class.Poop(self.surface)
         self.score = score_class.Score()
         #取得した体
         self.max = 1
@@ -41,10 +46,12 @@ class Game:
             if m == 1:
                 pygame.mixer.music.load(const.B_MUSIC_PATH)
             elif m == 2:
+                pygame.mixer.music.set_volume(0.1)
                 pygame.mixer.music.load(const.B_RAIN_PATH)
             else:
                 pygame.mixer.music.load(const.B_SUMMER_PATH)
             pygame.mixer.music.play(-1, 0)
+
 
     def play_sound(self, sound_name):
         if const.SOUND:
@@ -56,6 +63,8 @@ class Game:
                 sound = pygame.mixer.Sound(const.GET_GOLD_SOUND_PATH)
             elif sound_name == 'bad':
                 sound = pygame.mixer.Sound(const.GET_BAD_SOUND_PATH)
+            elif sound_name == 'had_poop':
+                sound = pygame.mixer.Sound(const.GET_POOP_SOUND_PATH)
             pygame.mixer.Sound.play(sound)
 
     #インスタンスのリセット
@@ -64,6 +73,7 @@ class Game:
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.Goldapple(self.surface)
+        self.snake_poop = snake_poop_class.Poop(self.surface)
         self.score = score_class.Score()
 
     #衝突判定
@@ -99,7 +109,11 @@ class Game:
     def play(self):
         #背景の描画
         self.render_background()
+
+        #蛇を歩かせる
         self.snake.walk()
+
+        #りんごを描く
         self.apple.draw()
         self.bad_apple.draw()
         #舌を出す・出さない
@@ -110,7 +124,7 @@ class Game:
             self.snake.out = True
             self.snake.tongue()
         #golden appleを作る
-        if ((self.snake.length%10 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
+        if ((self.snake.length%7 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
             self.gold_apple.mkapple()
             self.gold_apple.cnt+=1
             self.play_background_music()
@@ -118,21 +132,27 @@ class Game:
         # 蛇がりんごを食べた！
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
             self.play_sound('ding')
-            #体を減らす
+            #体を増やす
             self.snake.increase_length()
             #すでにりんごがある場所に配置しない
             for i in range(random.randint(1, 2)):
                 self.bad_apple.mkapple(self.apple.x, self.apple.y)
-            #for i in range(random.randint(1,2)):
             self.apple.move(self.bad_apple.bad_apples)
         # 蛇がgold appleを食べた！
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.gold_apple.x, self.gold_apple.y):
             self.play_sound('gold')
-            self.bad_apple.del_apples(10)
+            #bad appleを削除
+            self.bad_apple.del_apples(random.randint(7, 10))
+            #gold appleの初期化
             self.gold_apple = gold_apple_class.Goldapple(self.surface)
             self.gold_apple.cnt = 1
             self.snake.get_gold_apple = True
+            #うんこをする
+            self.snake_poop.make_poop(self.apple.x, self.apple.y, self.snake.x, self.snake.y)
+            #goldを食べたときのスキンエフェクト
             self.snake.chcg()
+
+        self.snake_poop.draw()
         # 蛇がbad appleを食べた！
         if self.had_bad_apple(self.snake.x[0], self.snake.y[0]):
             self.play_sound('bad')
@@ -143,9 +163,13 @@ class Game:
             self.snake.s_cnt = 1
             self.snake.speedup()
             if self.snake.length == 1:
-                self.cause_of_death = 'bad apple'
-                print('Snake had too many bad apples and R.I.P')
-                raise 'Snake had too many bad apples and R.I.P'
+                self.cause_of_death = const.G_OVER_CAUSE_BAD_APPLE
+                raise Exception('Snake had too many bad apples and R.I.P')
+        #蛇がpoopを食べた
+        if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake_poop.x, self.snake_poop.y):
+            self.play_sound('had_poop')
+            self.cause_of_death = const.G_OVER_CAUSE_POOP
+            raise Exception('Snake had a poop!!')
         # 蛇が自分自身にぶつかった！
         #for i in range(5, self.snake.length):
         #    if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
@@ -256,7 +280,7 @@ class Game:
                 line0 = font.render('invalid score' , True, const.GOLD)
                 self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
                 self.score.write('1')
-                print(f'不正なスコアを発見しました: {e}')
+                raise Exception(f'不正なスコアを発見しました: {e}')
         else:
             if int(self.score.b_score) < int(self.score.n_score):
                 line0 = font.render(const.G_BEST , True, const.GOLD)
@@ -269,10 +293,10 @@ class Game:
         self.surface.blit(line1, (const.DIP_W / 4, const.DIP_H / 2 - 20))
         line2 = font.render(const.G_OVER_OP , True, const.WHITE)
         self.surface.blit(line2, (const.DIP_W / 4, const.DIP_H / 2 + 40))
-        if self.cause_of_death == 'bad apple':
-            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.WHITE)
-        elif self.cause_of_death == 'Collision':
-            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_COLLISION}' , True, const.WHITE)
+        if self.cause_of_death == const.G_OVER_CAUSE_BAD_APPLE:
+            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.HOT_PINK)
+        elif self.cause_of_death == const.G_OVER_CAUSE_POOP:
+            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_POOP}' , True, const.HOT_PINK)
         else:
             line3 = font.render(f'Cause of death: {const.G_OVER_UNKNOWN}' , True, const.WHITE)
         self.surface.blit(line3, (const.DIP_W / 4, const.DIP_H / 2 + 10))
@@ -320,6 +344,7 @@ class Game:
                 if not pause:
                     self.play()
             except Exception as e:
+                print(e)
                 self.show_game_over()
                 self.reset()
                 pause = True
