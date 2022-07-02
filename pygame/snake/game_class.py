@@ -249,12 +249,21 @@ class Game:
         self.render_background()
         font = pygame.font.SysFont(const.G_OVER_FONT, const.G_OVER_FONT_SIZE)
         #NEW RECORD達成時
-        if int(self.score.b_score) < int(self.score.n_score):
-            line0 = font.render(const.G_BEST , True, (255, 255, 255))
-            self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
-            self.score.write(self.score.n_score)
+        try:
+            if int(self.score.b_score) < int(self.score.n_score):
+                pass
+        except ValueError as e:
+                line0 = font.render('invalid score' , True, (255, 255, 0))
+                self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
+                self.score.write('1')
+                print(f'不正なスコアを発見しました: {e}')
         else:
-            self.score.write(self.score.b_score)
+            if int(self.score.b_score) < int(self.score.n_score):
+                line0 = font.render(const.G_BEST , True, (255, 255, 255))
+                self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
+                self.score.write(self.score.n_score)
+            else:
+                self.score.write(self.score.b_score)
         #結果スコア
         line1 = font.render(f'{const.G_OVER + str(self.max)}.', True, (255, 255, 255))
         self.surface.blit(line1, (const.DIP_W / 4, const.DIP_H / 2 - 20))

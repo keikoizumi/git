@@ -29,7 +29,6 @@ SNAKE_BLUE_HAD_BAD_APPLE_FACE_IMG_PATH = os.path.join(PATH, 'resources/images/bl
 SNAKE_YELLOW_EATING_FACE_IMG_PATH = os.path.join(PATH, 'resources/images/yellow_eating_face.png')
 SNAKE_RED_EATING_FACE_IMG_PATH = os.path.join(PATH, 'resources/images/red_eating_face.png')
 SNAKE_GREEN_EATING_FACE_IMG_PATH = os.path.join(PATH, 'resources/images/green_eating_face.png')
-#SNAKE_YELLOW_TAIL_IMG_PATH = os.path.join(PATH, 'resources/images/yellow_tail.png')
 APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/apple.jpg')
 BAD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/badapple.jpg')
 GOLD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/goldapple.jpg')
@@ -43,6 +42,11 @@ CRASH_SOUND_PATH = os.path.join(PATH, 'resources/sounds/crash.mp3')
 DING_SOUND_PATH = os.path.join(PATH, 'resources/sounds/eatapple.mp3')
 GET_GOLD_SOUND_PATH = os.path.join(PATH, 'resources/sounds/gold.mp3')
 GET_BAD_SOUND_PATH = os.path.join(PATH, 'resources/sounds/bad.mp3')
+
+#score file path
+SCORE_FILE_DIR = 'score'
+SCORE_FILE_NAME = 'score.txt'
+SCORE_FILE_PATH = os.path.join(PATH ,SCORE_FILE_DIR + '/' + SCORE_FILE_NAME)
 
 #apple snake size
 SIZE = 40
