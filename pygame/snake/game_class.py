@@ -229,14 +229,14 @@ class Game:
     def display_score(self):
         font = pygame.font.SysFont(const.G_OVER_FONT,const.G_OVER_FONT_SIZE)
         if const.SPEED == const.NORMAL_SPEED:
-            speed = font.render('speed: normal',True,(200, 200, 200))
+            speed = font.render('speed: normal', True, const.WHITE)
         elif const.SPEED == const.FAST_SPEED:
-            speed = font.render('speed: fast',True,(200, 200, 200))
+            speed = font.render('speed: fast', True, const.WHITE)
         else:
-            speed = font.render('speed: panic',True,(200, 200, 200))
-        count_bad = font.render(f'number of bad apples: {self.bad_apple.cnt}', True, (200, 200, 200))
-        score = font.render(f'body length: {self.snake.length}', True, (200, 200, 0)) #黄色
-        best_score = font.render(f'best record: {self.score.b_score}', True, (200, 200, 200))
+            speed = font.render('speed: panic', True, const.WHITE)
+        count_bad = font.render(f'number of bad apples: {self.bad_apple.cnt}', True, const.WHITE)
+        score = font.render(f'body length: {self.snake.length}', True, const.GOLD) #黄色
+        best_score = font.render(f'best record: {self.score.b_score}', True, const.WHITE)
         self.surface.blit(speed, (30, 10))
         self.surface.blit(count_bad,(180, 10))
         self.surface.blit(score, (420, 10))
@@ -253,28 +253,28 @@ class Game:
             if int(self.score.b_score) < int(self.score.n_score):
                 pass
         except ValueError as e:
-                line0 = font.render('invalid score' , True, (255, 255, 0))
+                line0 = font.render('invalid score' , True, const.GOLD)
                 self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
                 self.score.write('1')
                 print(f'不正なスコアを発見しました: {e}')
         else:
             if int(self.score.b_score) < int(self.score.n_score):
-                line0 = font.render(const.G_BEST , True, (255, 255, 255))
+                line0 = font.render(const.G_BEST , True, const.GOLD)
                 self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
                 self.score.write(self.score.n_score)
             else:
                 self.score.write(self.score.b_score)
         #結果スコア
-        line1 = font.render(f'{const.G_OVER + str(self.max)}.', True, (255, 255, 255))
+        line1 = font.render(f'{const.G_OVER + str(self.max)}.', True, const.WHITE)
         self.surface.blit(line1, (const.DIP_W / 4, const.DIP_H / 2 - 20))
-        line2 = font.render(const.G_OVER_OP , True, (255, 255, 255))
+        line2 = font.render(const.G_OVER_OP , True, const.WHITE)
         self.surface.blit(line2, (const.DIP_W / 4, const.DIP_H / 2 + 40))
         if self.cause_of_death == 'bad apple':
-            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, (255, 255, 255))
+            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.WHITE)
         elif self.cause_of_death == 'Collision':
-            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_COLLISION}' , True, (255, 255, 255))
+            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_COLLISION}' , True, const.WHITE)
         else:
-            line3 = font.render(f'Cause of death: {const.G_OVER_UNKNOWN}' , True, (255, 255, 255))
+            line3 = font.render(f'Cause of death: {const.G_OVER_UNKNOWN}' , True, const.WHITE)
         self.surface.blit(line3, (const.DIP_W / 4, const.DIP_H / 2 + 10))
         pygame.mixer.music.pause()
         pygame.display.flip()

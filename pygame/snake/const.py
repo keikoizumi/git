@@ -66,3 +66,12 @@ G_OVER_OP = 'To play again press Enter. To exit press Escape!'
 G_OVER_CAUSE_BAD_APPLE = 'Your snake had a lot of bad apples.'
 G_OVER_CAUSE_COLLISION = 'Collision happen.'
 G_OVER_UNKNOWN = 'Unknown'
+
+#RGB LIST
+WHITE = (255,255,255)
+BLACK = (0,0,0)
+ORANGE_RED = (255,69,0)
+GOLD = (255,215,0)
+GREEN_YELLOW = (173,255,47)
+BLUE = (0,0,255)
+HOT_PINK = (255,105,180)

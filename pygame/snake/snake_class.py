@@ -2,7 +2,7 @@
 import datetime
 import random
 
-#external moduleskin_color
+#external module
 import pygame
 from numpy import append, outer
 
