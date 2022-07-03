@@ -149,8 +149,7 @@ class Game:
             self.snake.speedup()
             if self.snake.length == 1:
                 self.cause_of_death = 'bad apple'
-                print('Snake had too many bad apples and R.I.P')
-                raise 'Snake had too many bad apples and R.I.P'
+                raise Exception('Snake had too many bad apples and R.I.P')
         # 蛇が自分自身にぶつかった！
         #for i in range(5, self.snake.length):
         #    if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
@@ -261,7 +260,7 @@ class Game:
                 line0 = font.render('invalid score' , True, const.GOLD)
                 self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
                 self.score.write('1')
-                print(f'不正なスコアを発見しました: {e}')
+                raise Exception('不正なスコアを発見しました')
         else:
             if int(self.score.b_score) < int(self.score.n_score):
                 line0 = font.render(const.G_BEST , True, const.GOLD)
