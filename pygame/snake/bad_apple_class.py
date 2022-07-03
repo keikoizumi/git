@@ -23,10 +23,12 @@ class BadApple:
         self.y = random.randint(1, 14) * const.SIZE
         self.bx = bx
         self.by = by
-        if self.x == self.bx and self.y == self.by:
-            self.mkapple(self, self.bx, self.by)
-        else:
+        #座標が重なっていないか確認
+        if ((self.x < self.bx or self.bx + const.SIZE < self.x)
+            and (self.y < self.by or self.by + const.SIZE < self.y)):
             self.bad_apples.append([self.x, self.y])
+        else:
+            self.make_bad_apple(self.bx, self.by)
 
     #りんごの描画
     def draw(self):

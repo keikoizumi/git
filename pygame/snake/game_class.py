@@ -113,9 +113,9 @@ class Game:
             self.snake.out = True
             self.snake.tongue()
         #golden appleを作る
-        if ((self.snake.length % 7 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
+        if ((self.snake.length % 10 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
             self.gold_apple.make_gold_apple()
-            self.gold_apple.cnt+=1
+            self.gold_apple.cnt += 1
             self.play_background_music()
         self.gold_apple.draw()
         # 蛇がりんごを食べた！
