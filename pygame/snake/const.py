@@ -39,6 +39,7 @@ APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/apple.jpg')
 BAD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/badapple.jpg')
 GOLD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/goldapple.jpg')
 SNAKE_POOP_IMG_PATH = os.path.join(PATH, 'resources/images/poop.png')
+FROG_IMG_PATH = os.path.join(PATH, 'resources/images/frog.png')
 
 #sound
 SOUND = True
@@ -50,6 +51,7 @@ DING_SOUND_PATH = os.path.join(PATH, 'resources/sounds/eatapple.mp3')
 GET_GOLD_SOUND_PATH = os.path.join(PATH, 'resources/sounds/gold.mp3')
 GET_BAD_SOUND_PATH = os.path.join(PATH, 'resources/sounds/bad.mp3')
 GET_POOP_SOUND_PATH = os.path.join(PATH, 'resources/sounds/had_poop.mp3')
+GET_FROG_SOUND_PATH = os.path.join(PATH, 'resources/sounds/had_frog.mp3')
 
 #apple snake size
 SIZE = 40
