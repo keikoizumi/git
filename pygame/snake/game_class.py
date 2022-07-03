@@ -135,8 +135,9 @@ class Game:
             self.gold_apple.cnt = 1
             self.snake.get_gold_apple = True
             self.snake.chcg()
-            print(f'x: {self.snake.x}')
-            print(f'y: {self.snake.y}')
+            #うんこ放出
+            self.snake_poop.make_poop(self.snake.x, self.snake.y)
+        self.snake_poop.draw()
         # 蛇が腐ったりんごを食べた！
         if self.had_bad_apple(self.snake.x[0], self.snake.y[0]):
             self.play_sound('bad')
