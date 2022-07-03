@@ -15,7 +15,7 @@ class GoldApple:
         self.y = -50
         self.image = pygame.image.load(const.GOLD_APPLE_IMG_PATH).convert()
 
-    def mkapple(self):
+    def make_gold_apple(self):
         self.x = random.randint(1, 24) * const.SIZE
         self.y = random.randint(1, 14) * const.SIZE
 

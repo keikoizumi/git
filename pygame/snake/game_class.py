@@ -15,7 +15,7 @@ import const
 import gold_apple_class
 import snake_class
 import score_class
-
+import snake_poop_class
 
 class Game:
     def __init__(self):
@@ -30,6 +30,7 @@ class Game:
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
+        self.snake_poop =  snake_poop_class.Poop(self.surface)
         self.score = score_class.Score()
         #取得した体
         self.max = 1
@@ -57,6 +58,8 @@ class Game:
                 sound = pygame.mixer.Sound(const.GET_GOLD_SOUND_PATH)
             elif sound_name == 'bad':
                 sound = pygame.mixer.Sound(const.GET_BAD_SOUND_PATH)
+            elif sound_name == 'die':
+                sound = pygame.mixer.Sound(const.GET_POOP_SOUND_PATH)
             pygame.mixer.Sound.play(sound)
 
     #インスタンスのリセット
@@ -65,19 +68,13 @@ class Game:
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
+        self.snake_poop = snake_poop_class.Poop(self.surface)
         self.score = score_class.Score()
 
     #衝突判定
     def is_collision(self, x1, y1, x2, y2):
         if (x1 >= x2 and x1 < x2 + const.SIZE) or (x1 + const.SIZE >= x2 and x1 + const.SIZE < x2 + const.SIZE):
             if (y1 >= y2 and y1 < y2 + const.SIZE) or (y1 + const.SIZE >= y2 and y1 + const.SIZE < y2 + const.SIZE):
-                #蛇が切り返したときに死なない
-                #if ((self.snake.directions[0] == 'up' and self.snake.directions[1] == 'down')
-                #    or (self.snake.directions[0] == 'down' and self.snake.directions[1] == 'up')
-                #    or (self.snake.directions[0] == 'left' and self.snake.directions[1] == 'right')
-                #    or (self.snake.directions[0] == 'right' and self.snake.directions[1] == 'left')):
-                #    return False
-                #else:
                     return True
         return False
 
@@ -93,6 +90,7 @@ class Game:
                     del self.bad_apple.bad_apples[cnt]
                     return True
         return False
+
     #背景
     def render_background(self):
         bg = pygame.image.load(const.B_IMG_PATH)
@@ -115,49 +113,50 @@ class Game:
             self.snake.out = True
             self.snake.tongue()
         #golden appleを作る
-        if ((self.snake.length%10 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
-            self.gold_apple.mkapple()
-            self.gold_apple.cnt+=1
+        if ((self.snake.length % 10 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
+            self.gold_apple.make_gold_apple()
+            self.gold_apple.cnt += 1
             self.play_background_music()
         self.gold_apple.draw()
         # 蛇がりんごを食べた！
-        if self.is_collision(self.snake.x[0], self.snake.y[0], self.apple.x, self.apple.y):
+        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.apple.x), int(self.apple.y)):
             self.play_sound('ding')
             #体を減らす
             self.snake.increase_length()
-            #すでにりんごがある場所に配置しない
+            #腐ったりんごの配置
             for i in range(random.randint(1, 2)):
-                self.bad_apple.mkapple(self.apple.x, self.apple.y)
-            #for i in range(random.randint(1,2)):
+                self.bad_apple.make_bad_apple(self.apple.x, self.apple.y)
+            #りんごの再配置
             self.apple.move(self.bad_apple.bad_apples)
-        # 蛇がgold appleを食べた！
-        if self.is_collision(self.snake.x[0], self.snake.y[0], self.gold_apple.x, self.gold_apple.y):
+        # 蛇が金のりんごを食べた！
+        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.gold_apple.x), int(self.gold_apple.y)):
             self.play_sound('gold')
             self.bad_apple.del_apples(10)
             self.gold_apple = gold_apple_class.GoldApple(self.surface)
             self.gold_apple.cnt = 1
             self.snake.get_gold_apple = True
             self.snake.chcg()
-        # 蛇がbad appleを食べた！
-        if self.had_bad_apple(self.snake.x[0], self.snake.y[0]):
+            #うんこ放出
+            self.snake_poop.make_poop(self.snake.x, self.snake.y)
+        self.snake_poop.draw()
+        # 蛇が腐ったりんごを食べた！
+        if self.had_bad_apple(int(self.snake.x[0]), int(self.snake.y[0])):
             self.play_sound('bad')
-            self.snake.had_bad_apple()
-            #self.bad_apple.del_apples(1)
+            self.snake.had_bad_apple_skin_effect()
             #体の数を減らす
             self.snake.decrease_length()
             self.snake.s_cnt = 1
             self.snake.speedup()
             if self.snake.length == 1:
-                self.cause_of_death = 'bad apple'
-                print('Snake had too many bad apples and R.I.P')
-                raise 'Snake had too many bad apples and R.I.P'
-        # 蛇が自分自身にぶつかった！
-        #for i in range(5, self.snake.length):
-        #    if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
-        #        self.play_sound('crash')
-        #        self.cause_of_death = 'Collision'
-        #        print('Collision Occurred')
-        #        raise 'Collision Occurred'
+                self.play_sound('die')
+                self.cause_of_death = const.G_OVER_CAUSE_BAD_APPLE
+                raise Exception(const.G_OVER_CAUSE_BAD_APPLE)
+        # 蛇がうんこを食べた！
+        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.snake_poop.poop_x), int(self.snake_poop.poop_y)):
+            self.play_sound('die')
+            print(str(self.snake.x[0]) + ','+ str(self.snake.y[0]) + ','+ str(self.snake_poop.poop_x) + ','+ str(self.snake_poop.poop_y))
+            self.cause_of_death = const.G_OVER_CAUSE_POOP
+            raise Exception(const.G_OVER_CAUSE_POOP)
         # 枠を出たらUターン
         if ((self.snake.x[0] + const.SIZE > const.DIP_W) or (self.snake.x[0] < 0)
             or (self.snake.y[0] + const.SIZE > const.DIP_H) or (self.snake.y[0] < 0)):
@@ -199,15 +198,15 @@ class Game:
                 else:
                     self.snake.face = pygame.transform.rotate(self.snake.face, 90)
                 #スキンエフェクト 青色
-                self.snake.panic_cnt += 1
-                if self.snake.panic_cnt % 2 == 0:
-                    self.snake.image = pygame.image.load(const.SNAKE_BLUE_IMG_PATH).convert()
-                    self.snake.draw()
-                    pygame.display.flip()
-                else:
-                    self.snake.image = self.snake.init_body
-                    self.snake.draw()
-                    pygame.display.flip()
+                #self.snake.panic_cnt += 1
+                #if self.snake.panic_cnt % 2 == 0:
+                #    self.snake.image = pygame.image.load(const.SNAKE_BLUE_IMG_PATH).convert()
+                #    self.snake.draw()
+                #    pygame.display.flip()
+                #else:
+                #    self.snake.image = self.snake.init_body
+                #    self.snake.draw()
+                #    pygame.display.flip()
             else:
                 #お体をもとに戻す
                 self.snake.image = self.snake.init_body
@@ -261,7 +260,7 @@ class Game:
                 line0 = font.render('invalid score' , True, const.GOLD)
                 self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
                 self.score.write('1')
-                print(f'不正なスコアを発見しました: {e}')
+                raise Exception(const.INVALID_NUM_ERR)
         else:
             if int(self.score.b_score) < int(self.score.n_score):
                 line0 = font.render(const.G_BEST , True, const.GOLD)
@@ -274,10 +273,10 @@ class Game:
         self.surface.blit(line1, (const.DIP_W / 4, const.DIP_H / 2 - 20))
         line2 = font.render(const.G_OVER_OP , True, const.WHITE)
         self.surface.blit(line2, (const.DIP_W / 4, const.DIP_H / 2 + 40))
-        if self.cause_of_death == 'bad apple':
-            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.WHITE)
-        elif self.cause_of_death == 'Collision':
-            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_COLLISION}' , True, const.WHITE)
+        if self.cause_of_death == const.G_OVER_CAUSE_BAD_APPLE:
+            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.GOLD)
+        elif self.cause_of_death == const.G_OVER_CAUSE_POOP:
+            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_POOP}' , True, const.GOLD)
         else:
             line3 = font.render(f'Cause of death: {const.G_OVER_UNKNOWN}' , True, const.WHITE)
         self.surface.blit(line3, (const.DIP_W / 4, const.DIP_H / 2 + 10))

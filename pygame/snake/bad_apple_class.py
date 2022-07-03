@@ -15,7 +15,7 @@ class BadApple:
         self.bad_apples = [[-50,-50]]
         self.cnt = 0
 
-    def mkapple(self, bx, by):
+    def make_bad_apple(self, bx, by):
         #腐ったりんごの数
         self.cnt += 1
         #新しいりんごの座標
@@ -23,10 +23,12 @@ class BadApple:
         self.y = random.randint(1, 14) * const.SIZE
         self.bx = bx
         self.by = by
-        if self.x == self.bx and self.y == self.by:
-            self.mkapple(self, self.bx, self.by)
-        else:
+        #座標が重なっていないか確認
+        if ((self.x < self.bx or self.bx + const.SIZE < self.x)
+            and (self.y < self.by or self.by + const.SIZE < self.y)):
             self.bad_apples.append([self.x, self.y])
+        else:
+            self.make_bad_apple(self.bx, self.by)
 
     #りんごの描画
     def draw(self):
@@ -35,7 +37,6 @@ class BadApple:
             self.x = i[0]
             self.y = i[1]
             self.parent_screen.blit(self.image, (self.x, self.y))
-        print(self.bad_apples)
 
     #りんごの移動
     def move(self):
@@ -47,4 +48,7 @@ class BadApple:
     def del_apples(self, cnt_apple):
         self.cnt -= cnt_apple
         for i in range(cnt_apple):
-            del self.bad_apples[-1]
+            try:
+                del self.bad_apples[-1]
+            except IndexError as e:
+                pass

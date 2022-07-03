@@ -168,7 +168,7 @@ class Snake:
             self.image = self.init_body
             pygame.display.flip()
 
-    def had_bad_apple(self):
+    def had_bad_apple_skin_effect(self):
         #スキンエフェクト
         cnt = 0
         while cnt < 100:
