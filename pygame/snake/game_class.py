@@ -58,7 +58,7 @@ class Game:
                 sound = pygame.mixer.Sound(const.GET_GOLD_SOUND_PATH)
             elif sound_name == 'bad':
                 sound = pygame.mixer.Sound(const.GET_BAD_SOUND_PATH)
-            elif sound_name == 'had_poop':
+            elif sound_name == 'die':
                 sound = pygame.mixer.Sound(const.GET_POOP_SOUND_PATH)
             pygame.mixer.Sound.play(sound)
 
@@ -89,13 +89,6 @@ class Game:
                     #ぶつかったBADりんごを削除
                     del self.bad_apple.bad_apples[cnt]
                     return True
-        return False
-
-    #POOP食べたか判定
-    def had_poop(self, snake_x, snake_y, poop_x, poop_y):
-        if ((poop_x > snake_x and snake_x < poop_x + const.SIZE) and
-            (poop_y > snake_y and snake_y < poop_y + const.SIZE)):
-                return True
         return False
 
     #背景
@@ -155,11 +148,12 @@ class Game:
             self.snake.s_cnt = 1
             self.snake.speedup()
             if self.snake.length == 1:
+                self.play_sound('die')
                 self.cause_of_death = const.G_OVER_CAUSE_BAD_APPLE
                 raise Exception(const.G_OVER_CAUSE_BAD_APPLE)
         # 蛇がうんこを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.snake_poop.poop_x), int(self.snake_poop.poop_y)):
-            self.play_sound('had_poop')
+            self.play_sound('die')
             print(str(self.snake.x[0]) + ','+ str(self.snake.y[0]) + ','+ str(self.snake_poop.poop_x) + ','+ str(self.snake_poop.poop_y))
             self.cause_of_death = const.G_OVER_CAUSE_POOP
             raise Exception(const.G_OVER_CAUSE_POOP)
