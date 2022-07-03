@@ -7,7 +7,7 @@ import pygame
 #Self-made module
 import const
 
-class Goldapple:
+class GoldApple:
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
         self.cnt = 1

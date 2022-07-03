@@ -28,7 +28,7 @@ class Game:
         self.snake = snake_class.Snake(self.surface)
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
-        self.gold_apple = gold_apple_class.Goldapple(self.surface)
+        self.gold_apple = gold_apple_class.GoldApple(self.surface)
         self.score = score_class.Score()
         #取得した体
         self.max = 1
@@ -63,7 +63,7 @@ class Game:
         self.snake = snake_class.Snake(self.surface)
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
-        self.gold_apple = gold_apple_class.Goldapple(self.surface)
+        self.gold_apple = gold_apple_class.GoldApple(self.surface)
         self.score = score_class.Score()
 
     #衝突判定
@@ -129,7 +129,7 @@ class Game:
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.gold_apple.x, self.gold_apple.y):
             self.play_sound('gold')
             self.bad_apple.del_apples(10)
-            self.gold_apple = gold_apple_class.Goldapple(self.surface)
+            self.gold_apple = gold_apple_class.GoldApple(self.surface)
             self.gold_apple.cnt = 1
             self.snake.get_gold_apple = True
             self.snake.chcg()
