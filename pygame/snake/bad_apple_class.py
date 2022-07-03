@@ -46,4 +46,7 @@ class BadApple:
     def del_apples(self, cnt_apple):
         self.cnt -= cnt_apple
         for i in range(cnt_apple):
-            del self.bad_apples[-1]
+            try:
+                del self.bad_apples[-1]
+            except IndexError as e:
+                pass
