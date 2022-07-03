@@ -71,13 +71,6 @@ class Game:
     def is_collision(self, x1, y1, x2, y2):
         if (x1 >= x2 and x1 < x2 + const.SIZE) or (x1 + const.SIZE >= x2 and x1 + const.SIZE < x2 + const.SIZE):
             if (y1 >= y2 and y1 < y2 + const.SIZE) or (y1 + const.SIZE >= y2 and y1 + const.SIZE < y2 + const.SIZE):
-                #蛇が切り返したときに死なない
-                #if ((self.snake.directions[0] == 'up' and self.snake.directions[1] == 'down')
-                #    or (self.snake.directions[0] == 'down' and self.snake.directions[1] == 'up')
-                #    or (self.snake.directions[0] == 'left' and self.snake.directions[1] == 'right')
-                #    or (self.snake.directions[0] == 'right' and self.snake.directions[1] == 'left')):
-                #    return False
-                #else:
                     return True
         return False
 
@@ -150,13 +143,6 @@ class Game:
             if self.snake.length == 1:
                 self.cause_of_death = 'bad apple'
                 raise Exception('Snake had too many bad apples and R.I.P')
-        # 蛇が自分自身にぶつかった！
-        #for i in range(5, self.snake.length):
-        #    if self.is_collision(self.snake.x[0], self.snake.y[0], self.snake.x[i], self.snake.y[i]):
-        #        self.play_sound('crash')
-        #        self.cause_of_death = 'Collision'
-        #        print('Collision Occurred')
-        #        raise 'Collision Occurred'
         # 枠を出たらUターン
         if ((self.snake.x[0] + const.SIZE > const.DIP_W) or (self.snake.x[0] < 0)
             or (self.snake.y[0] + const.SIZE > const.DIP_H) or (self.snake.y[0] < 0)):
