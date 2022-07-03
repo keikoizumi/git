@@ -3,6 +3,7 @@ import datetime
 import pygame
 import random
 import time
+import traceback
 
 #external module
 from pygame.locals import *
@@ -324,4 +325,5 @@ class Game:
                 self.reset()
                 pause = True
                 const.SPEED = const.NORMAL_SPEED
+                print(traceback.format_exc())
             time.sleep(const.SPEED)
