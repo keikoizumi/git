@@ -138,12 +138,13 @@ class Game:
                 self.bad_apple.make_bad_apple(self.apple.x, self.apple.y)
             #りんごの再配置
             self.apple.move(self.bad_apple.bad_apples)
-
             #音楽がRAINの場合、カエルを放出
             if self.m == 2:
-                #カエルの鳴き声
-                self.play_sound('frog')
+                self.frog.is_frog = True
                 self.frog.move(self.bad_apple.bad_apples)
+        # カエルの鳴き声
+        if self.frog.is_frog:
+            self.play_sound('frog')
         self.frog.draw()
         # 蛇が金のりんごを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.gold_apple.x), int(self.gold_apple.y)):
@@ -156,7 +157,6 @@ class Game:
             #うんこ放出
             self.snake_poop.make_poop(self.snake.x, self.snake.y)
         self.snake_poop.draw()
-
         # 蛇が腐ったりんごを食べた！
         if self.had_bad_apple(int(self.snake.x[0]), int(self.snake.y[0])):
             self.play_sound('bad')
@@ -176,7 +176,10 @@ class Game:
             raise Exception(const.G_OVER_CAUSE_POOP)
         # 蛇がカエルを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.frog.x), int(self.frog.y)):
+            #蛇がカエルを食べた
             self.had_frog = True
+            #カエルが死んだ
+            self.frog.is_frog = False
             self.frog = frog_class.Frog(self.surface)
         # 枠を出たらUターン
         if ((self.snake.x[0] + const.SIZE > const.DIP_W) or (self.snake.x[0] < 0)

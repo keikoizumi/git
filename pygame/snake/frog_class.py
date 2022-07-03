@@ -13,6 +13,8 @@ class Frog:
         self.image = pygame.image.load(const.FROG_IMG_PATH).convert()
         self.x = -100
         self.y = -100
+        #カエルが生きている場合True
+        self.is_frog = False
 
     #カエルの描画
     def draw(self):
