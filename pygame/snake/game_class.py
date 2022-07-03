@@ -15,7 +15,7 @@ import const
 import gold_apple_class
 import snake_class
 import score_class
-
+import snake_poop_class
 
 class Game:
     def __init__(self):
@@ -30,6 +30,7 @@ class Game:
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
+        self.snake_poop =  snake_poop_class.Poop(self.surface)
         self.score = score_class.Score()
         #取得した体
         self.max = 1
@@ -57,6 +58,8 @@ class Game:
                 sound = pygame.mixer.Sound(const.GET_GOLD_SOUND_PATH)
             elif sound_name == 'bad':
                 sound = pygame.mixer.Sound(const.GET_BAD_SOUND_PATH)
+            elif sound_name == 'had_poop':
+                sound = pygame.mixer.Sound(const.GET_POOP_SOUND_PATH)
             pygame.mixer.Sound.play(sound)
 
     #インスタンスのリセット
@@ -65,6 +68,7 @@ class Game:
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
+        self.snake_poop = snake_poop_class.Poop(self.surface)
         self.score = score_class.Score()
 
     #衝突判定
@@ -108,7 +112,7 @@ class Game:
             self.snake.out = True
             self.snake.tongue()
         #golden appleを作る
-        if ((self.snake.length%10 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
+        if ((self.snake.length % 7 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
             self.gold_apple.make_gold_apple()
             self.gold_apple.cnt+=1
             self.play_background_music()
@@ -118,12 +122,12 @@ class Game:
             self.play_sound('ding')
             #体を減らす
             self.snake.increase_length()
-            #すでにりんごがある場所に配置しない
+            #腐ったりんごの配置
             for i in range(random.randint(1, 2)):
                 self.bad_apple.make_bad_apple(self.apple.x, self.apple.y)
-            #for i in range(random.randint(1,2)):
+            #りんごの再配置
             self.apple.move(self.bad_apple.bad_apples)
-        # 蛇がgold appleを食べた！
+        # 蛇が金のりんごを食べた！
         if self.is_collision(self.snake.x[0], self.snake.y[0], self.gold_apple.x, self.gold_apple.y):
             self.play_sound('gold')
             self.bad_apple.del_apples(10)
@@ -131,11 +135,12 @@ class Game:
             self.gold_apple.cnt = 1
             self.snake.get_gold_apple = True
             self.snake.chcg()
-        # 蛇がbad appleを食べた！
+            print(f'x: {self.snake.x}')
+            print(f'y: {self.snake.y}')
+        # 蛇が腐ったりんごを食べた！
         if self.had_bad_apple(self.snake.x[0], self.snake.y[0]):
             self.play_sound('bad')
-            self.snake.had_bad_apple()
-            #self.bad_apple.del_apples(1)
+            self.snake.had_bad_apple_skin_effect()
             #体の数を減らす
             self.snake.decrease_length()
             self.snake.s_cnt = 1

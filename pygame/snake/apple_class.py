@@ -27,7 +27,11 @@ class Apple:
         for i in bad_apples:
             self.bx = i[0]
             self.by = i[1]
-            if self.bx == self.x and self.by == self.y:
-                #座標がすでに作成済みであるか確認
+            #座標が重なっていないか確認
+            if ((self.x < self.bx or self.bx + const.SIZE < self.x)
+                and (self.y < self.by or self.by + const.SIZE < self.y)):
+                pass
+            else:
+                #座標の再作成
                 self.move(bad_apples)
         self.draw()

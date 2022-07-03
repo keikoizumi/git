@@ -32,6 +32,7 @@ SNAKE_GREEN_EATING_FACE_IMG_PATH = os.path.join(PATH, 'resources/images/green_ea
 APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/apple.jpg')
 BAD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/badapple.jpg')
 GOLD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/goldapple.jpg')
+SNAKE_POOP_IMG_PATH = os.path.join(PATH, 'resources/images/poop.png')
 
 #sound
 SOUND = True
@@ -42,6 +43,7 @@ CRASH_SOUND_PATH = os.path.join(PATH, 'resources/sounds/crash.mp3')
 DING_SOUND_PATH = os.path.join(PATH, 'resources/sounds/eatapple.mp3')
 GET_GOLD_SOUND_PATH = os.path.join(PATH, 'resources/sounds/gold.mp3')
 GET_BAD_SOUND_PATH = os.path.join(PATH, 'resources/sounds/bad.mp3')
+GET_POOP_SOUND_PATH = os.path.join(PATH, 'resources/sounds/had_poop.mp3')
 
 #score file path
 SCORE_FILE_DIR = 'score'
