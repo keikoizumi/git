@@ -1,11 +1,11 @@
 #Standard module
 import datetime
-import pygame
 import random
 import time
 import traceback
 
 #external module
+import pygame
 from pygame.locals import *
 
 #Self-made module
@@ -82,11 +82,15 @@ class Game:
         return False
 
     def had_bad_apple(self, x1, y1):
+        cnt = -1
         for i in self.bad_apple.bad_apples:
+            cnt += 1
             x2 = i[0]
             y2 = i[1]
             if x1 >= x2 and x1 < x2 + const.SIZE:
                 if y1 >= y2 and y1 < y2 + const.SIZE:
+                    #ぶつかったBADりんごを削除
+                    del self.bad_apple.bad_apples[cnt]
                     return True
         return False
     #背景
@@ -138,7 +142,7 @@ class Game:
         if self.had_bad_apple(self.snake.x[0], self.snake.y[0]):
             self.play_sound('bad')
             self.snake.had_bad_apple()
-            self.bad_apple.del_apples(1)
+            #self.bad_apple.del_apples(1)
             #体の数を減らす
             self.snake.decrease_length()
             self.snake.s_cnt = 1
