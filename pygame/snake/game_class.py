@@ -12,6 +12,7 @@ from pygame.locals import *
 import apple_class
 import bad_apple_class
 import const
+import frog_class
 import gold_apple_class
 import snake_class
 import score_class
@@ -31,18 +32,24 @@ class Game:
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
         self.snake_poop =  snake_poop_class.Poop(self.surface)
+        #カエルをインスタンス化
+        self.frog =  frog_class.Frog(self.surface)
         self.score = score_class.Score()
         #取得した体
         self.max = 1
         #死因
         self.cause_of_death = 'unknown'
+        #蛇がカエルを食べたらTrue
+        self.had_frog = False
 
     def play_background_music(self):
         if const.SOUND:
-            m = random.randint(1, 3)
-            if m == 1:
+            self.m = random.randint(1, 3)
+            if self.m == 1:
                 pygame.mixer.music.load(const.B_MUSIC_PATH)
-            elif m == 2:
+            elif self.m == 2:
+                #音量を下げる
+                pygame.mixer.music.set_volume(0.5)
                 pygame.mixer.music.load(const.B_RAIN_PATH)
             else:
                 pygame.mixer.music.load(const.B_SUMMER_PATH)
@@ -60,6 +67,8 @@ class Game:
                 sound = pygame.mixer.Sound(const.GET_BAD_SOUND_PATH)
             elif sound_name == 'die':
                 sound = pygame.mixer.Sound(const.GET_POOP_SOUND_PATH)
+            elif sound_name == 'frog':
+                sound = pygame.mixer.Sound(const.GET_FROG_SOUND_PATH)
             pygame.mixer.Sound.play(sound)
 
     #インスタンスのリセット
@@ -69,6 +78,7 @@ class Game:
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
         self.snake_poop = snake_poop_class.Poop(self.surface)
+        self.frog = frog_class.Frog(self.surface)
         self.score = score_class.Score()
 
     #衝突判定
@@ -128,6 +138,13 @@ class Game:
                 self.bad_apple.make_bad_apple(self.apple.x, self.apple.y)
             #りんごの再配置
             self.apple.move(self.bad_apple.bad_apples)
+
+            #音楽がRAINの場合、カエルを放出
+            if self.m == 2:
+                #カエルの鳴き声
+                self.play_sound('frog')
+                self.frog.move(self.bad_apple.bad_apples)
+        self.frog.draw()
         # 蛇が金のりんごを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.gold_apple.x), int(self.gold_apple.y)):
             self.play_sound('gold')
@@ -139,6 +156,7 @@ class Game:
             #うんこ放出
             self.snake_poop.make_poop(self.snake.x, self.snake.y)
         self.snake_poop.draw()
+
         # 蛇が腐ったりんごを食べた！
         if self.had_bad_apple(int(self.snake.x[0]), int(self.snake.y[0])):
             self.play_sound('bad')
@@ -154,9 +172,12 @@ class Game:
         # 蛇がうんこを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.snake_poop.poop_x), int(self.snake_poop.poop_y)):
             self.play_sound('die')
-            print(str(self.snake.x[0]) + ','+ str(self.snake.y[0]) + ','+ str(self.snake_poop.poop_x) + ','+ str(self.snake_poop.poop_y))
             self.cause_of_death = const.G_OVER_CAUSE_POOP
             raise Exception(const.G_OVER_CAUSE_POOP)
+        # 蛇がカエルを食べた！
+        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.frog.x), int(self.frog.y)):
+            self.had_frog = True
+            self.frog = frog_class.Frog(self.surface)
         # 枠を出たらUターン
         if ((self.snake.x[0] + const.SIZE > const.DIP_W) or (self.snake.x[0] < 0)
             or (self.snake.y[0] + const.SIZE > const.DIP_H) or (self.snake.y[0] < 0)):
@@ -183,7 +204,10 @@ class Game:
 
         #SPEED PANIC 確認
         if self.snake.s_cnt == 1:
-            if datetime.datetime.now() < self.snake.d:
+            #設定された時間ない
+            #蛇がカエルを食べていない
+            #パニックにする
+            if datetime.datetime.now() < self.snake.d and self.had_frog is False:
                 #スピードのパラメータ変更
                 const.SPEED = const.PANIC_SPEED
                 #顔色を変える
@@ -223,6 +247,8 @@ class Game:
                 self.snake.s_cnt = 0
                 #スピードをもとに戻す
                 const.SPEED = const.NORMAL_SPEED
+        #蛇がカエルを食べたらTrue
+        self.had_frog = False
         #最大長を保持
         if self.max <= self.snake.length:
             self.max = self.snake.length
