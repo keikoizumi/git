@@ -116,7 +116,7 @@ class Game:
             self.snake.tongue()
         #golden appleを作る
         if ((self.snake.length%10 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
-            self.gold_apple.mkapple()
+            self.gold_apple.make_gold_apple()
             self.gold_apple.cnt+=1
             self.play_background_music()
         self.gold_apple.draw()
@@ -127,7 +127,7 @@ class Game:
             self.snake.increase_length()
             #すでにりんごがある場所に配置しない
             for i in range(random.randint(1, 2)):
-                self.bad_apple.mkapple(self.apple.x, self.apple.y)
+                self.bad_apple.make_bad_apple(self.apple.x, self.apple.y)
             #for i in range(random.randint(1,2)):
             self.apple.move(self.bad_apple.bad_apples)
         # 蛇がgold appleを食べた！
