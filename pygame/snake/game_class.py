@@ -1,5 +1,6 @@
 #Standard module
 import datetime
+import pygame
 import random
 import time
 import traceback
@@ -19,6 +20,7 @@ import rain_class
 import snake_class
 import score_class
 import snake_poop_class
+
 
 class Game:
     def __init__(self):
@@ -55,10 +57,12 @@ class Game:
             elif self.m == 2:
                 #音量を下げる
                 pygame.mixer.music.set_volume(0.5)
+
                 pygame.mixer.music.load(const.B_RAIN_PATH)
             else:
                 pygame.mixer.music.load(const.B_SUMMER_PATH)
             pygame.mixer.music.play(-1, 0)
+
 
     def play_sound(self, sound_name):
         if const.SOUND:
@@ -74,6 +78,8 @@ class Game:
                 sound = pygame.mixer.Sound(const.GET_POOP_SOUND_PATH)
             elif sound_name == 'frog':
                 sound = pygame.mixer.Sound(const.GET_FROG_SOUND_PATH)
+            elif sound_name == 'had_poop':
+                sound = pygame.mixer.Sound(const.GET_POOP_SOUND_PATH)
             pygame.mixer.Sound.play(sound)
 
     #インスタンスのリセット
@@ -124,6 +130,8 @@ class Game:
             self.rain.draw()
         self.block.draw()
         self.snake.walk()
+
+        #りんごを描く
         self.apple.draw()
         self.bad_apple.draw()
         #舌を出す・出さない
@@ -133,6 +141,7 @@ class Game:
         else:
             self.snake.out = True
             self.snake.tongue()
+
         #ゴールドアップルを作る
         if ((self.snake.length % 10 == 0 and self.gold_apple.cnt == 1) and len(self.bad_apple.bad_apples) >= 10):
             self.gold_apple.make_gold_apple()
@@ -146,7 +155,7 @@ class Game:
             self.had_apple_cnt += 1
             #体を増やす
             self.snake.increase_length()
-            #腐ったりんごの配置e
+            #腐ったりんごの配置
             if self.had_apple_cnt < 50:
                 random_ = random.randint(1, 2)
             elif self.had_apple_cnt < 100:
@@ -174,6 +183,9 @@ class Game:
             self.gold_apple = gold_apple_class.GoldApple(self.surface)
             self.gold_apple.cnt = 1
             self.snake.get_gold_apple = True
+            #うんこをする
+            self.snake_poop.make_poop(self.apple.x, self.apple.y, self.snake.x, self.snake.y)
+            #goldを食べたときのスキンエフェクト
             self.snake.chcg()
             #うんこ放出
             self.snake_poop.make_poop(self.snake.x, self.snake.y)
@@ -343,6 +355,7 @@ class Game:
                 self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
                 self.score.write('1')
                 raise Exception(const.INVALID_NUM_ERR)
+
         else:
             if int(self.score.b_score) < int(self.score.n_score):
                 line0 = font.render(const.G_BEST , True, const.GOLD)
@@ -359,6 +372,7 @@ class Game:
             line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.GOLD)
         elif self.cause_of_death == const.G_OVER_CAUSE_POOP:
             line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_POOP}' , True, const.GOLD)
+
         else:
             line3 = font.render(f'Cause of death: {const.G_OVER_UNKNOWN}' , True, const.WHITE)
         self.surface.blit(line3, (const.DIP_W / 4, const.DIP_H / 2 + 10))
@@ -406,6 +420,7 @@ class Game:
                 if not pause:
                     self.play()
             except Exception as e:
+                print(e)
                 self.show_game_over()
                 self.reset()
                 pause = True

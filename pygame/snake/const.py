@@ -35,6 +35,7 @@ SNAKE_BLUE_HAD_BAD_APPLE_FACE_IMG_PATH = os.path.join(PATH, 'resources/images/bl
 SNAKE_YELLOW_EATING_FACE_IMG_PATH = os.path.join(PATH, 'resources/images/yellow_eating_face.png')
 SNAKE_RED_EATING_FACE_IMG_PATH = os.path.join(PATH, 'resources/images/red_eating_face.png')
 SNAKE_GREEN_EATING_FACE_IMG_PATH = os.path.join(PATH, 'resources/images/green_eating_face.png')
+SNAKE_POOP_IMG_PATH = os.path.join(PATH, 'resources/images/poop.png')
 APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/apple.jpg')
 BAD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/badapple.jpg')
 GOLD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/goldapple.jpg')
@@ -56,6 +57,7 @@ GET_BAD_SOUND_PATH = os.path.join(PATH, 'resources/sounds/bad.mp3')
 GET_POOP_SOUND_PATH = os.path.join(PATH, 'resources/sounds/had_poop.mp3')
 GET_FROG_SOUND_PATH = os.path.join(PATH, 'resources/sounds/had_frog.mp3')
 
+
 #apple snake size
 SIZE = 40
 
@@ -71,6 +73,9 @@ G_OVER_FONT = 'arial'
 G_BEST = 'Congratulation!! You got best record!! '
 G_OVER = 'Game is over! You had '
 G_OVER_OP = 'To play again press Enter. To exit press Escape!'
+G_OVER_CAUSE_BAD_APPLE = 'Your snake had a lot of bad apples.'
+G_OVER_CAUSE_COLLISION = 'Collision happen.'
+G_OVER_CAUSE_POOP = 'Your snake had a poop!!!!.'
 G_OVER_UNKNOWN = 'Unknown'
 
 #RGB LIST
