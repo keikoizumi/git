@@ -140,17 +140,19 @@ class Game:
             self.had_apple_cnt += 1
             #体を増やす
             self.snake.increase_length()
-            #腐ったりんごの配置
+            #腐ったりんごの配置e
             if self.had_apple_cnt < 50:
-                random_ = random.randint(10, 20)
+                random_ = random.randint(1, 2)
             elif self.had_apple_cnt < 100:
                 random_ = random.randint(1, 4)
             else:
                 random_ = random.randint(2, 4)
             for i in range(random_):
-                self.bad_apple.make_bad_apple(self.apple.x, self.apple.y)
+                self.bad_apple.make_bad_apple(self.apple.x, self.apple.y, self.block.blocks)
             #りんごの再配置
-            self.apple.move(self.bad_apple.bad_apples)
+            #ブッロクと重ならないように配置
+            #青りんごと重ならないように配置
+            self.apple.move(self.bad_apple.bad_apples, self.block.blocks)
             #カエルを放出
             if (len(self.bad_apple.bad_apples) > 10 and self.snake.length % 15 == 0):
                 self.frog.is_frog = True
