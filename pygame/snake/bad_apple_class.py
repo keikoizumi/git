@@ -62,8 +62,6 @@ class BadApple:
         for i in self.bad_apples:
             self.x = i[0]
             self.y = i[1]
-            print(self.x)
-            print(self.y)
             self.parent_screen.blit(self.image, (self.x, self.y))
 
     #りんごの移動

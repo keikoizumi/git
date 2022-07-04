@@ -55,8 +55,8 @@ class Apple:
     #新しい軸がブロックの軸と重なっていないことを確認
     #重なりがあればTrue
     def check_for_blocks(self):
-        if ((self.block_x + const.SIZE < self.x and self.x < const.DIP_W - const.SIZE * 2)
-            or (self.block_y + const.SIZE < self.y and self.y < const.DIP_H - const.SIZE * 2)):
+        if ((self.block_x + const.SIZE < self.x or self.x < const.DIP_W - const.SIZE * 2)
+            and (self.block_y + const.SIZE < self.y or self.y < const.DIP_H - const.SIZE * 2)):
             return False
         else:
             return True

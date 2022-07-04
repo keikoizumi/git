@@ -15,6 +15,7 @@ import block_class
 import const
 import frog_class
 import gold_apple_class
+import rain_class
 import snake_class
 import score_class
 import snake_poop_class
@@ -32,6 +33,7 @@ class Game:
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
+        self.rain = rain_class.Rain(self.surface)
         self.snake_poop =  snake_poop_class.Poop(self.surface)
         #カエルをインスタンス化
         self.frog =  frog_class.Frog(self.surface)
@@ -82,6 +84,7 @@ class Game:
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
         self.snake_poop = snake_poop_class.Poop(self.surface)
         self.frog = frog_class.Frog(self.surface)
+        self.rain = rain_class.Rain(self.surface)
         self.score = score_class.Score()
         #取ったりんごの数を0にリセット
         self.had_apple_cnt = 0
@@ -116,6 +119,9 @@ class Game:
     def play(self):
         #背景の描画
         self.render_background()
+        #雨が降る
+        if self.m == 2:
+            self.rain.draw()
         self.block.draw()
         self.snake.walk()
         self.apple.draw()
@@ -201,17 +207,17 @@ class Game:
             self.snake.increase_length()
             self.frog = frog_class.Frog(self.surface)
         # 枠を出たらUターン
-        if ((self.snake.x[0] + const.SIZE * 3 > const.DIP_W) or (self.snake.x[0] < 0 + const.SIZE * 2)
-            or (self.snake.y[0] + const.SIZE * 3 > const.DIP_H) or (self.snake.y[0] < 0 + const.SIZE * 2)):
-            #画面超えたら軸を初期化
-            #if self.snake.x[0] >= const.DIP_W:
-            #    self.snake.x[0] = const.DIP_W - const.SIZE
-            #if self.snake.x[0] < 0:
-            #    self.snake.x[0] = 0
-            #if self.snake.y[0] >= const.DIP_H:
-            #    self.snake.y[0] = const.DIP_H - const.SIZE
-            #if self.snake.y[0] < 0:
-            #    self.snake.y[0] = 0
+        if ((self.snake.x[0] + const.SIZE * 2 > const.DIP_W) or (self.snake.x[0] < 0 + const.SIZE * 1)
+            or (self.snake.y[0] + const.SIZE * 2 > const.DIP_H) or (self.snake.y[0] < 0 + const.SIZE * 1)):
+            #基準軸を超えたら軸を初期化
+            if self.snake.x[0] + const.SIZE * 3 > const.DIP_W:
+                self.snake.x[0] = const.DIP_W - const.SIZE * 2
+            if self.snake.x[0] <  0 + const.SIZE * 2:
+                self.snake.x[0] =  0 + const.SIZE
+            if self.snake.y[0] + const.SIZE * 3  > const.DIP_H:
+                self.snake.y[0] = const.DIP_H - const.SIZE * 2
+            if self.snake.y[0] < 0 + const.SIZE * 2:
+                self.snake.y[0] = 0 + const.SIZE
             if self.snake.directions[-1] == 'left':
                 self.snake.move_right()
             elif self.snake.directions[-1] == 'right':
@@ -319,7 +325,7 @@ class Game:
         #self.surface.blit(speed, (30, 10))
         #self.surface.blit(count_bad,(180, 10))
         #self.surface.blit(snake_length, (420, 10))
-        self.surface.blit(had_apple_cnt, (const.SIZE, const.SIZE))
+        self.surface.blit(had_apple_cnt, (const.SIZE, 10))
         self.surface.blit(best_score, (const.SIZE, const.DIP_H - const.SIZE * 2))
 
     #Game Over画面
