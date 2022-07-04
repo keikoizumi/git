@@ -319,8 +319,8 @@ class Game:
         #self.surface.blit(speed, (30, 10))
         #self.surface.blit(count_bad,(180, 10))
         #self.surface.blit(snake_length, (420, 10))
-        self.surface.blit(had_apple_cnt, (10, 10))
-        self.surface.blit(best_score, (10, const.DIP_H - 40))
+        self.surface.blit(had_apple_cnt, (const.SIZE, const.SIZE))
+        self.surface.blit(best_score, (const.SIZE, const.DIP_H - const.SIZE * 2))
 
     #Game Over画面
     def show_game_over(self):
