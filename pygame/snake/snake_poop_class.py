@@ -22,3 +22,13 @@ class Poop:
     #描画
     def draw(self):
         self.parent_screen.blit(self.image, (self.poop_x, self.poop_y))
+
+    #蛇が画面のソトに侵攻した場合
+    def out_of_range_move_up(self):
+        self.poop_y += const.SIZE
+    def out_of_range_move_down(self):
+        self.poop_y -= const.SIZE
+    def out_of_range_move_right(self):
+        self.poop_x -= const.SIZE
+    def out_of_range_move_left(self):
+        self.poop_x += const.SIZE

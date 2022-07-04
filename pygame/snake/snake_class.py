@@ -37,8 +37,8 @@ class Snake:
         #初期長
         self.length = 1
         #初期位置
-        self.x = [const.SIZE]
-        self.y = [const.SIZE]
+        self.x = [const.DIP_W / 2]
+        self.y = [const.DIP_H / 4]
         #時間
         self.d = datetime.datetime.now() + datetime.timedelta(days=-7)
         #speed はノーマル

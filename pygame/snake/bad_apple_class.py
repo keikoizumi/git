@@ -19,8 +19,8 @@ class BadApple:
         #腐ったりんごの数
         self.cnt += 1
         #新しいりんごの座標
-        self.x = random.randint(1, 24) * const.SIZE
-        self.y = random.randint(1, 14) * const.SIZE
+        self.x = random.randint(-50, 50) * const.SIZE
+        self.y = random.randint(-50, 50) * const.SIZE
         self.bx = bx
         self.by = by
         #座標が重なっていないか確認
@@ -52,3 +52,21 @@ class BadApple:
                 del self.bad_apples[-1]
             except IndexError as e:
                 pass
+
+    #蛇が画面のソトに侵攻した場合
+    def out_of_range_move_up(self):
+        for i in self.bad_apples:
+            i[1] += const.SIZE
+            self.y = i[1]
+    def out_of_range_move_down(self):
+        for i in self.bad_apples:
+            i[1] -= const.SIZE
+            self.y = i[1]
+    def out_of_range_move_right(self):
+        for i in self.bad_apples:
+            i[0] -= const.SIZE
+            self.x = i[0]
+    def out_of_range_move_left(self):
+        for i in self.bad_apples:
+            i[0] += const.SIZE
+            self.x = i[0]

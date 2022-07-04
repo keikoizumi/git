@@ -23,3 +23,13 @@ class GoldApple:
     def draw(self):
         #配列の数分描画
         self.parent_screen.blit(self.image, (self.x, self.y))
+
+    #蛇が画面のソトに侵攻した場合
+    def out_of_range_move_up(self):
+        self.y += const.SIZE
+    def out_of_range_move_down(self):
+        self.y -= const.SIZE
+    def out_of_range_move_right(self):
+        self.x -= const.SIZE
+    def out_of_range_move_left(self):
+        self.x += const.SIZE

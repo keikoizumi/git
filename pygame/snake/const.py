@@ -16,8 +16,8 @@ SCORE_FILE_PATH = os.path.join(PATH ,SCORE_FILE_DIR + '/' + SCORE_FILE_NAME)
 CAPTION = 'Snake And Apple Game'
 
 #display
-DIP_W = 1000
-DIP_H = 600
+DIP_W = 1200
+DIP_H = 640
 
 #image
 B_IMG_PATH = os.path.join(PATH, 'resources/images/background.jpg')
@@ -40,6 +40,7 @@ BAD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/badapple.jpg')
 GOLD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/goldapple.jpg')
 SNAKE_POOP_IMG_PATH = os.path.join(PATH, 'resources/images/poop.png')
 FROG_IMG_PATH = os.path.join(PATH, 'resources/images/frog.png')
+BLOCK_IMG_PATH = os.path.join(PATH, 'resources/images/block.jpg')
 
 #sound
 SOUND = True
@@ -65,8 +66,8 @@ SPEED = NORMAL_SPEED
 #game over display
 G_OVER_FONT_SIZE = 25
 G_OVER_FONT = 'arial'
-G_BEST = 'Congratulation!! You got best body length!! '
-G_OVER = 'Game is over! Your MAX body length is '
+G_BEST = 'Congratulation!! You got best record!! '
+G_OVER = 'Game is over! You had '
 G_OVER_OP = 'To play again press Enter. To exit press Escape!'
 G_OVER_UNKNOWN = 'Unknown'
 

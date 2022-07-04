@@ -11,6 +11,7 @@ from pygame.locals import *
 #Self-made module
 import apple_class
 import bad_apple_class
+import block_class
 import const
 import frog_class
 import gold_apple_class
@@ -22,11 +23,11 @@ class Game:
     def __init__(self):
         pygame.init()
         pygame.display.set_caption(const.CAPTION)
-
         pygame.mixer.init()
         self.play_background_music()
         #インスタンスの初期化
         self.surface = pygame.display.set_mode((const.DIP_W, const.DIP_H))
+        self.block = block_class.Block(self.surface)
         self.snake = snake_class.Snake(self.surface)
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
@@ -41,6 +42,8 @@ class Game:
         self.cause_of_death = 'unknown'
         #蛇がカエルを食べたらTrue
         self.had_frog = False
+        #食べたりんごの数
+        self.had_apple_cnt = 0
 
     def play_background_music(self):
         if const.SOUND:
@@ -80,7 +83,8 @@ class Game:
         self.snake_poop = snake_poop_class.Poop(self.surface)
         self.frog = frog_class.Frog(self.surface)
         self.score = score_class.Score()
-
+        #取ったりんごの数を0にリセット
+        self.had_apple_cnt = 0
     #衝突判定
     def is_collision(self, x1, y1, x2, y2):
         if (x1 >= x2 and x1 < x2 + const.SIZE) or (x1 + const.SIZE >= x2 and x1 + const.SIZE < x2 + const.SIZE):
@@ -112,6 +116,7 @@ class Game:
     def play(self):
         #背景の描画
         self.render_background()
+        self.block.draw()
         self.snake.walk()
         self.apple.draw()
         self.bad_apple.draw()
@@ -122,8 +127,8 @@ class Game:
         else:
             self.snake.out = True
             self.snake.tongue()
-        #golden appleを作る
-        if ((self.snake.length % 10 == 0 and self.gold_apple.cnt == 1) and self.bad_apple.cnt >= 10):
+        #ゴールドアップルを作る
+        if ((self.snake.length % 10 == 0 and self.gold_apple.cnt == 1) and len(self.bad_apple.bad_apples) >= 10):
             self.gold_apple.make_gold_apple()
             self.gold_apple.cnt += 1
             self.play_background_music()
@@ -131,15 +136,23 @@ class Game:
         # 蛇がりんごを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.apple.x), int(self.apple.y)):
             self.play_sound('ding')
-            #体を減らす
+            #食べた数をカウントアップ
+            self.had_apple_cnt += 1
+            #体を増やす
             self.snake.increase_length()
             #腐ったりんごの配置
-            for i in range(random.randint(1, 2)):
+            if self.had_apple_cnt < 50:
+                random_ = random.randint(10, 20)
+            elif self.had_apple_cnt < 100:
+                random_ = random.randint(1, 4)
+            else:
+                random_ = random.randint(2, 4)
+            for i in range(random_):
                 self.bad_apple.make_bad_apple(self.apple.x, self.apple.y)
             #りんごの再配置
             self.apple.move(self.bad_apple.bad_apples)
-            #音楽がRAINの場合、カエルを放出
-            if self.m == 2:
+            #カエルを放出
+            if (len(self.bad_apple.bad_apples) > 10 and self.snake.length % 15 == 0):
                 self.frog.is_frog = True
                 self.frog.move(self.bad_apple.bad_apples)
         # カエルの鳴き声
@@ -170,7 +183,8 @@ class Game:
                 self.cause_of_death = const.G_OVER_CAUSE_BAD_APPLE
                 raise Exception(const.G_OVER_CAUSE_BAD_APPLE)
         # 蛇がうんこを食べた！
-        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.snake_poop.poop_x), int(self.snake_poop.poop_y)):
+        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]),
+                                int(self.snake_poop.poop_x - 10), int(self.snake_poop.poop_y - 10)):
             self.play_sound('die')
             self.cause_of_death = const.G_OVER_CAUSE_POOP
             raise Exception(const.G_OVER_CAUSE_POOP)
@@ -180,20 +194,22 @@ class Game:
             self.had_frog = True
             #カエルが死んだ
             self.frog.is_frog = False
+            #体を増やす
+            self.snake.increase_length()
+            self.snake.increase_length()
             self.frog = frog_class.Frog(self.surface)
         # 枠を出たらUターン
-        if ((self.snake.x[0] + const.SIZE > const.DIP_W) or (self.snake.x[0] < 0)
-            or (self.snake.y[0] + const.SIZE > const.DIP_H) or (self.snake.y[0] < 0)):
+        if ((self.snake.x[0] + const.SIZE * 3 > const.DIP_W) or (self.snake.x[0] < 0 + const.SIZE * 2)
+            or (self.snake.y[0] + const.SIZE * 3 > const.DIP_H) or (self.snake.y[0] < 0 + const.SIZE * 2)):
             #画面超えたら軸を初期化
-            if self.snake.x[0] >= const.DIP_W:
-                self.snake.x[0] = const.DIP_W - const.SIZE
-            if self.snake.x[0] < 0:
-                self.snake.x[0] = 0
-            if self.snake.y[0] >= const.DIP_H:
-                self.snake.y[0] = const.DIP_H - const.SIZE
-            if self.snake.y[0] < 0:
-                self.snake.y[0] = 0
-            #一つ前の方向と反対方向へすすめ
+            #if self.snake.x[0] >= const.DIP_W:
+            #    self.snake.x[0] = const.DIP_W - const.SIZE
+            #if self.snake.x[0] < 0:
+            #    self.snake.x[0] = 0
+            #if self.snake.y[0] >= const.DIP_H:
+            #    self.snake.y[0] = const.DIP_H - const.SIZE
+            #if self.snake.y[0] < 0:
+            #    self.snake.y[0] = 0
             if self.snake.directions[-1] == 'left':
                 self.snake.move_right()
             elif self.snake.directions[-1] == 'right':
@@ -202,6 +218,32 @@ class Game:
                 self.snake.move_down()
             elif self.snake.directions[-1] == 'down':
                 self.snake.move_up()
+            #蛇が枠外に侵攻
+            #蛇の動きと逆方向に座標をずらす
+            #if self.snake.directions[-1] == 'up':
+            #    self.apple.out_of_range_move_up()
+            #    self.bad_apple.out_of_range_move_up()
+            #    self.gold_apple.out_of_range_move_up()
+            #    self.frog.out_of_range_move_up()
+            #    self.snake_poop.out_of_range_move_up()
+            #elif self.snake.directions[-1] == 'down':
+            #    self.apple.out_of_range_move_down()
+            #    self.bad_apple.out_of_range_move_down()
+            #    self.gold_apple.out_of_range_move_down()
+            #    self.frog.out_of_range_move_down()
+            #    self.snake_poop.out_of_range_move_down()
+            #elif self.snake.directions[-1] == 'right':
+            #    self.apple.out_of_range_move_right()
+            #    self.bad_apple.out_of_range_move_right()
+            #    self.gold_apple.out_of_range_move_right()
+            #    self.frog.out_of_range_move_right()
+            #    self.snake_poop.out_of_range_move_right()
+            #elif self.snake.directions[-1] == 'left':
+            #    self.apple.out_of_range_move_left()
+            #    self.bad_apple.out_of_range_move_left()
+            #    self.gold_apple.out_of_range_move_left()
+            #    self.frog.out_of_range_move_left()
+            #    self.snake_poop.out_of_range_move_left()
         #スコアの表示
         self.display_score()
 
@@ -253,27 +295,30 @@ class Game:
         #蛇がカエルを食べたらTrue
         self.had_frog = False
         #最大長を保持
-        if self.max <= self.snake.length:
-            self.max = self.snake.length
+        if self.max <= self.had_apple_cnt:
+            self.max = self.had_apple_cnt
         #画面の更新
         pygame.display.flip()
 
     #スコアの画面表示
     def display_score(self):
         font = pygame.font.SysFont(const.G_OVER_FONT,const.G_OVER_FONT_SIZE)
-        if const.SPEED == const.NORMAL_SPEED:
-            speed = font.render('speed: normal', True, const.WHITE)
-        elif const.SPEED == const.FAST_SPEED:
-            speed = font.render('speed: fast', True, const.WHITE)
-        else:
-            speed = font.render('speed: panic', True, const.WHITE)
-        count_bad = font.render(f'number of bad apples: {self.bad_apple.cnt}', True, const.WHITE)
-        score = font.render(f'body length: {self.snake.length}', True, const.GOLD) #黄色
-        best_score = font.render(f'best record: {self.score.b_score}', True, const.WHITE)
-        self.surface.blit(speed, (30, 10))
-        self.surface.blit(count_bad,(180, 10))
-        self.surface.blit(score, (420, 10))
-        self.surface.blit(best_score, (570, 10))
+        #if const.SPEED == const.NORMAL_SPEED:
+        #    speed = font.render('speed: normal', True, const.WHITE)
+        #elif const.SPEED == const.FAST_SPEED:
+        #    speed = font.render('speed: fast', True, const.WHITE)
+        #else:
+        #    speed = font.render('speed: panic', True, const.WHITE)
+        #count_bad = font.render(f'number of bad apples: {self.bad_apple.cnt}', True, const.WHITE)
+        #snake_length = font.render(f'Body length: {self.snake.length}', True, const.WHITE)
+        had_apple_cnt = font.render(f'Number of apples your snake had: {self.had_apple_cnt}', True, const.WHITE)
+        best_score  = font.render(f'Best record ever: {self.score.b_score}', True, const.GOLD)
+
+        #self.surface.blit(speed, (30, 10))
+        #self.surface.blit(count_bad,(180, 10))
+        #self.surface.blit(snake_length, (420, 10))
+        self.surface.blit(had_apple_cnt, (10, 10))
+        self.surface.blit(best_score, (10, const.DIP_H - 40))
 
     #Game Over画面
     def show_game_over(self):
@@ -300,7 +345,7 @@ class Game:
         #結果スコア
         line1 = font.render(f'{const.G_OVER + str(self.max)}.', True, const.WHITE)
         self.surface.blit(line1, (const.DIP_W / 4, const.DIP_H / 2 - 20))
-        line2 = font.render(const.G_OVER_OP , True, const.WHITE)
+        line2 = font.render(const.G_OVER_OP + 'apples', True, const.WHITE)
         self.surface.blit(line2, (const.DIP_W / 4, const.DIP_H / 2 + 40))
         if self.cause_of_death == const.G_OVER_CAUSE_BAD_APPLE:
             line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.GOLD)
