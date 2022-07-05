@@ -31,14 +31,12 @@ class Apple:
             self.by = i[1]
             while self.check_for_bad_apples():
                 self.make_new_apple()
-                print('再作成１')
         #ブロックの軸と重なっていないか確認
         for i in self.blocks:
             self.block_x = i[0]
             self.block_y = i[1]
             while self.check_for_blocks():
                 self.make_new_apple()
-                print('再作成2')
         self.draw()
 
     def make_new_apple(self):

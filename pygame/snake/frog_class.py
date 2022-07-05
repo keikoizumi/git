@@ -22,6 +22,7 @@ class Frog:
 
     #カエルの移動
     def move(self, bad_apples):
+        self.is_frog = True
         #カエルの新しい座標
         self.x = abs(random.randint(1, const.DIP_W) - const.SIZE)
         self.y = abs(random.randint(1, const.DIP_H) - const.SIZE)

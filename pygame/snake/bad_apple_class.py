@@ -26,14 +26,12 @@ class BadApple:
         #座標が重なっていないか確認
         while self.check_for_apples():
             self.make_new_apple()
-            print('再作成3')
         #ブロックの軸と重なっていないか確認
         for i in self.blocks:
             self.block_x = i[0]
             self.block_y = i[1]
             while self.check_for_blocks():
                 self.make_new_apple()
-                print('再作成4')
         self.bad_apples.append([self.x, self.y])
 
     def make_new_apple(self):

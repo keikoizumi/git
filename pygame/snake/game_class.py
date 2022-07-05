@@ -13,6 +13,7 @@ from pygame.locals import *
 import apple_class
 import bad_apple_class
 import block_class
+import bird_class
 import const
 import frog_class
 import gold_apple_class
@@ -43,6 +44,8 @@ class Game:
         self.frog =  frog_class.Frog(self.surface)
         #雨をインスタンス化
         self.rain = rain_class.Rain(self.surface)
+        #鳥をインスタンス化
+        self.bird = bird_class.Bird(self.surface)
         #バックグラウンド音楽
         self.play_background_music()
         #取得した体
@@ -96,6 +99,8 @@ class Game:
         self.snake_poop = snake_poop_class.Poop(self.surface)
         self.frog = frog_class.Frog(self.surface)
         self.rain = rain_class.Rain(self.surface)
+        self.cicada = cicada_class.Cicada(self.surface)
+        self.bird = bird_class.Bird(self.surface)
         self.score = score_class.Score()
         #取ったりんごの数を0にリセット
         self.had_apple_cnt = 0
@@ -130,15 +135,23 @@ class Game:
     def play(self):
         #背景の描画
         self.render_background()
-        #雨が降る
-        if self.m == 2:
+
+        if self.m == 1:
+            if self.bird.is_bird:
+                self.bird.make_bird()
+        elif self.m == 2:
+            #雨が降る
             self.rain.draw()
+            self.frog.draw()
         elif self.m == 3:
-            self.cicada.draw()
+            #セミ放出
+            if self.cicada.is_cicada:
+                self.cicada.make_cicada()
+        # カエルの鳴き声
+        if self.frog.is_frog:
+            self.play_sound('frog')
         self.block.draw()
         self.snake.walk()
-
-
         #りんごを描く
         self.apple.draw()
         self.bad_apple.draw()
@@ -149,7 +162,6 @@ class Game:
         else:
             self.snake.out = True
             self.snake.tongue()
-
         #ゴールドアップルを作る
         if ((self.snake.length % 10 == 0 and self.gold_apple.cnt == 1) and len(self.bad_apple.bad_apples) >= 10):
             self.gold_apple.make_gold_apple()
@@ -177,13 +189,10 @@ class Game:
             #青りんごと重ならないように配置
             self.apple.move(self.bad_apple.bad_apples, self.block.blocks)
             #カエルを放出
-            if (len(self.bad_apple.bad_apples) > 10 and self.snake.length % 15 == 0):
-                self.frog.is_frog = True
-                self.frog.move(self.bad_apple.bad_apples)
-        # カエルの鳴き声
-        if self.frog.is_frog:
-            self.play_sound('frog')
-        self.frog.draw()
+            if self.m == 2:
+                if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 3  == 0):
+                    if self.had_frog is False:
+                        self.frog.move(self.bad_apple.bad_apples)
         # 蛇が金のりんごを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.gold_apple.x), int(self.gold_apple.y)):
             self.play_sound('gold')
@@ -192,11 +201,13 @@ class Game:
             self.gold_apple.cnt = 1
             self.snake.get_gold_apple = True
             #うんこをする
-            self.snake_poop.make_poop(self.apple.x, self.apple.y, self.snake.x, self.snake.y)
+            self.snake_poop.make_poop(self.snake.x, self.snake.y)
             #goldを食べたときのスキンエフェクト
             self.snake.chcg()
             #うんこ放出
             self.snake_poop.make_poop(self.snake.x, self.snake.y)
+            #音楽を変更
+            self.play_background_music()
         self.snake_poop.draw()
         # 蛇が腐ったりんごを食べた！
         if self.had_bad_apple(int(self.snake.x[0]), int(self.snake.y[0])):
@@ -224,8 +235,22 @@ class Game:
             self.frog.is_frog = False
             #体を増やす
             self.snake.increase_length()
-            self.snake.increase_length()
+            self.snake.draw()
             self.frog = frog_class.Frog(self.surface)
+        # 蛇がセミを食べた！
+        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.cicada.x), int(self.cicada.y)):
+            self.cicada.is_cicada = False
+            #体を増やす
+            self.snake.increase_length()
+            self.snake.draw()
+            self.cicada = cicada_class.Cicada(self.surface)
+        # 蛇が鳥を食べた！
+        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.bird.x), int(self.bird.y)):
+            self.bird.is_bird = False
+            #体を増やす
+            self.snake.increase_length()
+            self.snake.draw()
+            self.bird = bird_class.Bird(self.surface)
         # 枠を出たらUターン
         if ((self.snake.x[0] + const.SIZE * 2 > const.DIP_W) or (self.snake.x[0] < 0 + const.SIZE * 1)
             or (self.snake.y[0] + const.SIZE * 2 > const.DIP_H) or (self.snake.y[0] < 0 + const.SIZE * 1)):
@@ -246,32 +271,7 @@ class Game:
                 self.snake.move_down()
             elif self.snake.directions[-1] == 'down':
                 self.snake.move_up()
-            #蛇が枠外に侵攻
-            #蛇の動きと逆方向に座標をずらす
-            #if self.snake.directions[-1] == 'up':
-            #    self.apple.out_of_range_move_up()
-            #    self.bad_apple.out_of_range_move_up()
-            #    self.gold_apple.out_of_range_move_up()
-            #    self.frog.out_of_range_move_up()
-            #    self.snake_poop.out_of_range_move_up()
-            #elif self.snake.directions[-1] == 'down':
-            #    self.apple.out_of_range_move_down()
-            #    self.bad_apple.out_of_range_move_down()
-            #    self.gold_apple.out_of_range_move_down()
-            #    self.frog.out_of_range_move_down()
-            #    self.snake_poop.out_of_range_move_down()
-            #elif self.snake.directions[-1] == 'right':
-            #    self.apple.out_of_range_move_right()
-            #    self.bad_apple.out_of_range_move_right()
-            #    self.gold_apple.out_of_range_move_right()
-            #    self.frog.out_of_range_move_right()
-            #    self.snake_poop.out_of_range_move_right()
-            #elif self.snake.directions[-1] == 'left':
-            #    self.apple.out_of_range_move_left()
-            #    self.bad_apple.out_of_range_move_left()
-            #    self.gold_apple.out_of_range_move_left()
-            #    self.frog.out_of_range_move_left()
-            #    self.snake_poop.out_of_range_move_left()
+
         #スコアの表示
         self.display_score()
 
