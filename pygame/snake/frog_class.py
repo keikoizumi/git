@@ -24,8 +24,8 @@ class Frog:
     def move(self, bad_apples):
         self.is_frog = True
         #カエルの新しい座標
-        self.x = abs(random.randint(1, const.DIP_W) - const.SIZE)
-        self.y = abs(random.randint(1, const.DIP_H) - const.SIZE)
+        self.x = random.randint(1, const.DIP_W) - const.SIZE
+        self.y = const.DIP_H - const.SIZE
         for i in bad_apples:
             self.bx = i[0]
             self.by = i[1]

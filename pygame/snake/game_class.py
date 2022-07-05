@@ -12,7 +12,7 @@ from pygame.locals import *
 #Self-made module
 import apple_class
 import bad_apple_class
-import block_class
+import grass_class
 import bird_class
 import const
 import frog_class
@@ -31,7 +31,7 @@ class Game:
         pygame.mixer.init()
         #インスタンスの初期化
         self.surface = pygame.display.set_mode((const.DIP_W, const.DIP_H))
-        self.block = block_class.Block(self.surface)
+        self.grass = grass_class.Grass(self.surface)
         self.snake = snake_class.Snake(self.surface)
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
@@ -135,22 +135,20 @@ class Game:
     def play(self):
         #背景の描画
         self.render_background()
-
+        #草を描く
+        self.grass.draw()
         if self.m == 1:
-            if self.bird.is_bird:
-                self.bird.make_bird()
+            self.bird.draw()
         elif self.m == 2:
             #雨が降る
             self.rain.draw()
+            # カエルの鳴き声
+            if self.frog.is_frog:
+                self.play_sound('frog')
             self.frog.draw()
         elif self.m == 3:
-            #セミ放出
-            if self.cicada.is_cicada:
-                self.cicada.make_cicada()
-        # カエルの鳴き声
-        if self.frog.is_frog:
-            self.play_sound('frog')
-        self.block.draw()
+            self.cicada.draw()
+        #ヘビ歩く
         self.snake.walk()
         #りんごを描く
         self.apple.draw()
@@ -183,16 +181,27 @@ class Game:
             else:
                 random_ = random.randint(2, 4)
             for i in range(random_):
-                self.bad_apple.make_bad_apple(self.apple.x, self.apple.y, self.block.blocks)
+                self.bad_apple.make_bad_apple(self.apple.x, self.apple.y, self.grass.grasss)
             #りんごの再配置
             #ブッロクと重ならないように配置
             #青りんごと重ならないように配置
-            self.apple.move(self.bad_apple.bad_apples, self.block.blocks)
-            #カエルを放出
-            if self.m == 2:
-                if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 3  == 0):
+            self.apple.move(self.bad_apple.bad_apples, self.grass.grasss)
+            #生き物たち
+            if self.m == 1:
+                #鳥を放出
+                if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 7  == 0):
+                    if self.bird.is_bird is False:
+                        self.bird.make_bird()
+            elif self.m == 2:
+                #カエルを放出
+                if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 7  == 0):
                     if self.had_frog is False:
                         self.frog.move(self.bad_apple.bad_apples)
+            elif self.m == 3:
+                #セミ放出
+                if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 7  == 0):
+                    if self.cicada.is_cicada is False:
+                        self.cicada.make_cicada()
         # 蛇が金のりんごを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.gold_apple.x), int(self.gold_apple.y)):
             self.play_sound('gold')
@@ -235,12 +244,16 @@ class Game:
             self.frog.is_frog = False
             #体を増やす
             self.snake.increase_length()
+            self.snake.increase_length()
+            self.snake.increase_length()
             self.snake.draw()
             self.frog = frog_class.Frog(self.surface)
         # 蛇がセミを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.cicada.x), int(self.cicada.y)):
             self.cicada.is_cicada = False
             #体を増やす
+            self.snake.increase_length()
+            self.snake.increase_length()
             self.snake.increase_length()
             self.snake.draw()
             self.cicada = cicada_class.Cicada(self.surface)
@@ -249,20 +262,22 @@ class Game:
             self.bird.is_bird = False
             #体を増やす
             self.snake.increase_length()
+            self.snake.increase_length()
+            self.snake.increase_length()
             self.snake.draw()
             self.bird = bird_class.Bird(self.surface)
         # 枠を出たらUターン
-        if ((self.snake.x[0] + const.SIZE * 2 > const.DIP_W) or (self.snake.x[0] < 0 + const.SIZE * 1)
-            or (self.snake.y[0] + const.SIZE * 2 > const.DIP_H) or (self.snake.y[0] < 0 + const.SIZE * 1)):
+        if ((self.snake.x[0] + const.SIZE > const.DIP_W) or (self.snake.x[0] < 0)
+            or (self.snake.y[0] + const.SIZE > const.DIP_H) or (self.snake.y[0] < 0)):
             #基準軸を超えたら軸を初期化
-            if self.snake.x[0] + const.SIZE * 3 > const.DIP_W:
-                self.snake.x[0] = const.DIP_W - const.SIZE * 2
-            if self.snake.x[0] <  0 + const.SIZE * 2:
-                self.snake.x[0] =  0 + const.SIZE
-            if self.snake.y[0] + const.SIZE * 3  > const.DIP_H:
-                self.snake.y[0] = const.DIP_H - const.SIZE * 2
-            if self.snake.y[0] < 0 + const.SIZE * 2:
-                self.snake.y[0] = 0 + const.SIZE
+            if self.snake.x[0] > const.DIP_W:
+                self.snake.x[0] = const.DIP_W
+            if self.snake.x[0] <  0:
+                self.snake.x[0] =  0
+            if self.snake.y[0] + const.SIZE * 2  > const.DIP_H:
+                self.snake.y[0] = const.DIP_H - const.SIZE
+            if self.snake.y[0] < 0:
+                self.snake.y[0] = 0
             if self.snake.directions[-1] == 'left':
                 self.snake.move_right()
             elif self.snake.directions[-1] == 'right':
@@ -294,16 +309,6 @@ class Game:
                     self.snake.face = pygame.transform.rotate(self.snake.face, -90)
                 else:
                     self.snake.face = pygame.transform.rotate(self.snake.face, 90)
-                #スキンエフェクト 青色
-                #self.snake.panic_cnt += 1
-                #if self.snake.panic_cnt % 2 == 0:
-                #    self.snake.image = pygame.image.load(const.SNAKE_BLUE_IMG_PATH).convert()
-                #    self.snake.draw()
-                #    pygame.display.flip()
-                #else:
-                #    self.snake.image = self.snake.init_body
-                #    self.snake.draw()
-                #    pygame.display.flip()
             else:
                 #お体をもとに戻す
                 self.snake.image = self.snake.init_body
@@ -340,7 +345,7 @@ class Game:
         #count_bad = font.render(f'number of bad apples: {self.bad_apple.cnt}', True, const.WHITE)
         #snake_length = font.render(f'Body length: {self.snake.length}', True, const.WHITE)
         had_apple_cnt = font.render(f'Number of apples your snake had: {self.had_apple_cnt}', True, const.WHITE)
-        best_score  = font.render(f'Best record ever: {self.score.b_score}', True, const.GOLD)
+        best_score  = font.render(f'Best record ever: {self.score.b_score}', True, const.WHITE)
 
         #self.surface.blit(speed, (30, 10))
         #self.surface.blit(count_bad,(180, 10))
