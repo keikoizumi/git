@@ -24,12 +24,12 @@ class Rain:
         for i in self.rains:
                 self.x = i[0]
                 self.y = i[1]
-                print(f'x: {self.x}')
-                print(f'y: {self.y}')
-                if random.randint(1,3) % 2 == 0:
+                if random.randint(1,5) % 2 == 0:
                     self.parent_screen.blit(self.image_png, (self.x, self.y))
-                else:
+                elif random.randint(1,5) % 2 == 1:
                     self.parent_screen.blit(self.image_jpg, (self.x, self.y))
+                else:
+                    pass
 
     def move_rain(self):
         for i in self.rains:

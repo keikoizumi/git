@@ -45,6 +45,7 @@ BLOCK_IMG_PATH = os.path.join(PATH, 'resources/images/block.jpg')
 GRASS_IMG_PATH = os.path.join(PATH, 'resources/images/grass.jpg')
 RAIN_IMG_PATH = os.path.join(PATH, 'resources/images/rain.jpg')
 RAIN_IMG_PNG_PATH = os.path.join(PATH, 'resources/images/rain.png')
+CICADA_IMG_PATH  = os.path.join(PATH, 'resources/images/cicada.png')
 #sound
 SOUND = True
 B_MUSIC_PATH = os.path.join(PATH, 'resources/sounds/bg_music_1.mp3')

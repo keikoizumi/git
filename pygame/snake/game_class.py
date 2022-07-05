@@ -17,6 +17,7 @@ import const
 import frog_class
 import gold_apple_class
 import rain_class
+import cicada_class
 import snake_class
 import score_class
 import snake_poop_class
@@ -27,7 +28,6 @@ class Game:
         pygame.init()
         pygame.display.set_caption(const.CAPTION)
         pygame.mixer.init()
-        self.play_background_music()
         #インスタンスの初期化
         self.surface = pygame.display.set_mode((const.DIP_W, const.DIP_H))
         self.block = block_class.Block(self.surface)
@@ -35,11 +35,16 @@ class Game:
         self.apple = apple_class.Apple(self.surface)
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
-        self.rain = rain_class.Rain(self.surface)
         self.snake_poop =  snake_poop_class.Poop(self.surface)
+        self.score = score_class.Score()
+        #セミをインスタンス化
+        self.cicada = cicada_class.Cicada(self.surface)
         #カエルをインスタンス化
         self.frog =  frog_class.Frog(self.surface)
-        self.score = score_class.Score()
+        #雨をインスタンス化
+        self.rain = rain_class.Rain(self.surface)
+        #バックグラウンド音楽
+        self.play_background_music()
         #取得した体
         self.max = 1
         #死因
@@ -57,10 +62,10 @@ class Game:
             elif self.m == 2:
                 #音量を下げる
                 pygame.mixer.music.set_volume(0.5)
-
                 pygame.mixer.music.load(const.B_RAIN_PATH)
-            else:
+            elif self.m == 3:
                 pygame.mixer.music.load(const.B_SUMMER_PATH)
+
             pygame.mixer.music.play(-1, 0)
 
 
@@ -128,8 +133,11 @@ class Game:
         #雨が降る
         if self.m == 2:
             self.rain.draw()
+        elif self.m == 3:
+            self.cicada.draw()
         self.block.draw()
         self.snake.walk()
+
 
         #りんごを描く
         self.apple.draw()
