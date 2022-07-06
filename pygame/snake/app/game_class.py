@@ -10,15 +10,14 @@ import pygame
 from pygame.locals import *
 
 #Self-made module
+from app.utils_class import Utils
+import app.const as const
+from app.creatures_class import Cicada, Bird, Frog
 import app.apple_class as apple_class
 import app.bad_apple_class as bad_apple_class
 import app.grass_class as grass_class
-import app.bird_class as bird_class
-import app.const as const
-import app.frog_class as frog_class
 import app.gold_apple_class as gold_apple_class
 import app.rain_class as rain_class
-import app.cicada_class as cicada_class
 import app.snake_class as snake_class
 import app.score_class as score_class
 import app.snake_poop_class as snake_poop_class
@@ -39,13 +38,13 @@ class Game:
         self.snake_poop =  snake_poop_class.Poop(self.surface)
         self.score = score_class.Score()
         #セミをインスタンス化
-        self.cicada = cicada_class.Cicada(self.surface)
+        self.cicada = Cicada(self.surface)
         #カエルをインスタンス化
-        self.frog =  frog_class.Frog(self.surface)
+        self.frog =  Frog(self.surface)
         #雨をインスタンス化
         self.rain = rain_class.Rain(self.surface)
         #鳥をインスタンス化
-        self.bird = bird_class.Bird(self.surface)
+        self.bird = Bird(self.surface)
         #バックグラウンド音楽
         self.play_background_music()
         #取得した体
@@ -97,10 +96,10 @@ class Game:
         self.bad_apple = bad_apple_class.BadApple(self.surface)
         self.gold_apple = gold_apple_class.GoldApple(self.surface)
         self.snake_poop = snake_poop_class.Poop(self.surface)
-        self.frog = frog_class.Frog(self.surface)
+        self.frog = Frog(self.surface)
         self.rain = rain_class.Rain(self.surface)
-        self.cicada = cicada_class.Cicada(self.surface)
-        self.bird = bird_class.Bird(self.surface)
+        self.cicada = Cicada(self.surface)
+        self.bird = Bird(self.surface)
         self.score = score_class.Score()
         #取ったりんごの数を0にリセット
         self.had_apple_cnt = 0
@@ -133,7 +132,7 @@ class Game:
         const.SPEED = const.FAST_SPEED
 
     def play(self):
-        #背景の描画
+        #背景の描画self.frog.is_alive
         self.render_background()
         #草を描く
         self.grass.draw()
@@ -143,7 +142,7 @@ class Game:
             #雨が降る
             self.rain.draw()
             # カエルの鳴き声
-            if self.frog.is_frog:
+            if self.frog.is_alive:
                 self.play_sound('frog')
             self.frog.draw()
         elif self.m == 3:
@@ -190,8 +189,8 @@ class Game:
             if self.m == 1:
                 #鳥を放出
                 if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 7  == 0):
-                    if self.bird.is_bird is False:
-                        self.bird.make_bird()
+                    if self.bird.is_alive is False:
+                        self.bird.make(self.bad_apple.bad_apples)
             elif self.m == 2:
                 #カエルを放出
                 if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 7  == 0):
@@ -200,8 +199,8 @@ class Game:
             elif self.m == 3:
                 #セミ放出
                 if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 7  == 0):
-                    if self.cicada.is_cicada is False:
-                        self.cicada.make_cicada()
+                    if self.cicada.is_alive is False:
+                        self.cicada.make(self.bad_apple.bad_apples)
         # 蛇が金のりんごを食べた！
         if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.gold_apple.x), int(self.gold_apple.y)):
             self.play_sound('gold')
@@ -237,35 +236,35 @@ class Game:
             self.cause_of_death = const.G_OVER_CAUSE_POOP
             raise Exception(const.G_OVER_CAUSE_POOP)
         # 蛇がカエルを食べた！
-        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.frog.x), int(self.frog.y)):
+        if Utils.collision_check(int(self.snake.x[0]), int(self.snake.y[0]), self.frog.creatures):
             #蛇がカエルを食べた
             self.had_frog = True
             #カエルが死んだ
-            self.frog.is_frog = False
+            self.frog.is_alive = False
             #体を増やす
             self.snake.increase_length()
             self.snake.increase_length()
             self.snake.increase_length()
             self.snake.draw()
-            self.frog = frog_class.Frog(self.surface)
+            self.frog = Frog(self.surface)
         # 蛇がセミを食べた！
-        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.cicada.x), int(self.cicada.y)):
-            self.cicada.is_cicada = False
+        if Utils.collision_check(int(self.snake.x[0]), int(self.snake.y[0]), self.cicada.creatures):
+            self.cicada.is_alive = False
             #体を増やす
             self.snake.increase_length()
             self.snake.increase_length()
             self.snake.increase_length()
             self.snake.draw()
-            self.cicada = cicada_class.Cicada(self.surface)
+            self.cicada = Cicada(self.surface)
         # 蛇が鳥を食べた！
-        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.bird.x), int(self.bird.y)):
+        if Utils.collision_check(int(self.snake.x[0]), int(self.snake.y[0]), self.bird.creatures):
             self.bird.is_bird = False
             #体を増やす
             self.snake.increase_length()
             self.snake.increase_length()
             self.snake.increase_length()
             self.snake.draw()
-            self.bird = bird_class.Bird(self.surface)
+            self.bird = Bird(self.surface)
         # 枠を出たらUターン
         if ((self.snake.x[0] + const.SIZE > const.DIP_W) or (self.snake.x[0] < 0)
             or (self.snake.y[0] + const.SIZE > const.DIP_H) or (self.snake.y[0] < 0)):
@@ -336,20 +335,8 @@ class Game:
     #スコアの画面表示
     def display_score(self):
         font = pygame.font.SysFont(const.G_OVER_FONT,const.G_OVER_FONT_SIZE)
-        #if const.SPEED == const.NORMAL_SPEED:
-        #    speed = font.render('speed: normal', True, const.WHITE)
-        #elif const.SPEED == const.FAST_SPEED:
-        #    speed = font.render('speed: fast', True, const.WHITE)
-        #else:
-        #    speed = font.render('speed: panic', True, const.WHITE)
-        #count_bad = font.render(f'number of bad apples: {self.bad_apple.cnt}', True, const.WHITE)
-        #snake_length = font.render(f'Body length: {self.snake.length}', True, const.WHITE)
         had_apple_cnt = font.render(f'Number of apples your snake had: {self.had_apple_cnt}', True, const.WHITE)
         best_score  = font.render(f'Best record ever: {self.score.b_score}', True, const.WHITE)
-
-        #self.surface.blit(speed, (30, 10))
-        #self.surface.blit(count_bad,(180, 10))
-        #self.surface.blit(snake_length, (420, 10))
         self.surface.blit(had_apple_cnt, (const.SIZE, 10))
         self.surface.blit(best_score, (const.SIZE, const.DIP_H - const.SIZE * 2))
 
