@@ -1,10 +1,134 @@
 #external module
 import pygame
-
 #Self-made module
+from app.creatures_class import Creatures
+from app.utils_class import Utils
 import app.const as const
 
+
 #様々な果物の親クラス
-class Grass:
+class Fruits(Creatures):
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
+        # x座標、yを配列で保持
+        self.fruits = []
+        # 生き物が画面上に存在するか否か
+        # 存在する場合はTrue
+        self.is_alive = False
+        # 画像を読み込む
+        self.image = None
+    # 生き物を作成
+    def make(self, bad_apples, number = 1):
+        # 生き物を生存状態にする
+        self.is_alive = True
+        # 新しい生き物を作る
+        for i in range(number - 1):
+            self.x , self.y = Utils.make_new_x_y()
+            # 青りんごと新しい生き物のX、Y座標が重なっていないか確認
+            Utils.check(self.x, self.y, bad_apples)
+            # 生き物のみ生き物配列に追加
+            self.fruits.append([self.x, self.y])
+    # 生き物をランダムな位置に移動させる
+    def move(self, bad_apples):
+        self.x , self.y = Utils.make_new_x_y()
+        # 青りんごと新しい生き物のX、Y座標が重なっていないか確認
+        for i in bad_apples:
+            x2 = i[0]
+            y2 = i[1]
+            while Utils.is_collision(self.x, self.y, x2, y2):
+                self.x , self.y = Utils.make_new_x_y()
+        self.draw()
+    # 生き物とヘビが衝突した場合、衝突した生き物を削除
+    # 削除した場合はTrue、してない場合はFalse
+    def remove(self, x1, y1):
+        no = 0
+        for i in self.fruits:
+            x2 = i[0]
+            y2 = i[1]
+            #ヘビの頭とぶつかった生き物を削除
+            if Utils.is_collision(x1, y1, x2, y2):
+                    #ぶつかったBADりんごを削除
+                    del self.fruits[no]
+                    return True
+            no += 1
+        return False
+    def draw(self):
+        super().draw(self.fruits)
+
+#赤りんごクラス
+class Apple(Fruits):
+    def __init__(self, parent_screen):
+        self.parent_screen = parent_screen
+        # x座標、yを配列で保持
+        self.fruits = []
+        # 生き物が画面上に存在するか否か
+        # 存在する場合はTrue
+        self.is_alive = False
+        # 画像を読み込む
+        self.image = pygame.image.load(const.APPLE_IMG_PATH).convert()
+    # 生き物を作成
+    def make(self, bad_apples, number = 1):
+        super().make(bad_apples, number)
+    # 生き物をランダムな位置に移動させる
+    def move(self, bad_apples):
+        super().move(bad_apples)
+    # 生き物とヘビが衝突した場合、衝突した生き物を削除
+    # 削除した場合はTrue、してない場合はFalse
+    def remove(self, x1, y1):
+        if super().remove(x1, y1):
+            return True
+        return False
+    def draw(self):
+        super().draw(self.fruits)
+
+#青りんごクラス
+class BadApple(Fruits):
+    def __init__(self, parent_screen):
+        self.parent_screen = parent_screen
+        # x座標、yを配列で保持
+        self.fruits = []
+        # 生き物が画面上に存在するか否か
+        # 存在する場合はTrue
+        self.is_alive = False
+        # 画像を読み込む
+        self.image = pygame.image.load(const.BAD_APPLE_IMG_PATH).convert()
+    # 生き物を作成
+    def make(self, bad_apples, number = 1):
+        super().make(bad_apples, number)
+    # 生き物をランダムな位置に移動させる
+    def move(self, bad_apples):
+        super().move(bad_apples)
+    # 生き物とヘビが衝突した場合、衝突した生き物を削除
+    # 削除した場合はTrue、してない場合はFalse
+    def remove(self, x1, y1):
+        if super().remove(x1, y1):
+            return True
+        return False
+    def draw(self):
+        super().draw(self.fruits)
+
+#金りんごクラス
+class GoldApple(Fruits):
+    def __init__(self, parent_screen):
+        self.parent_screen = parent_screen
+        # x座標、yを配列で保持
+        self.fruits = []
+        # 生き物が画面上に存在するか否か
+        # 存在する場合はTrue
+        self.is_alive = False
+        # 画像を読み込む
+        self.image = pygame.image.load(const.GOLD_APPLE_IMG_PATH).convert()
+    # 生き物を作成
+    def make(self, bad_apples, number = 1):
+        super().make(bad_apples, number)
+    # 生き物をランダムな位置に移動させる
+    def move(self, bad_apples):
+        super().move(bad_apples)
+    # 生き物とヘビが衝突した場合、衝突した生き物を削除
+    # 削除した場合はTrue、してない場合はFalse
+    def remove(self, x1, y1):
+        if super().remove(x1, y1):
+            return True
+        return False
+    def draw(self):
+        super().draw(self.fruits)

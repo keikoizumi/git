@@ -1,6 +1,3 @@
-#Standard module
-import random
-
 #external module
 import pygame
 
@@ -20,15 +17,17 @@ class Creatures:
         # 画像を読み込む
         self.image = None
     # 生き物を作成
-    def make(self, bad_apples):
+    # bad_applesと個数を引数にとる
+    def make(self, bad_apples, number = 1):
         # 生き物を生存状態にする
         self.is_alive = True
         # 新しい生き物を作る
-        self.x , self.y = Utils.make_new_x_y()
-        # 青りんごと新しい生き物のX、Y座標が重なっていないか確認
-        Utils.check(self.x, self.y, bad_apples)
-        # 生き物のみ生き物配列に追加
-        self.creatures.append([self.x, self.y])
+        for i in range(number - 1):
+            self.x , self.y = Utils.make_new_x_y()
+            # 青りんごと新しい生き物のX、Y座標が重なっていないか確認
+            Utils.check(self.x, self.y, bad_apples)
+            # 生き物のみ生き物配列に追加
+            self.creatures.append([self.x, self.y])
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):
         self.x , self.y = Utils.make_new_x_y()
@@ -42,7 +41,7 @@ class Creatures:
     # 生き物とヘビが衝突した場合、衝突した生き物を削除
     # 削除した場合はTrue、してない場合はFalse
     def remove(self, x1, y1):
-        no = 1
+        no = 0
         for i in self.creatures:
             x2 = i[0]
             y2 = i[1]
@@ -74,8 +73,8 @@ class Bird(Creatures):
         # 画像を読み込む
         self.image = pygame.image.load(const.BIRD_IMG_PATH).convert()
     # 生き物を作成
-    def make(self, bad_apples):
-        super().make(bad_apples)
+    def make(self, bad_apples, number = 1):
+        super().make(bad_apples, number)
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):
         super().move(bad_apples)
@@ -100,8 +99,8 @@ class Cicada(Creatures):
         # 画像を読み込む
         self.image = pygame.image.load(const.CICADA_IMG_PATH).convert()
     # 生き物を作成
-    def make(self, bad_apples):
-        super().make(bad_apples)
+    def make(self, bad_apples, number = 1):
+        super().make(bad_apples, number)
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):
         super().move(bad_apples)
@@ -126,8 +125,8 @@ class Frog(Creatures):
         # 画像を読み込む
         self.image = pygame.image.load(const.FROG_IMG_PATH).convert()
     # 生き物を作成
-    def make(self, bad_apples):
-        super().make(bad_apples)
+    def make(self, bad_apples, number = 1):
+        super().make(bad_apples, number)
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):
         super().move(bad_apples)

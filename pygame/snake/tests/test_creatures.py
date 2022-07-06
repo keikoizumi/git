@@ -64,11 +64,16 @@ class CreaturesTestCase(unittest.TestCase):
         sut.creatures = [[100, 100]]
         sut.make(bad_apples)
         self.assertEqual(sut.is_alive, True)
+#
+    #def test_make2(self):
+    #    bad_apples = [[100, 50],[120, 300]]
+    #    sut.make(bad_apples)
+    #    self.assertEqual(len(sut.creatures), 3)
 
-    def test_make2(self):
+    def test_make3(self):
         bad_apples = [[100, 50],[120, 300]]
-        sut.make(bad_apples)
-        self.assertEqual(len(sut.creatures), 3)
+        sut.make(bad_apples, 5)
+        self.assertEqual(len(sut.creatures), 5)
 
     def test_remove1(self):
         x = 100
@@ -96,9 +101,8 @@ class BirdTestCase(unittest.TestCase):
     def test_make1(self):
         bad_apples = [[100, 50]]
         sut.creatures = [[100, 100]]
-        sut.make(bad_apples)
-        print(sut.creatures)
-        self.assertEqual(len(sut.creatures), 2)
+        sut.make(bad_apples, 3)
+        self.assertEqual(len(sut.creatures), 3)
 
     def test_remove1(self):
         x = 100
@@ -126,8 +130,7 @@ class CicadaTestCase(unittest.TestCase):
         bad_apples = [[100, 50]]
         sut.creatures = [[100, 100]]
         sut.make(bad_apples)
-        print(sut.creatures)
-        self.assertEqual(len(sut.creatures), 2)
+        self.assertEqual(len(sut.creatures), 1)
 
     def test_remove1(self):
         x = 100
@@ -154,8 +157,7 @@ class FrogTestCase(unittest.TestCase):
         bad_apples = [[100, 50]]
         sut.creatures = [[100, 100]]
         sut.make(bad_apples)
-        print(sut.creatures)
-        self.assertEqual(len(sut.creatures), 2)
+        self.assertEqual(len(sut.creatures), 1)
 
     def test_remove1(self):
         x = 100
