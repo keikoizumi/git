@@ -2,7 +2,7 @@
 import pygame
 
 #Self-made module
-import const
+import app.const as const
 
 #様々な果物の親クラス
 class Grass:

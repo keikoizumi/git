@@ -7,7 +7,7 @@ import pygame
 from numpy import append, outer
 
 #Self-made module
-import const
+import app.const as const
 
 class Snake:
     def __init__(self, parent_screen):

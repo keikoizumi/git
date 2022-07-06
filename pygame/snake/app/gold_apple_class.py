@@ -5,7 +5,7 @@ import random
 import pygame
 
 #Self-made module
-import const
+import app.const as const
 
 class GoldApple:
     def __init__(self, parent_screen):

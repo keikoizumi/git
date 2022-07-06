@@ -2,7 +2,7 @@
 import pygame
 
 #Self-made module
-import const
+import app.const as const
 
 class Grass:
     def __init__(self, parent_screen):

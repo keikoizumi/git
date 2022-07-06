@@ -5,7 +5,7 @@ import random
 import pygame
 
 #Self-made module
-import const
+import app.const as const
 
 #様々な生き物の親になるクラス
 class Creatures:

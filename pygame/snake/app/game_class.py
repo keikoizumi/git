@@ -10,18 +10,18 @@ import pygame
 from pygame.locals import *
 
 #Self-made module
-import apple_class
-import bad_apple_class
-import grass_class
-import bird_class
-import const
-import frog_class
-import gold_apple_class
-import rain_class
-import cicada_class
-import snake_class
-import score_class
-import snake_poop_class
+import app.apple_class as apple_class
+import app.bad_apple_class as bad_apple_class
+import app.grass_class as grass_class
+import app.bird_class as bird_class
+import app.const as const
+import app.frog_class as frog_class
+import app.gold_apple_class as gold_apple_class
+import app.rain_class as rain_class
+import app.cicada_class as cicada_class
+import app.snake_class as snake_class
+import app.score_class as score_class
+import app.snake_poop_class as snake_poop_class
 
 
 class Game:

@@ -1,4 +1,4 @@
-import const
+import app.const as const
 
 class Score:
     def __init__(self):
