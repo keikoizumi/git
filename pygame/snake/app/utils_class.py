@@ -1,8 +1,5 @@
 import random
 
-#external module
-import pygame
-
 #Self-made module
 import app.const as const
 
@@ -12,10 +9,10 @@ class Utils:
     # const.SIZEpx × const.SIZEpxが重なっていないか確認
     # 戻り値: 重なりがる場合 True, 重ならない場合 False
     def is_collision(x1, y1, x2, y2):
-        if ((x1 <= x2 + const.SIZE and y1 <= y2 + const.SIZE)
-            and (x2 <= x1 + const.SIZE and y1 <= y2 + const.SIZE)
-            and (x1 <= x2 + const.SIZE and y2 <= y1 + const.SIZE)
-            and (x2 <= x1 + const.SIZE and y2 <= y1 + const.SIZE)):
+        if (    (x1 < x2 + const.SIZE and y1 < y2 + const.SIZE)
+            and (x2 < x1 + const.SIZE and y1 < y2 + const.SIZE)
+            and (x1 < x2 + const.SIZE and y2 < y1 + const.SIZE)
+            and (x2 < x1 + const.SIZE and y2 < y1 + const.SIZE)):
             return True
         else:
             return False

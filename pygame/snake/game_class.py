@@ -12,15 +12,11 @@ from pygame.locals import *
 #Self-made module
 from app.utils_class import Utils
 import app.const as const
-from app.creatures_class import Cicada, Bird, Frog
-import app.apple_class as apple_class
-import app.bad_apple_class as bad_apple_class
+from app.creatures_class import Cicada, Bird, Frog, Snake, Poop
+from app.fruits_class import Apple, BadApple, GoldApple
 import app.grass_class as grass_class
-import app.gold_apple_class as gold_apple_class
 import app.rain_class as rain_class
-import app.snake_class as snake_class
 import app.score_class as score_class
-import app.snake_poop_class as snake_poop_class
 
 
 class Game:
@@ -31,11 +27,11 @@ class Game:
         #インスタンスの初期化
         self.surface = pygame.display.set_mode((const.DIP_W, const.DIP_H))
         self.grass = grass_class.Grass(self.surface)
-        self.snake = snake_class.Snake(self.surface)
-        self.apple = apple_class.Apple(self.surface)
-        self.bad_apple = bad_apple_class.BadApple(self.surface)
-        self.gold_apple = gold_apple_class.GoldApple(self.surface)
-        self.snake_poop =  snake_poop_class.Poop(self.surface)
+        self.apple = Apple(self.surface)
+        self.snake = Snake(self.surface)
+        self.bad_apple = BadApple(self.surface)
+        self.gold_apple = GoldApple(self.surface)
+        self.snake_poop =  Poop(self.surface)
         self.score = score_class.Score()
         #セミをインスタンス化
         self.cicada = Cicada(self.surface)
@@ -91,11 +87,11 @@ class Game:
 
     #インスタンスのリセット
     def reset(self):
-        self.snake = snake_class.Snake(self.surface)
-        self.apple = apple_class.Apple(self.surface)
-        self.bad_apple = bad_apple_class.BadApple(self.surface)
-        self.gold_apple = gold_apple_class.GoldApple(self.surface)
-        self.snake_poop = snake_poop_class.Poop(self.surface)
+        self.snake = Snake(self.surface)
+        self.apple = Apple(self.surface)
+        self.bad_apple = BadApple(self.surface)
+        self.gold_apple = GoldApple(self.surface)
+        self.snake_poop = Poop(self.surface)
         self.frog = Frog(self.surface)
         self.rain = rain_class.Rain(self.surface)
         self.cicada = Cicada(self.surface)
@@ -103,25 +99,6 @@ class Game:
         self.score = score_class.Score()
         #取ったりんごの数を0にリセット
         self.had_apple_cnt = 0
-    #衝突判定
-    def is_collision(self, x1, y1, x2, y2):
-        if (x1 >= x2 and x1 < x2 + const.SIZE) or (x1 + const.SIZE >= x2 and x1 + const.SIZE < x2 + const.SIZE):
-            if (y1 >= y2 and y1 < y2 + const.SIZE) or (y1 + const.SIZE >= y2 and y1 + const.SIZE < y2 + const.SIZE):
-                    return True
-        return False
-
-    def had_bad_apple(self, x1, y1):
-        cnt = -1
-        for i in self.bad_apple.bad_apples:
-            cnt += 1
-            x2 = i[0]
-            y2 = i[1]
-            if x1 >= x2 and x1 < x2 + const.SIZE:
-                if y1 >= y2 and y1 < y2 + const.SIZE:
-                    #ぶつかったBADりんごを削除
-                    del self.bad_apple.bad_apples[cnt]
-                    return True
-        return False
 
     #背景
     def render_background(self):
@@ -136,6 +113,7 @@ class Game:
         self.render_background()
         #草を描く
         self.grass.draw()
+        #音楽毎の設定
         if self.m == 1:
             self.bird.draw()
         elif self.m == 2:
@@ -151,6 +129,7 @@ class Game:
         self.snake.walk()
         #りんごを描く
         self.apple.draw()
+        #青りんごを描く
         self.bad_apple.draw()
         #舌を出す・出さない
         if self.snake.out:
@@ -160,13 +139,16 @@ class Game:
             self.snake.out = True
             self.snake.tongue()
         #ゴールドアップルを作る
-        if ((self.snake.length % 10 == 0 and self.gold_apple.cnt == 1) and len(self.bad_apple.bad_apples) >= 10):
+        if ((self.snake.length % 10 == 0
+            and len(self.gold_apple.fruits) == 1)
+            and len(self.bad_apple.fruits) >= 10):
             self.gold_apple.make_gold_apple()
             self.gold_apple.cnt += 1
             self.play_background_music()
         self.gold_apple.draw()
         # 蛇がりんごを食べた！
-        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.apple.x), int(self.apple.y)):
+        if Utils.collision_check(int(self.snake.x[0]),
+            int(self.snake.y[0]), self.apple.fruits):
             self.play_sound('ding')
             #食べた数をカウントアップ
             self.had_apple_cnt += 1
@@ -180,49 +162,58 @@ class Game:
             else:
                 random_ = random.randint(2, 4)
             for i in range(random_):
-                self.bad_apple.make_bad_apple(self.apple.x, self.apple.y, self.grass.grasss)
+                self.bad_apple.make(self.bad_apple.fruits)
             #りんごの再配置
             #ブッロクと重ならないように配置
             #青りんごと重ならないように配置
-            self.apple.move(self.bad_apple.bad_apples, self.grass.grasss)
+            self.apple.remove(self.apple.x, self.apple.y)
+            self.apple.make(self.bad_apple.fruits)
             #生き物たち
             if self.m == 1:
                 #鳥を放出
-                if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 7  == 0):
+                if (len(self.bad_apple.fruits) > 5
+                    and self.snake.length % 7 == 0):
                     if self.bird.is_alive is False:
-                        self.bird.make(self.bad_apple.bad_apples)
+                        self.bird.make(self.bad_apple.fruits)
             elif self.m == 2:
                 #カエルを放出
-                if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 7  == 0):
+                if (len(self.bad_apple.fruits) > 5
+                    and self.snake.length % 7 == 0):
                     if self.had_frog is False:
-                        self.frog.move(self.bad_apple.bad_apples)
+                        self.frog.move(self.bad_apple.fruits)
             elif self.m == 3:
                 #セミ放出
-                if (len(self.bad_apple.bad_apples) > 5 and self.snake.length % 7  == 0):
+                if (len(self.bad_apple.fruits) > 5
+                    and self.snake.length % 7 == 0):
                     if self.cicada.is_alive is False:
-                        self.cicada.make(self.bad_apple.bad_apples)
+                        self.cicada.make(self.bad_apple.fruits)
         # 蛇が金のりんごを食べた！
-        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]), int(self.gold_apple.x), int(self.gold_apple.y)):
+        if Utils.collision_check(int(self.snake.x[0]),
+            int(self.snake.y[0]), self.gold_apple.fruits):
             self.play_sound('gold')
             self.bad_apple.del_apples(10)
-            self.gold_apple = gold_apple_class.GoldApple(self.surface)
+            self.gold_apple = GoldApple(self.surface)
             self.gold_apple.cnt = 1
             self.snake.get_gold_apple = True
             #うんこをする
             self.snake_poop.make_poop(self.snake.x, self.snake.y)
             #goldを食べたときのスキンエフェクト
-            self.snake.chcg()
+            self.snake.skin_effect_af_gold_apple()
             #うんこ放出
             self.snake_poop.make_poop(self.snake.x, self.snake.y)
             #音楽を変更
             self.play_background_music()
         self.snake_poop.draw()
         # 蛇が腐ったりんごを食べた！
-        if self.had_bad_apple(int(self.snake.x[0]), int(self.snake.y[0])):
+        if Utils.collision_check(int(self.snake.x[0]),
+            int(self.snake.y[0]), self.bad_apple.fruits):
+            #食べた青りんごを削除
+            self.bad_apple.remove(self.snake.x[0], self.snake.y[0])
             self.play_sound('bad')
-            self.snake.had_bad_apple_skin_effect()
+            self.snake.skin_effect_af_bad_apple()
             #体の数を減らす
             self.snake.decrease_length()
+            #パニック状態にする
             self.snake.s_cnt = 1
             self.snake.speedup()
             if self.snake.length == 1:
@@ -230,52 +221,51 @@ class Game:
                 self.cause_of_death = const.G_OVER_CAUSE_BAD_APPLE
                 raise Exception(const.G_OVER_CAUSE_BAD_APPLE)
         # 蛇がうんこを食べた！
-        if self.is_collision(int(self.snake.x[0]), int(self.snake.y[0]),
-                                int(self.snake_poop.poop_x - 10), int(self.snake_poop.poop_y - 10)):
+        if Utils.collision_check(int(self.snake.x[0]),
+            int(self.snake.y[0]), self.snake_poop.creatures):
             self.play_sound('die')
             self.cause_of_death = const.G_OVER_CAUSE_POOP
             raise Exception(const.G_OVER_CAUSE_POOP)
         # 蛇がカエルを食べた！
-        if Utils.collision_check(int(self.snake.x[0]), int(self.snake.y[0]), self.frog.creatures):
+        if Utils.collision_check(int(self.snake.x[0]),
+            int(self.snake.y[0]), self.frog.creatures):
             #蛇がカエルを食べた
             self.had_frog = True
             #カエルが死んだ
             self.frog.is_alive = False
             #体を増やす
-            self.snake.increase_length()
-            self.snake.increase_length()
-            self.snake.increase_length()
+            self.snake.increase_length(3)
             self.snake.draw()
             self.frog = Frog(self.surface)
         # 蛇がセミを食べた！
-        if Utils.collision_check(int(self.snake.x[0]), int(self.snake.y[0]), self.cicada.creatures):
+        if Utils.collision_check(int(self.snake.x[0]),
+            int(self.snake.y[0]), self.cicada.creatures):
             self.cicada.is_alive = False
             #体を増やす
-            self.snake.increase_length()
-            self.snake.increase_length()
-            self.snake.increase_length()
+            self.snake.increase_length(3)
             self.snake.draw()
             self.cicada = Cicada(self.surface)
         # 蛇が鳥を食べた！
-        if Utils.collision_check(int(self.snake.x[0]), int(self.snake.y[0]), self.bird.creatures):
+        if Utils.collision_check(int(self.snake.x[0]),
+            int(self.snake.y[0]), self.bird.creatures):
             self.bird.is_bird = False
             #体を増やす
-            self.snake.increase_length()
-            self.snake.increase_length()
-            self.snake.increase_length()
+            self.snake.increase_length(3)
             self.snake.draw()
             self.bird = Bird(self.surface)
         # 枠を出たらUターン
-        if ((self.snake.x[0] + const.SIZE > const.DIP_W) or (self.snake.x[0] < 0)
-            or (self.snake.y[0] + const.SIZE > const.DIP_H) or (self.snake.y[0] < 0)):
+        if (   (self.snake.x[0] + const.SIZE > const.DIP_W)
+            or (self.snake.x[0] < 0)
+            or (self.snake.y[0] + const.SIZE > const.DIP_H)
+            or (self.snake.y[0] < 0)):
             #基準軸を超えたら軸を初期化
             if self.snake.x[0] > const.DIP_W:
                 self.snake.x[0] = const.DIP_W
-            if self.snake.x[0] <  0:
+            elif self.snake.x[0] <  0:
                 self.snake.x[0] =  0
-            if self.snake.y[0] + const.SIZE * 2  > const.DIP_H:
-                self.snake.y[0] = const.DIP_H - const.SIZE
-            if self.snake.y[0] < 0:
+            elif self.snake.y[0] + const.SIZE * 2 > const.DIP_H:
+                self.snake.y[0] = const.DIP_H - const.SIZE * 2
+            elif self.snake.y[0] < 0:
                 self.snake.y[0] = 0
             if self.snake.directions[-1] == 'left':
                 self.snake.move_right()
@@ -294,34 +284,13 @@ class Game:
             #設定された時間ない
             #蛇がカエルを食べていない
             #パニックにする
-            if datetime.datetime.now() < self.snake.d and self.had_frog is False:
+            if (datetime.datetime.now() < self.snake.d
+                and self.had_frog is False):
                 #スピードのパラメータ変更
                 const.SPEED = const.PANIC_SPEED
-                #顔色を変える
-                #お顔を整える
-                self.snake.face = pygame.image.load(const.SNAKE_BLUE_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
-                if self.snake.directions[1] == 'up':
-                    self.snake.face = pygame.transform.rotate(self.snake.face, 0)
-                elif self.snake.directions[1] == 'down':
-                    self.snake.face = pygame.transform.rotate(self.snake.face, 180)
-                elif self.snake.directions[1] == 'right':
-                    self.snake.face = pygame.transform.rotate(self.snake.face, -90)
-                else:
-                    self.snake.face = pygame.transform.rotate(self.snake.face, 90)
+                self.snake.while_having_bad_apple()
             else:
-                #お体をもとに戻す
-                self.snake.image = self.snake.init_body
-                #お顔をもとに戻す
-                self.snake.face = self.snake.init_face
-                if self.snake.directions[1] == 'up':
-                    self.snake.face = pygame.transform.rotate(self.snake.face, 180)
-                elif self.snake.directions[1] == 'down':
-                    self.snake.face = pygame.transform.rotate(self.snake.face, 0)
-                elif self.snake.directions[1] == 'right':
-                    self.snake.face = pygame.transform.rotate(self.snake.face, 90)
-                else:
-                    self.snake.face = pygame.transform.rotate(self.snake.face, -90)
-                self.snake.s_cnt = 0
+                self.snake.turn_back_skin_color()
                 #スピードをもとに戻す
                 const.SPEED = const.NORMAL_SPEED
         #蛇がカエルを食べたらTrue
@@ -355,7 +324,6 @@ class Game:
                 self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
                 self.score.write('1')
                 raise Exception(const.INVALID_NUM_ERR)
-
         else:
             if int(self.score.b_score) < int(self.score.n_score):
                 line0 = font.render(const.G_BEST , True, const.GOLD)
@@ -427,3 +395,7 @@ class Game:
                 const.SPEED = const.NORMAL_SPEED
                 print(traceback.format_exc())
             time.sleep(const.SPEED)
+
+if __name__ == '__main__':
+    game = Game()
+    game.run()
