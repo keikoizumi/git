@@ -1,4 +1,5 @@
 #Standard module
+from ctypes.wintypes import SIZE
 import random
 
 #external module
@@ -16,14 +17,10 @@ class Creatures:
         # 生き物が画面上に存在するか否か
         # 存在する場合はTrue
         self.is_alive = False
-        # 生き物の数
-        self.cnt = 0
         # 画像を読み込む
         self.image = None
     # 生き物を作成
     def make(self, bad_apples):
-        # 生き物の数
-        self.cnt += 1
         # 生き物を生存状態にする
         self.is_alive = True
         # 新しい生き物を作る
@@ -42,20 +39,19 @@ class Creatures:
             while self.is_collision(self.x, self.y, x2, y2):
                 self.make_new_x_y()
         self.draw()
-
     # 生き物とヘビが衝突した場合、衝突した生き物を削除
     # 削除した場合はTrue、してない場合はFalse
     def remove(self, x1, y1):
-        # 生き物の数を減らす
-        self.cnt = -1
+        no = 1
         for i in self.creatures:
             x2 = i[0]
             y2 = i[1]
             #ヘビの頭とぶつかった生き物を削除
             if self.is_collision(x1, y1, x2, y2):
                     #ぶつかったBADりんごを削除
-                    del self.creatures[i]
+                    del self.creatures[no]
                     return True
+            no += 1
         return False
     # 生き物を描画する
     def draw(self):
@@ -73,18 +69,15 @@ class Creatures:
     # 青りんごconst.SIZEpx × const.SIZEpxが重なっていないか確認
     # 戻り値: 重なりがる場合 True, 重ならない場合 False
     # TODO:Utilに実装
-    def is_collision(x1, y1, x2, y2):
-        if ((x1 <= x2 and x2 <= x1 + const.SIZE)
-            and (y1 <= y2 and y2 <= y2 + const.SIZE)
-            or (x1 <= x2 and x2 + const.SIZE <= x1 + const.SIZE)
-            and (y1 <= y2 and y2 <= y2 + const.SIZE)
-            or (x1 <= x2 and x2 <= x1 + const.SIZE)
-            and (y1 <= y2 and y2 + const.SIZE <= y2 + const.SIZE)
-            or (x1 <= x2 and x2 + const.SIZE <= x1 + const.SIZE)
-            and (y1 <= y2 + const.SIZE and y2 <= y2 + const.SIZE)):
+    def is_collision(self,x1, y1, x2, y2):
+        if ((x1 <= x2 + const.SIZE and y1 <= y2 + const.SIZE)
+            and (x2 <= x1 + const.SIZE and y1 <= y2 + const.SIZE)
+            and (x1 <= x2 + const.SIZE and y2 <= y1 + const.SIZE)
+            and (x2 <= x1 + const.SIZE and y2 <= y1 + const.SIZE)):
             return True
         else:
             return False
+
     # 新しいX座標、Y座標を作成する
     # TODO:Utilに実装
     def make_new_x_y(self):
