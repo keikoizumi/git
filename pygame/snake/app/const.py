@@ -39,7 +39,6 @@ SNAKE_POOP_IMG_PATH = os.path.join(PATH, 'resources/images/poop.png')
 APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/apple.jpg')
 BAD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/badapple.jpg')
 GOLD_APPLE_IMG_PATH = os.path.join(PATH, 'resources/images/goldapple.jpg')
-SNAKE_POOP_IMG_PATH = os.path.join(PATH, 'resources/images/poop.png')
 FROG_IMG_PATH = os.path.join(PATH, 'resources/images/frog.png')
 BLOCK_IMG_PATH = os.path.join(PATH, 'resources/images/block.jpg')
 GRASS_IMG_PATH = os.path.join(PATH, 'resources/images/grass.jpg')
@@ -69,6 +68,7 @@ NORMAL_SPEED = .15
 FAST_SPEED = .05
 PANIC_SPEED = .01
 SPEED = NORMAL_SPEED
+PANIC_TIME_SEC = 5
 
 #game over display
 G_OVER_FONT_SIZE = 25

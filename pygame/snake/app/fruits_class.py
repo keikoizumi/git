@@ -21,12 +21,19 @@ class Fruits:
         # 果物を生存状態にする
         self.is_alive = True
         # 新しい果物を作る
-        for i in range(number):
+        if number == 1:
             self.x , self.y = Utils.make_new_x_y()
             # 青りんごと新しい果物のX、Y座標が重なっていないか確認
             Utils.check(self.x, self.y, bad_apples)
             # 果物のみ果物配列に追加
             self.fruits.append([self.x, self.y])
+        else:
+            for i in range(number -  1):
+                self.x , self.y = Utils.make_new_x_y()
+                # 青りんごと新しい果物のX、Y座標が重なっていないか確認
+                Utils.check(self.x, self.y, bad_apples)
+                # 果物のみ果物配列に追加
+                self.fruits.append([self.x, self.y])
     # 果物をランダムな位置に移動させる
     def move(self, bad_apples):
         self.x , self.y = Utils.make_new_x_y()
@@ -72,16 +79,45 @@ class Apple(Fruits):
         self.image = pygame.image.load(const.APPLE_IMG_PATH).convert()
     # 果物を作成
     def make(self, bad_apples, number = 1):
-        super().make(bad_apples, number)
+        # 果物を生存状態にする
+        self.is_alive = True
+        # 新しい果物を作る
+        if number == 1:
+            self.x , self.y = Utils.make_new_x_y()
+            # 青りんごと新しい果物のX、Y座標が重なっていないか確認
+            Utils.check(self.x, self.y, bad_apples)
+            # 果物のみ果物配列に追加
+            self.fruits.append([self.x, self.y])
+        else:
+            for i in range(number - 1):
+                self.x , self.y = Utils.make_new_x_y()
+                # 青りんごと新しい果物のX、Y座標が重なっていないか確認
+                Utils.check(self.x, self.y, bad_apples)
+                # 果物のみ果物配列に追加
+                self.fruits.append([self.x, self.y])
     # 果物をランダムな位置に移動させる
     #def move(self, bad_apples):
     #    super().move(bad_apples)
     # 果物とヘビが衝突した場合、衝突した果物を削除
     # 削除した場合はTrue、してない場合はFalse
     def remove(self, x1, y1):
-        if super().remove(x1, y1):
-            return True
-        return False
+        no = 0
+        for i in self.fruits:
+            print(f'i: {i}')
+            x2 = i[0]
+            y2 = i[1]
+            print(f'x: {x1}')
+            print(f'y: {x2}')
+            print(f'x2: {i[0]}')
+            print(f'y2: {i[1]}')
+
+            #ヘビの頭とぶつかった果物を削除
+            if Utils.is_collision(x1, y1, x2, y2):
+                    #ぶつかったりんごを削除
+                    print(f'remove: {self.fruits[no]}')
+                    del self.fruits[no]
+            no += 1
+
     def draw(self):
         super().draw(self.fruits)
 
@@ -98,16 +134,50 @@ class BadApple(Fruits):
         self.image = pygame.image.load(const.BAD_APPLE_IMG_PATH).convert()
     # 果物を作成
     def make(self, bad_apples, number = 1):
-        super().make(bad_apples, number)
+        # 果物を生存状態にする
+        self.is_alive = True
+        # 新しい果物を作る
+        if number == 1:
+            self.x , self.y = Utils.make_new_x_y()
+            # 青りんごと新しい果物のX、Y座標が重なっていないか確認
+            Utils.check(self.x, self.y, bad_apples)
+            # 果物のみ果物配列に追加
+            self.fruits.append([self.x, self.y])
+        else:
+            for i in range(number - 1):
+                self.x , self.y = Utils.make_new_x_y()
+                # 青りんごと新しい果物のX、Y座標が重なっていないか確認
+                Utils.check(self.x, self.y, bad_apples)
+                # 果物のみ果物配列に追加
+                self.fruits.append([self.x, self.y])
     # 果物をランダムな位置に移動させる
-    def move(self, bad_apples):
-        super().move(bad_apples)
+    #def move(self, bad_apples):
+    #    super().move(bad_apples)
     # 果物とヘビが衝突した場合、衝突した果物を削除
     # 削除した場合はTrue、してない場合はFalse
-    def remove(self, x1, y1):
-        if super().remove(x1, y1):
-            return True
-        return False
+    def remove(self, x1, y1, number = 1):
+        #指定された個数消す
+        if number != 1:
+            try:
+                if len(self.fruits) < number:
+                    for i in range(len(self.fruits)):
+                        del self.fruits[i]
+                else:
+                    for i in range(0, number - 1, 1):
+                        del self.fruits[i]
+            except IndexError as e:
+                pass
+        else:
+            no = 0
+            for i in self.fruits:
+                x2 = i[0]
+                y2 = i[1]
+                #ヘビの頭とぶつかった果物を削除
+                if Utils.is_collision(x1, y1, x2, y2):
+                        #ぶつかったBADりんごを削除
+                        del self.fruits[no]
+                no += 1
+
     def draw(self):
         super().draw(self.fruits)
 
@@ -124,7 +194,22 @@ class GoldApple(Fruits):
         self.image = pygame.image.load(const.GOLD_APPLE_IMG_PATH).convert()
     # 果物を作成
     def make(self, bad_apples, number = 1):
-        super().make(bad_apples, number)
+        # 果物を生存状態にする
+        self.is_alive = True
+        # 新しい果物を作る
+        if number == 1:
+            self.x , self.y = Utils.make_new_x_y()
+            # 青りんごと新しい果物のX、Y座標が重なっていないか確認
+            Utils.check(self.x, self.y, bad_apples)
+            # 果物のみ果物配列に追加
+            self.fruits.append([self.x, self.y])
+        else:
+            for i in range(number - 1):
+                self.x , self.y = Utils.make_new_x_y()
+                # 青りんごと新しい果物のX、Y座標が重なっていないか確認
+                Utils.check(self.x, self.y, bad_apples)
+                # 果物のみ果物配列に追加
+                self.fruits.append([self.x, self.y])
     # 果物をランダムな位置に移動させる
     def move(self, bad_apples):
         super().move(bad_apples)

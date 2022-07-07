@@ -11,11 +11,11 @@ class Rain:
         self.parent_screen = parent_screen
         self.image_jpg = pygame.image.load(const.RAIN_IMG_PATH).convert()
         self.image_png = pygame.image.load(const.RAIN_IMG_PATH).convert()
-        self.image_jpg = pygame.transform.rotate(self.image_jpg, 5)
-        self.image_png = pygame.transform.rotate(self.image_png, 5)
+        self.image_jpg = pygame.transform.rotate(self.image_jpg, 2)
+        self.image_png = pygame.transform.rotate(self.image_png, 3)
         self.rains = [[0,0]]
-        for i in range(25):
-            self.x = i * random.randint(const.SIZE,const.SIZE * 2)
+        for i in range(20):
+            self.x = i  * random.randint(const.SIZE,const.SIZE * 2)
             self.y = 0
             for j in range(10):
                 self.y += const.SIZE + random.randint(const.SIZE / 2,const.SIZE)
@@ -26,12 +26,7 @@ class Rain:
         for i in self.rains:
                 self.x = i[0]
                 self.y = i[1]
-                if random.randint(1,5) % 2 == 0:
-                    self.parent_screen.blit(self.image_png, (self.x, self.y))
-                elif random.randint(1,5) % 2 == 1:
-                    self.parent_screen.blit(self.image_jpg, (self.x, self.y))
-                else:
-                    pass
+                self.parent_screen.blit(self.image_png, (self.x, self.y))
 
     def move_rain(self):
         for i in self.rains:

@@ -57,7 +57,7 @@ class AppleTestCase(unittest.TestCase):
         bad_apples = [[100, 50]]
         sut.fruits = [[100, 100]]
         sut.make(bad_apples)
-        self.assertEqual(len(sut.fruits), 1)
+        self.assertEqual(len(sut.fruits), 2)
 
     def test_remove1(self):
         x = 100
@@ -84,7 +84,7 @@ class BadAppleTestCase(unittest.TestCase):
         bad_apples = [[100, 50]]
         sut.fruits = [[100, 100]]
         sut.make(bad_apples)
-        self.assertEqual(len(sut.fruits), 1)
+        self.assertEqual(len(sut.fruits), 2)
 
     def test_remove1(self):
         x = 100
@@ -111,7 +111,7 @@ class GoldAppleTestCase(unittest.TestCase):
         bad_apples = [[100, 50]]
         sut.fruits = [[100, 100]]
         sut.make(bad_apples)
-        self.assertEqual(len(sut.fruits), 1)
+        self.assertEqual(len(sut.fruits), 2)
 
     def test_remove1(self):
         x = 100

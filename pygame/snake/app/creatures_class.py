@@ -1,4 +1,5 @@
 #Standard module
+from ctypes.wintypes import SIZE
 import datetime
 import random
 import time
@@ -23,16 +24,23 @@ class Creatures:
         self.image = None
     # 生き物を作成
     # bad_applesと個数を引数にとる
-    def make(self, bad_apples, number = 1):
+    def make(self, targets, number = 1):
         # 生き物を生存状態にする
         self.is_alive = True
         # 新しい生き物を作る
-        for i in range(number - 1):
+        if number == 1:
             self.x , self.y = Utils.make_new_x_y()
             # 青りんごと新しい生き物のX、Y座標が重なっていないか確認
-            Utils.check(self.x, self.y, bad_apples)
+            Utils.check(self.x, self.y, targets)
             # 生き物のみ生き物配列に追加
             self.creatures.append([self.x, self.y])
+        else:
+            for i in range(number - 1):
+                self.x , self.y = Utils.make_new_x_y()
+                # 青りんごと新しい生き物のX、Y座標が重なっていないか確認
+                Utils.check(self.x, self.y, targets)
+                # 生き物のみ生き物配列に追加
+                self.creatures.append([self.x, self.y])
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):
         self.x , self.y = Utils.make_new_x_y()
@@ -79,7 +87,22 @@ class Bird(Creatures):
         self.image = pygame.image.load(const.BIRD_IMG_PATH).convert()
     # 生き物を作成
     def make(self, bad_apples, number = 1):
-        super().make(bad_apples, number)
+        # 生き物を生存状態にする
+        self.is_alive = True
+        # 新しい生き物を作る
+        if number == 1:
+            self.x , self.y = Utils.make_new_x_y()
+            # 青りんごと新しい生き物のX、Y座標が重なっていないか確認
+            Utils.check(self.x, self.y, bad_apples)
+            # 生き物のみ生き物配列に追加
+            self.creatures.append([self.x, self.y])
+        else:
+            for i in range(number - 1):
+                self.x , self.y = Utils.make_new_x_y()
+                # 青りんごと新しい生き物のX、Y座標が重なっていないか確認
+                Utils.check(self.x, self.y, bad_apples)
+                # 生き物のみ生き物配列に追加
+                self.creatures.append([self.x, self.y])
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):
         super().move(bad_apples)
@@ -105,7 +128,8 @@ class Cicada(Creatures):
         self.image = pygame.image.load(const.CICADA_IMG_PATH).convert()
     # 生き物を作成
     def make(self, bad_apples, number = 1):
-        super().make(bad_apples, number)
+        self.x, self.y = 30, 300
+        self.creatures.append([self.x, self.y])
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):
         super().move(bad_apples)
@@ -116,7 +140,11 @@ class Cicada(Creatures):
             return True
         return False
     def draw(self):
-        super().draw(self.creatures)
+        #配列の数分描画
+        for i in self.creatures:
+            self.x = i[0]
+            self.y = i[1]
+            self.parent_screen.blit(self.image, (self.x, self.y))
 
 #カエルクラス
 class Frog(Creatures):
@@ -130,8 +158,10 @@ class Frog(Creatures):
         # 画像を読み込む
         self.image = pygame.image.load(const.FROG_IMG_PATH).convert()
     # 生き物を作成
-    def make(self, bad_apples, number = 1):
-        super().make(bad_apples, number)
+    def make(self, apples, number = 1):
+        self.x = random.randint(0, const.DIP_W - const.SIZE)
+        self.y = const.DIP_H - const.SIZE
+        self.creatures.append([self.x, self.y])
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):
         super().move(bad_apples)
@@ -142,7 +172,11 @@ class Frog(Creatures):
             return True
         return False
     def draw(self):
-        super().draw(self.creatures)
+        #配列の数分描画
+        for i in self.creatures:
+            self.x = i[0]
+            self.y = i[1]
+            self.parent_screen.blit(self.image, (self.x, self.y))
 
 #POOPクラス
 class Poop(Creatures):
@@ -154,19 +188,20 @@ class Poop(Creatures):
         # 存在する場合はTrue
         self.is_alive = False
         # 画像を読み込む
-        self.image = pygame.image.load(const.FROG_IMG_PATH).convert()
+        self.image = pygame.image.load(const.SNAKE_POOP_IMG_PATH).convert()
     # 生き物を作成
-    def make(self, bad_apples, number = 1):
-        super().make(bad_apples, number)
+    def make(self, apples, number = 1):
+        # 生き物を生存状態にする
+        self.is_alive = True
+        # 新しい生き物を作る
+        super().make(apples, number)
     # 生き物をランダムな位置に移動させる
-    def move(self, bad_apples):
-        super().move(bad_apples)
+    def move(self, apples):
+        super().move(apples)
     # 生き物とヘビが衝突した場合、衝突した生き物を削除
     # 削除した場合はTrue、してない場合はFalse
-    def remove(self, x1, y1):
-        if super().remove(x1, y1):
-            return True
-        return False
+    def remove(self):
+        self.creatures = []
     def draw(self):
         super().draw(self.creatures)
 
@@ -220,7 +255,7 @@ class Snake(Creatures):
         #時間（７日前）
         self.d = datetime.datetime.now() + datetime.timedelta(days=-7)
         #初期方向
-        self.directions = ['down', 'down']
+        self.directions = ['up', 'up']
         #初期位置
         self.x = [const.DIP_W / 2]
         self.y = [const.DIP_H / 4]
@@ -232,7 +267,7 @@ class Snake(Creatures):
         #初期長
         self.length = 1
         #speed はノーマル
-        self.s_cnt = 0
+        self.panic = False
         self.panic_cnt = 0
         self.draw()
 
@@ -353,6 +388,7 @@ class Snake(Creatures):
             self.body_img = self.init_body_img
             pygame.display.flip()
 
+    # 青りんごを食べた後のスキン
     def skin_effect_af_bad_apple(self):
         #bad face 表示
         if self.color == 1:
@@ -413,7 +449,7 @@ class Snake(Creatures):
         else:
             self.face_img = pygame.transform.rotate(self.face_img, -90)
         #パニック状態の解除
-        self.s_cnt = 0
+        self.panic = False
 
     def tongue(self):
         #舌を出すフェクト
@@ -446,5 +482,6 @@ class Snake(Creatures):
 
     def speedup(self):
         #秒間speed up
-        if self.s_cnt == 1:
-            self.d = datetime.datetime.now() + datetime.timedelta(seconds=10)
+        if self.panic == True:
+            self.d = datetime.datetime.now() + datetime.timedelta(seconds=const.PANIC_TIME_SEC)
+
