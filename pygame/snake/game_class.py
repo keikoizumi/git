@@ -15,6 +15,7 @@ import app.const as const
 from app.creatures_class import Cicada, Bird, Frog, Snake, Poop
 from app.fruits_class import Apple, BadApple, GoldApple
 import app.grass_class as grass_class
+import app.life_class as life_class
 import app.rain_class as rain_class
 import app.score_class as score_class
 
@@ -33,6 +34,7 @@ class Game:
         self.gold_apple = GoldApple(self.surface)
         self.snake_poop =  Poop(self.surface)
         self.score = score_class.Score()
+        self.life = life_class.Life(self.surface)
         #セミをインスタンス化
         self.cicada = Cicada(self.surface)
         #カエルをインスタンス化
@@ -88,8 +90,8 @@ class Game:
 
     #インスタンスのリセット
     def reset(self):
-        self.snake = Snake(self.surface)
         self.apple = Apple(self.surface)
+        self.snake = Snake(self.surface)
         self.bad_apple = BadApple(self.surface)
         self.gold_apple = GoldApple(self.surface)
         self.snake_poop = Poop(self.surface)
@@ -98,6 +100,7 @@ class Game:
         self.cicada = Cicada(self.surface)
         self.bird = Bird(self.surface)
         self.score = score_class.Score()
+        self.life = life_class.Life(self.surface)
         #取ったりんごの数を0にリセット
         self.had_apple_cnt = 0
 
@@ -110,8 +113,14 @@ class Game:
         const.SPEED = const.FAST_SPEED
 
     def play(self):
+        #ヘビが生きているかライフチェック
+        #ヘビのライフがなければ原因オーバー
+        if self.life.death_check():
+            raise 'game over'
         #背景の描画
         self.render_background()
+        #ライフポイントを表示
+        self.life.draw()
         #草を描く
         self.grass.draw()
         #音楽毎の設定
@@ -177,8 +186,8 @@ class Game:
                         self.frog.make(self.bad_apple.fruits)
             elif self.m == 3:
                 #セミ放出
-                if (len(self.bad_apple.fruits) > 5
-                    and self.snake.length % 5 == 0
+                if (len(self.bad_apple.fruits) > 10
+                    and self.snake.length % 10 == 0
                     and len(self.cicada.creatures) <= 1):
                         self.cicada.is_alive = True
                         self.cicada.make(self.bad_apple.fruits)
@@ -222,15 +231,31 @@ class Game:
             self.snake.panic = True
             self.snake.speedup()
             if self.snake.length == 1:
+                #ライフを一つ減らす
                 self.play_sound('die')
-                self.cause_of_death = const.G_OVER_CAUSE_BAD_APPLE
-                raise Exception(const.G_OVER_CAUSE_BAD_APPLE)
+                self.life.remove()
+                #初期化
+                self.snake.panic = False
+                self.apple = Apple(self.surface)
+                self.snake = Snake(self.surface)
+                self.bad_apple = BadApple(self.surface)
+                self.snake_poop = Poop(self.surface)
+                #self.play_sound('die')
+                #self.cause_of_death = const.G_OVER_CAUSE_BAD_APPLE
+                #raise Exception(const.G_OVER_CAUSE_BAD_APPLE)
         # 蛇がうんこを食べた！
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.snake_poop.creatures):
             self.play_sound('die')
-            self.cause_of_death = const.G_OVER_CAUSE_POOP
-            raise Exception(const.G_OVER_CAUSE_POOP)
+            self.life.remove()
+            #初期化
+            self.snake.panic = False
+            self.apple = Apple(self.surface)
+            self.snake = Snake(self.surface)
+            self.bad_apple = BadApple(self.surface)
+            self.snake_poop = Poop(self.surface)
+            #self.cause_of_death = const.G_OVER_CAUSE_POOP
+            #raise Exception(const.G_OVER_CAUSE_POOP)
         # 蛇がカエルを食べた！
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.frog.creatures):
@@ -240,7 +265,7 @@ class Game:
             #カエルが死んだ
             self.frog.is_alive = False
             #りんごを増やす
-            self.apple.make(self.bad_apple.fruits,3)
+            self.apple.make(self.bad_apple.fruits,5)
             self.frog.remove(self.snake.x[0], self.snake.y[0])
         # 蛇がセミを食べた！
         if Utils.collision_check(int(self.snake.x[0]),
@@ -254,7 +279,7 @@ class Game:
             int(self.snake.y[0]), self.bird.creatures):
             self.play_sound('gold')
             #りんごを増やす
-            self.apple.make(self.bad_apple.fruits,2)
+            self.apple.make(self.bad_apple.fruits,3)
             self.snake.increase_length(3)
             self.bird.remove(self.snake.x[0], self.snake.y[0])
         if (   (self.snake.x[0] + const.SIZE > const.DIP_W)
@@ -308,10 +333,12 @@ class Game:
     #スコアの画面表示
     def display_score(self):
         font = pygame.font.SysFont(const.G_OVER_FONT,const.G_OVER_FONT_SIZE)
-        had_apple_cnt = font.render(f'Number of apples your snake had: {self.had_apple_cnt}', True, const.WHITE)
-        best_score  = font.render(f'Best record ever: {self.score.b_score}', True, const.WHITE)
-        self.surface.blit(had_apple_cnt, (const.SIZE, 10))
-        self.surface.blit(best_score, (const.SIZE, const.DIP_H - const.SIZE * 2))
+        had_apple_cnt = font.render(const.G_YOU_HAVE + str(self.had_apple_cnt), True, const.WHITE)
+        best_score  = font.render(const.G_YOUR_BEST + str(self.score.b_score), True, const.WHITE)
+        life  = font.render('Life', True, const.WHITE)
+        self.surface.blit(had_apple_cnt, (const.SIZE / 2, const.SIZE / 8))
+        self.surface.blit(best_score, (const.SIZE / 2, const.DIP_H - const.SIZE * 2))
+        self.surface.blit(life, (const.SIZE * 10 - const.SIZE , const.SIZE / 8))
 
     #Game Over画面
     def show_game_over(self):
@@ -331,23 +358,25 @@ class Game:
         else:
             if int(self.score.b_score) < int(self.score.n_score):
                 line0 = font.render(const.G_BEST , True, const.GOLD)
-                self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - 20))
+                self.surface.blit(line0, (const.DIP_W/4, const.DIP_H/3 - const.SIZE / 2))
                 self.score.write(self.score.n_score)
             else:
                 self.score.write(self.score.b_score)
         #結果スコア
         line1 = font.render(f'{const.G_OVER + str(self.max)}.', True, const.WHITE)
-        self.surface.blit(line1, (const.DIP_W / 4, const.DIP_H / 2 - 20))
-        line2 = font.render(const.G_OVER_OP + 'apples', True, const.WHITE)
-        self.surface.blit(line2, (const.DIP_W / 4, const.DIP_H / 2 + 40))
-        if self.cause_of_death == const.G_OVER_CAUSE_BAD_APPLE:
-            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.GOLD)
-        elif self.cause_of_death == const.G_OVER_CAUSE_POOP:
-            line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_POOP}' , True, const.GOLD)
-
-        else:
-            line3 = font.render(f'Cause of death: {const.G_OVER_UNKNOWN}' , True, const.WHITE)
-        self.surface.blit(line3, (const.DIP_W / 4, const.DIP_H / 2 + 10))
+        self.surface.blit(line1, (const.DIP_W / 4, const.DIP_H / 2 - const.SIZE))
+        line2 = font.render(f'{const.G_YOUR_BEST + str(self.score.b_score)}.', True, const.WHITE)
+        self.surface.blit(line2, (const.DIP_W / 4, const.DIP_H / 2 + const.SIZE))
+        line3 = font.render(const.G_OVER_OP, True, const.WHITE)
+        self.surface.blit(line3, (const.DIP_W / 4, const.DIP_H / 2 + const.SIZE * 3))
+        #if self.cause_of_death == const.G_OVER_CAUSE_BAD_APPLE:
+        #    line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.GOLD)
+        #elif self.cause_of_death == const.G_OVER_CAUSE_POOP:
+        #    line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_POOP}' , True, const.GOLD)
+#
+        #else:
+        #    line3 = font.render(f'Cause of death: {const.G_OVER_UNKNOWN}' , True, const.WHITE)
+        #self.surface.blit(line3, (const.DIP_W / 4, const.DIP_H / 2 + 10))
         pygame.mixer.music.pause()
         pygame.display.flip()
 

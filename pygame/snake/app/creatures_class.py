@@ -255,10 +255,10 @@ class Snake(Creatures):
         #時間（７日前）
         self.d = datetime.datetime.now() + datetime.timedelta(days=-7)
         #初期方向
-        self.directions = ['up', 'up']
+        self.directions = ['down', 'down']
         #初期位置
         self.x = [const.DIP_W / 2]
-        self.y = [const.DIP_H / 4]
+        self.y = [const.DIP_H / 4 - const.SIZE]
         self.get_gold_apple = False
         #速く動く
         self.fast_move = False

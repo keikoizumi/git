@@ -46,6 +46,7 @@ RAIN_IMG_PATH = os.path.join(PATH, 'resources/images/rain.jpg')
 RAIN_IMG_PNG_PATH = os.path.join(PATH, 'resources/images/rain.png')
 CICADA_IMG_PATH  = os.path.join(PATH, 'resources/images/cicada.png')
 BIRD_IMG_PATH  = os.path.join(PATH, 'resources/images/bird.png')
+LIFE_IMG_PATH  = os.path.join(PATH, 'resources/images/life.png')
 
 #sound
 SOUND = True
@@ -64,6 +65,7 @@ GET_FROG_SOUND_PATH = os.path.join(PATH, 'resources/sounds/had_frog.mp3')
 SIZE = 40
 
 #snake
+MAX_LIFE = 3
 NORMAL_SPEED = .15
 FAST_SPEED = .05
 PANIC_SPEED = .01
@@ -80,6 +82,8 @@ G_OVER_CAUSE_BAD_APPLE = 'Your snake had a lot of bad apples.'
 G_OVER_CAUSE_COLLISION = 'Collision happen.'
 G_OVER_CAUSE_POOP = 'Your snake had a poop!!!!.'
 G_OVER_UNKNOWN = 'Unknown'
+G_YOUR_BEST = 'Your best score is '
+G_YOU_HAVE = 'Your snake had '
 
 #RGB LIST
 WHITE = (255,255,255)
