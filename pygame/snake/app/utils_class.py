@@ -30,7 +30,7 @@ class Utils:
 
     # 新しいX座標、Y座標を作成する
     def make_new_x_y():
-        x = int(random.randint(const.SIZE, const.DIP_W - const.SIZE))
+        x = int(random.randint(const.SIZE, const.PLAY_DIP_W - const.SIZE))
         y = int(random.randint(const.SIZE * 2, const.DIP_H - const.SIZE))
         return x, y
 

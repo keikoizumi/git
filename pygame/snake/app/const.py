@@ -15,12 +15,18 @@ SCORE_FILE_PATH = os.path.join(PATH ,SCORE_FILE_DIR + '/' + SCORE_FILE_NAME)
 #caption
 CAPTION = 'Snake And Apple Game'
 
+#apple snake size
+SIZE = 40
+
 #display
 DIP_W = 1200
+PLAY_DIP_W = SIZE * 24
 DIP_H = 640
+START_DIP_W = 1200
+START_DIP_H = 640
 
 #image
-B_IMG_PATH = os.path.join(PATH, 'resources/images/background.jpg')
+B_IMG_PATH = os.path.join(PATH, 'resources/images/background2.jpg')
 SNAKE_YELLOW_IMG_PATH = os.path.join(PATH, 'resources/images/yellow_block.jpg')
 SNAKE_RED_IMG_PATH = os.path.join(PATH, 'resources/images/red_block.jpg')
 SNAKE_GREEN_IMG_PATH = os.path.join(PATH, 'resources/images/green_block.jpg')
@@ -62,10 +68,6 @@ GET_BAD_SOUND_PATH = os.path.join(PATH, 'resources/sounds/bad.mp3')
 GET_POOP_SOUND_PATH = os.path.join(PATH, 'resources/sounds/had_poop.mp3')
 GET_FROG_SOUND_PATH = os.path.join(PATH, 'resources/sounds/had_frog.mp3')
 
-
-#apple snake size
-SIZE = 40
-
 #snake
 MAX_LIFE = 3
 NORMAL_SPEED = .15
@@ -84,7 +86,7 @@ G_OVER_CAUSE_BAD_APPLE = 'Your snake had a lot of bad apples.'
 G_OVER_CAUSE_COLLISION = 'Collision happen.'
 G_OVER_CAUSE_POOP = 'Your snake had a poop!!!!.'
 G_OVER_UNKNOWN = 'Unknown'
-G_YOUR_BEST = 'Your best score is '
+G_YOUR_BEST = 'Best Score: '
 G_YOU_HAVE = 'Your snake had '
 
 #RGB LIST

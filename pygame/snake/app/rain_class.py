@@ -14,7 +14,7 @@ class Rain:
         self.image_jpg = pygame.transform.rotate(self.image_jpg, 2)
         self.image_png = pygame.transform.rotate(self.image_png, 3)
         self.rains = [[0,0]]
-        for i in range(20):
+        for i in range(int(const.PLAY_DIP_W / (const.SIZE * 2))):
             self.x = i  * random.randint(const.SIZE,const.SIZE * 2)
             self.y = 0
             for j in range(10):
@@ -30,7 +30,7 @@ class Rain:
 
     def move_rain(self):
         for i in self.rains:
-            if i[0] > const.DIP_W:
+            if i[0] > const.PLAY_DIP_W:
                 i[0] = 0
             else:
                 i[0] += const.SIZE

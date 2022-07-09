@@ -1,6 +1,7 @@
 #Standard module
 from ast import Pass
 import datetime
+from turtle import width
 import pygame
 import random
 import time
@@ -26,11 +27,28 @@ import app.score_class as score_class
 class Game:
     def __init__(self):
         pygame.init()
-        pygame.display.set_caption(const.CAPTION)
+        #pygame.display.set_caption(const.CAPTION)
         pygame.mixer.init()
-        # インスタンスの初期化
         self.surface = pygame.display.set_mode((const.DIP_W, const.DIP_H), FULLSCREEN)
-        const.DIP_W, const.DIP_H = pygame.display.get_surface().get_size()
+        width, height = pygame.display.get_surface().get_size()
+        if width - 1250 > 0:
+            #スタート画像(700px x 1250px)が起動されたPCのフルスクリーンより小さい場合、
+            #中央に配置
+            const.START_DIP_W = (width - 1250) / 2
+        else:
+            const.START_DIP_W = width
+        #ゲーム中の背景画面
+        const.DIP_W = width
+
+        if height - 700 > 0:
+            #スタート画像(700px x 1250px)が起動されたPCのフルスクリーンより小さい場合、
+            #中央に配置
+            const.START_DIP_H = (height - 700) / 2
+        else:
+            const.START_DIP_H = height
+        #ゲーム中の背景画面
+        const.DIP_H = height
+        # インスタンスの初期化
         self.grass = grass_class.Grass(self.surface)
         self.apple = Apple(self.surface)
         self.snake = Snake(self.surface)
@@ -57,11 +75,23 @@ class Game:
         self.had_frog = False
         #食べたりんごの数
         self.had_apple_cnt = 0
+        #食べた青りんごの数
+        self.had_bad_apple_cnt = 0
+        #食べた金りんごの数
+        self.had_gold_apple_cnt = 0
+        #食べたうんこの数
+        self.had_snake_poop_cnt = 0
+        #食べたカエルの数
+        self.had_frog_cnt = 0
+        #食べたセミの数
+        self.had_cicada_cnt = 0
+        #食べた鳥の数
+        self.had_bird_cnt = 0
 
     # スタート画面
     def render_start(self):
         st = pygame.image.load(const.START_IMG_PATH)
-        self.surface.blit(st, (0, 0))
+        self.surface.blit(st, (const.START_DIP_W, const.START_DIP_H))
         pygame.display.flip()
 
     #背景
@@ -77,6 +107,7 @@ class Game:
             if self.m == 1:
                 pygame.mixer.music.load(const.B_MUSIC_PATH)
             elif self.m == 2:
+
                 #音量を下げる
                 pygame.mixer.music.set_volume(0.5)
                 pygame.mixer.music.load(const.B_RAIN_PATH)
@@ -224,6 +255,8 @@ class Game:
         # 蛇が金のりんごを食べた！
         if Utils.collision_check(self.snake.x[0],
             self.snake.y[0], self.gold_apple.fruits):
+            #食べた数をカウントアップ
+            self.had_gold_apple_cnt += 1
             self.play_sound('gold')
             self.snake.increase_length(5)
             self.bad_apple.remove(self.snake.x[0], self.snake.y[0], 10)
@@ -242,6 +275,8 @@ class Game:
         # 蛇が腐ったりんごを食べた！
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.bad_apple.fruits):
+            #食べた数をカウントアップ
+            self.had_bad_apple_cnt += 1
             #食べた青りんごを削除
             self.bad_apple.remove(self.snake.x[0], self.snake.y[0])
             self.play_sound('bad')
@@ -268,6 +303,8 @@ class Game:
         # 蛇がうんこを食べた！
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.snake_poop.creatures):
+            #食べた数をカウントアップ
+            self.had_snake_poop_cnt += 1
             self.play_sound('die')
             self.snake.skin_effect_af_bad_apple()
             self.snake_poop.remove()
@@ -280,6 +317,8 @@ class Game:
         # 蛇がカエルを食べた！
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.frog.creatures):
+            #食べた数をカウントアップ
+            self.had_frog_cnt += 1
             self.play_sound('gold')
             #蛇がカエルを食べた
             self.had_frog = True
@@ -291,6 +330,8 @@ class Game:
         # 蛇がセミを食べた！
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.cicada.creatures):
+            #食べた数をカウントアップ
+            self.had_cicada_apple_cnt += 1
             self.play_sound('gold')
             #りんごを増やす
             self.apple.make(self.bad_apple.fruits,3)
@@ -298,20 +339,22 @@ class Game:
         # 蛇が鳥を食べた！
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.bird.creatures):
+            #食べた数をカウントアップ
+            self.had_bird_cnt += 1
             self.play_sound('gold')
             #りんごを増やす
             self.apple.make(self.bad_apple.fruits,3)
             self.snake.increase_length(3)
             self.bird.remove(self.snake.x[0], self.snake.y[0])
-        if (   (self.snake.x[0] + const.SIZE > const.DIP_W)
+        if (   (self.snake.x[0]  > const.PLAY_DIP_W)
             or (self.snake.x[0] < 0)
             or (self.snake.y[0] + const.SIZE > const.DIP_H)
             or (self.snake.y[0] < 0)):
             #基準軸を超えたら軸を初期化
-            if self.snake.x[0] > const.DIP_W:
-                self.snake.x[0] = const.DIP_W
-            elif self.snake.x[0] <  0:
-                self.snake.x[0] =  0
+            if self.snake.x[0] > const.PLAY_DIP_W - const.SIZE:
+                self.snake.x[0] = const.PLAY_DIP_W
+            elif self.snake.x[0] < 0:
+                self.snake.x[0] = 0
             elif self.snake.y[0] + const.SIZE * 2 > const.DIP_H:
                 self.snake.y[0] = const.DIP_H - const.SIZE
             elif self.snake.y[0] < 0:
@@ -354,15 +397,27 @@ class Game:
     #スコアの画面表示
     def display_score(self):
         font = pygame.font.SysFont(const.G_OVER_FONT,const.G_OVER_FONT_SIZE)
-        had_apple_cnt = font.render(const.G_YOU_HAVE + str(self.had_apple_cnt), True, const.WHITE)
-        best_score  = font.render(const.G_YOUR_BEST + str(self.score.b_score), True, const.WHITE)
-        note = font.render('EXIT = press ECS' , True, const.BLACK)
+        life  = font.render('Life: ', True, const.WHITE)
+        had_red_apple = font.render('Red Apple: ' + str(self.had_apple_cnt), True, const.WHITE)
+        best_score  = font.render('[ ' + const.G_YOUR_BEST + str(self.score.b_score) + ' ]', True, const.WHITE)
+        had_bad_apple = font.render('Bad Apple: ' + str(self.had_bad_apple_cnt), True, const.WHITE)
+        had_gold_apple = font.render('Gold Apple: ' + str(self.had_gold_apple_cnt), True, const.WHITE)
+        had_snake_poop = font.render('Poop: ' + str(self.had_snake_poop_cnt), True, const.WHITE)
+        had_frog = font.render('Frog: ' + str(self.had_frog_cnt), True, const.WHITE)
+        had_cicada = font.render('Cicada: ' + str(self.had_cicada_cnt), True, const.WHITE)
+        had_bird = font.render('Bird: ' + str(self.had_bird_cnt), True, const.WHITE)
 
-        life  = font.render('Life', True, const.WHITE)
-        self.surface.blit(had_apple_cnt, (const.SIZE / 2, const.SIZE / 8))
-        self.surface.blit(best_score, (const.SIZE / 2, const.DIP_H - const.SIZE * 2))
-        self.surface.blit(life, (const.SIZE * 10 - const.SIZE , const.SIZE / 8))
-        self.surface.blit(note, (const.SIZE / 2, const.DIP_H - const.SIZE))
+        self.surface.blit(life, (const.DIP_W - const.SIZE * 5.5, const.SIZE))
+        self.surface.blit(had_red_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 2))
+        self.surface.blit(best_score, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 3))
+        self.surface.blit(had_bad_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 4))
+        self.surface.blit(had_gold_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 5))
+        self.surface.blit(had_snake_poop, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 6))
+        self.surface.blit(had_frog, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 7))
+        self.surface.blit(had_cicada, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 8))
+        self.surface.blit(had_bird, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 9))
+        #self.surface.blit(best_score, (const.SIZE / 2, const.DIP_H - const.SIZE * 2))
+
 
     #Game Over画面
     def show_game_over(self):
@@ -410,7 +465,7 @@ class Game:
         rect = win32gui.GetWindowRect(handle)
         screenshot = ImageGrab.grab()
         croped_screenshot = screenshot.crop(rect)
-        croped_screenshot.save('resources/images/game_over.png')
+        croped_screenshot.save(const.GAME_OVER_IMG_PATH)
 
     def run(self):
         running = True
@@ -431,6 +486,8 @@ class Game:
                 else:
                     for event in pygame.event.get():
                         if event.type == KEYDOWN:
+                            if event.key == K_RETURN:
+                                pause = False
                             if event.key == K_ESCAPE:
                                 running = False
                             if event.key == K_SPACE:
