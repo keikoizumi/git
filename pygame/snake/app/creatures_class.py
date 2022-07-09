@@ -159,8 +159,8 @@ class Frog(Creatures):
         self.image = pygame.image.load(const.FROG_IMG_PATH).convert()
     # 生き物を作成
     def make(self, apples, number = 1):
-        self.x = random.randint(0, const.DIP_W - const.SIZE)
-        self.y = random.randint(0, const.DIP_W / 2)
+        self.x = random.randint(0, const.PLAY_DIP_W - const.SIZE)
+        self.y = random.randint(0, const.DIP_H / 2)
         self.creatures.append([self.x, self.y])
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):

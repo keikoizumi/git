@@ -67,8 +67,10 @@ class Game:
         self.rain = rain_class.Rain(self.surface)
         #鳥をインスタンス化
         self.bird = Bird(self.surface)
-        #取得した体
-        self.max = 1
+        #今回のスコア
+        self.this_score = 0
+        #取得した体(MAX)
+        self.max_length = 1
         #死因
         self.cause_of_death = 'unknown'
         #蛇がカエルを食べたらTrue
@@ -222,14 +224,14 @@ class Game:
             #生き物たち
             if self.m == 1:
                 #鳥を放出
-                if (len(self.bad_apple.fruits) > 7
-                    and self.snake.length % 7 == 0
-                    and len(self.bird.creatures) <= 5):
+                if (len(self.bad_apple.fruits) > 15
+                    and self.snake.length % 10 == 0
+                    and len(self.bird.creatures) <= 2):
                         self.bird.is_alive = True
                         self.bird.make(self.bad_apple.fruits)
             elif self.m == 2:
                 #カエルを放出
-                if (len(self.bad_apple.fruits) > 10
+                if (len(self.bad_apple.fruits) > 15
                     and self.snake.length % 7 == 0
                     and len(self.frog.creatures) <= 3):
                         self.frog.is_alive = True
@@ -237,7 +239,7 @@ class Game:
             elif self.m == 3:
                 #セミ放出
                 if (len(self.bad_apple.fruits) > 10
-                    and self.snake.length % 10 == 0
+                    and self.snake.length % 6 == 0
                     and len(self.cicada.creatures) <= 1):
                         self.cicada.is_alive = True
                         self.cicada.make(self.bad_apple.fruits)
@@ -386,8 +388,8 @@ class Game:
         #蛇がカエルを食べたらTrue
         self.had_frog = False
         #最大長を保持
-        if self.max <= self.had_apple_cnt:
-            self.max = self.had_apple_cnt
+        if self.max_length <= self.snake.length:
+            self.max_length = self.snake.length
         self.snake.draw()
         #画面の更新
         pygame.display.flip()
@@ -397,11 +399,7 @@ class Game:
         font = pygame.font.SysFont(const.G_OVER_FONT,const.G_OVER_FONT_SIZE)
         life  = font.render('Life: ', True, const.WHITE)
         had_red_apple = font.render('Red Apple: ' + str(self.had_apple_cnt), True, const.WHITE)
-        if int(self.score.b_score) < int(self.had_apple_cnt):
-            color = const.GOLD
-        else:
-            color = const.WHITE
-        best_score  = font.render('[ ' + const.G_YOUR_BEST + str(self.score.b_score) + ' ]', True, color)
+        snake_length  = font.render('Snake Length: ' + str(self.snake.length), True, const.WHITE)
         had_bad_apple = font.render('Bad Apple: ' + str(self.had_bad_apple_cnt), True, const.WHITE)
         had_gold_apple = font.render('Gold Apple: ' + str(self.had_gold_apple_cnt), True, const.WHITE)
         had_snake_poop = font.render('Poop: ' + str(self.had_snake_poop_cnt), True, const.WHITE)
@@ -413,7 +411,8 @@ class Game:
 
         self.surface.blit(life, (const.DIP_W - const.SIZE * 5.5, const.SIZE))
         self.surface.blit(had_red_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 2))
-        self.surface.blit(best_score, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 3))
+        #self.surface.blit(best_score, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 3))
+        self.surface.blit(snake_length, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 3))
         self.surface.blit(had_bad_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 4))
         self.surface.blit(had_gold_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 5))
         self.surface.blit(had_snake_poop, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 6))
@@ -423,13 +422,39 @@ class Game:
         self.surface.blit(note1, (const.DIP_W - const.SIZE * 5.5, const.DIP_H - const.SIZE * 3))
         self.surface.blit(note2, (const.DIP_W - const.SIZE * 5.5, const.DIP_H - const.SIZE * 2))
 
+        #スコアの計算
+        #赤りんご x 10
+        #青りんご x -5
+        #金りんご x 30
+        #鳥 x 20
+        #カエル x 10
+        #セミ x 5
+        #ヘビの長さ x 10
+        self.this_score = self.had_apple_cnt * 10 \
+                + self.max_length * 10 \
+                + self.had_bad_apple_cnt * (-5) \
+                + self.had_gold_apple_cnt * 30 \
+                + self.had_snake_poop_cnt * (-10) \
+                + self.had_frog_cnt * 10 \
+                + self.had_cicada_cnt * 5 \
+                + self.had_bird_cnt * 20
+
+        if int(self.score.b_score) < int(self.had_apple_cnt):
+            color = const.GOLD
+        else:
+            color = const.WHITE
+
+        score_str = font.render('Score: ' + str(self.this_score), True, color)
+        best_score  = font.render('[ ' + const.G_YOUR_BEST + str(self.score.b_score) + ' ]', True, const.WHITE)
+        self.surface.blit(score_str, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 11))
+        self.surface.blit(best_score, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 12))
 
     #Game Over画面
     def show_game_over(self):
         st = pygame.image.load(const.GAME_OVER_IMG_PATH)
         self.surface.blit(st, (0, 0))
         #スコアをファイルに書込む
-        self.score.write(self.max)
+        self.score.write(self.this_score)
         font = pygame.font.SysFont(const.G_OVER_FONT, const.G_OVER_FONT_SIZE)
         #NEW RECORD達成時
         try:
@@ -448,7 +473,7 @@ class Game:
             else:
                 self.score.write(self.score.b_score)
         #結果スコア
-        line1 = font.render(f'{const.G_OVER + str(self.max)}.', True, const.WHITE)
+        line1 = font.render(f'{const.G_OVER + str(self.this_score)}.', True, const.WHITE)
         self.surface.blit(line1, (const.DIP_W / 4, const.DIP_H / 2 - const.SIZE))
         line2 = font.render(f'{const.G_YOUR_BEST + str(self.score.b_score)}.', True, const.WHITE)
         self.surface.blit(line2, (const.DIP_W / 4, const.DIP_H / 2 + const.SIZE))
