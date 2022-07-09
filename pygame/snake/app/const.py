@@ -47,6 +47,8 @@ RAIN_IMG_PNG_PATH = os.path.join(PATH, 'resources/images/rain.png')
 CICADA_IMG_PATH  = os.path.join(PATH, 'resources/images/cicada.png')
 BIRD_IMG_PATH  = os.path.join(PATH, 'resources/images/bird.png')
 LIFE_IMG_PATH  = os.path.join(PATH, 'resources/images/life.png')
+START_IMG_PATH = os.path.join(PATH, 'resources/images/start.png')
+GAME_OVER_IMG_PATH = os.path.join(PATH, 'resources/images/game_over.png')
 
 #sound
 SOUND = True

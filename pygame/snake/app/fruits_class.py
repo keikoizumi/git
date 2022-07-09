@@ -103,18 +103,12 @@ class Apple(Fruits):
     def remove(self, x1, y1):
         no = 0
         for i in self.fruits:
-            print(f'i: {i}')
             x2 = i[0]
             y2 = i[1]
-            print(f'x: {x1}')
-            print(f'y: {x2}')
-            print(f'x2: {i[0]}')
-            print(f'y2: {i[1]}')
 
             #ヘビの頭とぶつかった果物を削除
             if Utils.is_collision(x1, y1, x2, y2):
                     #ぶつかったりんごを削除
-                    print(f'remove: {self.fruits[no]}')
                     del self.fruits[no]
             no += 1
 

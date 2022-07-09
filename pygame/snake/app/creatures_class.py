@@ -258,7 +258,7 @@ class Snake(Creatures):
         self.directions = ['down', 'down']
         #初期位置
         self.x = [const.DIP_W / 2]
-        self.y = [const.DIP_H / 4 - const.SIZE]
+        self.y = [const.DIP_H / 4 - const.SIZE / 2]
         self.get_gold_apple = False
         #速く動く
         self.fast_move = False

@@ -1,4 +1,5 @@
 #Standard module
+from ast import Pass
 import datetime
 import pygame
 import random
@@ -8,6 +9,8 @@ import traceback
 #external module
 import pygame
 from pygame.locals import *
+import win32gui
+from PIL import ImageGrab
 
 #Self-made module
 from app.utils_class import Utils
@@ -25,8 +28,9 @@ class Game:
         pygame.init()
         pygame.display.set_caption(const.CAPTION)
         pygame.mixer.init()
-        #インスタンスの初期化
-        self.surface = pygame.display.set_mode((const.DIP_W, const.DIP_H))
+        # インスタンスの初期化
+        self.surface = pygame.display.set_mode((const.DIP_W, const.DIP_H), FULLSCREEN)
+        const.DIP_W, const.DIP_H = pygame.display.get_surface().get_size()
         self.grass = grass_class.Grass(self.surface)
         self.apple = Apple(self.surface)
         self.snake = Snake(self.surface)
@@ -53,6 +57,18 @@ class Game:
         self.had_frog = False
         #食べたりんごの数
         self.had_apple_cnt = 0
+
+    # スタート画面
+    def render_start(self):
+        st = pygame.image.load(const.START_IMG_PATH)
+        self.surface.blit(st, (0, 0))
+        pygame.display.flip()
+
+    #背景
+    def render_background(self):
+        pass
+        bg = pygame.image.load(const.B_IMG_PATH)
+        self.surface.blit(bg, (0, 0))
 
     def play_background_music(self):
         if const.SOUND:
@@ -103,11 +119,6 @@ class Game:
         self.life = life_class.Life(self.surface)
         #取ったりんごの数を0にリセット
         self.had_apple_cnt = 0
-
-    #背景
-    def render_background(self):
-        bg = pygame.image.load(const.B_IMG_PATH)
-        self.surface.blit(bg, (0, 0))
     #fast move
     def fast_move(self):
         const.SPEED = const.FAST_SPEED
@@ -162,7 +173,17 @@ class Game:
             self.had_apple_cnt += 1
             #体を増やす
             self.snake.increase_length()
-            self.bad_apple.make(self.bad_apple.fruits)
+            #アップの獲得数で青りんごの数を変える
+            if self.had_apple_cnt < 10:
+                self.bad_apple.make(self.bad_apple.fruits)
+            elif 10 <= self.had_apple_cnt and self.had_apple_cnt < 50:
+                self.bad_apple.make(self.bad_apple.fruits, 2)
+            elif 50 <= self.had_apple_cnt and self.had_apple_cnt < 100:
+                self.bad_apple.make(self.bad_apple.fruits, 3)
+            elif 100 <= self.had_apple_cnt and self.had_apple_cnt < 200:
+                self.bad_apple.make(self.bad_apple.fruits, 4)
+            else:
+                self.bad_apple.make(self.bad_apple.fruits, 5)
             #りんごの再配置
             #ブッロクと重ならないように配置
             #青りんごと重ならないように配置
@@ -209,7 +230,7 @@ class Game:
             self.gold_apple = GoldApple(self.surface)
             self.snake.get_gold_apple = True
             #うんこをする
-            if len(self.snake_poop.creatures) < 1:
+            if len(self.snake_poop.creatures) <= 2:
                 self.snake_poop.make(self.apple.fruits)
             else:
                 self.snake_poop.move(self.apple.fruits)
@@ -240,6 +261,7 @@ class Game:
                 self.snake = Snake(self.surface)
                 self.bad_apple = BadApple(self.surface)
                 self.snake_poop = Poop(self.surface)
+                const.SPEED = const.NORMAL_SPEED
                 #self.play_sound('die')
                 #self.cause_of_death = const.G_OVER_CAUSE_BAD_APPLE
                 #raise Exception(const.G_OVER_CAUSE_BAD_APPLE)
@@ -247,13 +269,12 @@ class Game:
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.snake_poop.creatures):
             self.play_sound('die')
+            self.snake.skin_effect_af_bad_apple()
+            self.snake_poop.remove()
             self.life.remove()
             #初期化
             self.snake.panic = False
-            self.apple = Apple(self.surface)
-            self.snake = Snake(self.surface)
-            self.bad_apple = BadApple(self.surface)
-            self.snake_poop = Poop(self.surface)
+            const.SPEED = const.NORMAL_SPEED
             #self.cause_of_death = const.G_OVER_CAUSE_POOP
             #raise Exception(const.G_OVER_CAUSE_POOP)
         # 蛇がカエルを食べた！
@@ -335,16 +356,20 @@ class Game:
         font = pygame.font.SysFont(const.G_OVER_FONT,const.G_OVER_FONT_SIZE)
         had_apple_cnt = font.render(const.G_YOU_HAVE + str(self.had_apple_cnt), True, const.WHITE)
         best_score  = font.render(const.G_YOUR_BEST + str(self.score.b_score), True, const.WHITE)
+        note = font.render('EXIT = press ECS' , True, const.BLACK)
+
         life  = font.render('Life', True, const.WHITE)
         self.surface.blit(had_apple_cnt, (const.SIZE / 2, const.SIZE / 8))
         self.surface.blit(best_score, (const.SIZE / 2, const.DIP_H - const.SIZE * 2))
         self.surface.blit(life, (const.SIZE * 10 - const.SIZE , const.SIZE / 8))
+        self.surface.blit(note, (const.SIZE / 2, const.DIP_H - const.SIZE))
 
     #Game Over画面
     def show_game_over(self):
+        st = pygame.image.load(const.GAME_OVER_IMG_PATH)
+        self.surface.blit(st, (0, 0))
         #スコアをファイルに書込む
         self.score.write(self.max)
-        self.render_background()
         font = pygame.font.SysFont(const.G_OVER_FONT, const.G_OVER_FONT_SIZE)
         #NEW RECORD達成時
         try:
@@ -369,65 +394,83 @@ class Game:
         self.surface.blit(line2, (const.DIP_W / 4, const.DIP_H / 2 + const.SIZE))
         line3 = font.render(const.G_OVER_OP, True, const.WHITE)
         self.surface.blit(line3, (const.DIP_W / 4, const.DIP_H / 2 + const.SIZE * 3))
-        #if self.cause_of_death == const.G_OVER_CAUSE_BAD_APPLE:
-        #    line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_BAD_APPLE}' , True, const.GOLD)
         #elif self.cause_of_death == const.G_OVER_CAUSE_POOP:
         #    line3 = font.render(f'Cause of death: {const.G_OVER_CAUSE_POOP}' , True, const.GOLD)
-#
+        #
         #else:
         #    line3 = font.render(f'Cause of death: {const.G_OVER_UNKNOWN}' , True, const.WHITE)
-        #self.surface.blit(line3, (const.DIP_W / 4, const.DIP_H / 2 + 10))
+
         pygame.mixer.music.pause()
         pygame.display.flip()
+
+    def screen_shot(self):
+        # 最前面のウィンドウのスクショを取得する
+        handle = win32gui.GetForegroundWindow()
+        # ウィンドウの位置を取得
+        rect = win32gui.GetWindowRect(handle)
+        screenshot = ImageGrab.grab()
+        croped_screenshot = screenshot.crop(rect)
+        croped_screenshot.save('resources/images/game_over.png')
 
     def run(self):
         running = True
         pause = False
+        cnt = 0
         while running:
-            for event in pygame.event.get():
-                if event.type == KEYDOWN:
-                    if event.key == K_ESCAPE:
-                        running = False
-                    if event.key == K_RETURN:
-                        pygame.mixer.music.unpause()
-                        pause = False
-                        self.play_background_music()
-                    if event.key == K_SPACE:
-                        if pause == True:
-                            pause = False
-                            pygame.mixer.music.unpause()
-                        else:
-                            pause = True
-                            pygame.mixer.music.pause()
-                    if not pause:
-                        if event.key == K_LEFT:
-                            self.snake.move_left()
-                        if event.key == K_RIGHT:
-                            self.snake.move_right()
-                        if event.key == K_UP:
-                            self.snake.move_up()
-                        if event.key == K_DOWN:
-                            self.snake.move_down()
-                        if event.key == K_RCTRL or event.key == K_LCTRL:
-                            if self.snake.fast_move:
-                                self.snake.fast_move = False
-                                self.fast_move()
-                            else:
-                                self.snake.fast_move = True
-                                const.SPEED = const.NORMAL_SPEED
-                elif event.type == QUIT:
-                    running = False
-            try:
-                if not pause:
-                    self.play()
-            except Exception as e:
-                print(e)
-                self.show_game_over()
-                self.reset()
-                pause = True
-                const.SPEED = const.NORMAL_SPEED
-                print(traceback.format_exc())
-            time.sleep(const.SPEED)
+
+                if cnt == 0:
+                    self.render_start()
+                    pause = True
+                    for event in pygame.event.get():
+                        if event.type == KEYDOWN:
+                            if event.key == K_RETURN:
+                                pause = False
+                                cnt += 1
+                            elif event.type == QUIT:
+                                running = False
+                else:
+                    for event in pygame.event.get():
+                        if event.type == KEYDOWN:
+                            if event.key == K_ESCAPE:
+                                running = False
+                            if event.key == K_SPACE:
+                                if pause == True:
+                                    pause = False
+                                    pygame.mixer.music.unpause()
+                                else:
+                                    pause = True
+                                    pygame.mixer.music.pause()
+                            if not pause:
+                                if event.key == K_LEFT:
+                                    self.snake.move_left()
+                                if event.key == K_RIGHT:
+                                    self.snake.move_right()
+                                if event.key == K_UP:
+                                    self.snake.move_up()
+                                if event.key == K_DOWN:
+                                    self.snake.move_down()
+                                if event.key == K_RCTRL or event.key == K_LCTRL:
+                                    if self.snake.fast_move:
+                                        self.snake.fast_move = False
+                                        self.fast_move()
+                                    else:
+                                        self.snake.fast_move = True
+                                        const.SPEED = const.NORMAL_SPEED
+                        elif event.type == QUIT:
+                            running = False
+                    try:
+                        if not pause:
+                            self.play()
+                    except Exception as e:
+                        pause = True
+                        self.screen_shot()
+                        self.reset()
+                        const.SPEED = const.NORMAL_SPEED
+                        print(traceback.format_exc())
+                        self.show_game_over()
+
+
+                    time.sleep(const.SPEED)
 
 if __name__ == '__main__':
     game = Game()
