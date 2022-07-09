@@ -160,7 +160,7 @@ class Frog(Creatures):
     # 生き物を作成
     def make(self, apples, number = 1):
         self.x = random.randint(0, const.DIP_W - const.SIZE)
-        self.y = const.DIP_H - const.SIZE
+        self.y = random.randint(0, const.DIP_W / 2)
         self.creatures.append([self.x, self.y])
     # 生き物をランダムな位置に移動させる
     def move(self, bad_apples):

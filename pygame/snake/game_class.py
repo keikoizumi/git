@@ -48,6 +48,8 @@ class Game:
             const.START_DIP_H = height
         #ゲーム中の背景画面
         const.DIP_H = height
+        #バックグラウンド音楽
+        self.play_background_music()
         # インスタンスの初期化
         self.grass = grass_class.Grass(self.surface)
         self.apple = Apple(self.surface)
@@ -65,8 +67,6 @@ class Game:
         self.rain = rain_class.Rain(self.surface)
         #鳥をインスタンス化
         self.bird = Bird(self.surface)
-        #バックグラウンド音楽
-        self.play_background_music()
         #取得した体
         self.max = 1
         #死因
@@ -103,11 +103,9 @@ class Game:
     def play_background_music(self):
         if const.SOUND:
             self.m = random.randint(1, 3)
-            self.m == 1
             if self.m == 1:
                 pygame.mixer.music.load(const.B_MUSIC_PATH)
             elif self.m == 2:
-
                 #音量を下げる
                 pygame.mixer.music.set_volume(0.5)
                 pygame.mixer.music.load(const.B_RAIN_PATH)
@@ -331,7 +329,7 @@ class Game:
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.cicada.creatures):
             #食べた数をカウントアップ
-            self.had_cicada_apple_cnt += 1
+            self.had_cicada_cnt += 1
             self.play_sound('gold')
             #りんごを増やす
             self.apple.make(self.bad_apple.fruits,3)
@@ -399,13 +397,19 @@ class Game:
         font = pygame.font.SysFont(const.G_OVER_FONT,const.G_OVER_FONT_SIZE)
         life  = font.render('Life: ', True, const.WHITE)
         had_red_apple = font.render('Red Apple: ' + str(self.had_apple_cnt), True, const.WHITE)
-        best_score  = font.render('[ ' + const.G_YOUR_BEST + str(self.score.b_score) + ' ]', True, const.WHITE)
+        if int(self.score.b_score) < int(self.had_apple_cnt):
+            color = const.GOLD
+        else:
+            color = const.WHITE
+        best_score  = font.render('[ ' + const.G_YOUR_BEST + str(self.score.b_score) + ' ]', True, color)
         had_bad_apple = font.render('Bad Apple: ' + str(self.had_bad_apple_cnt), True, const.WHITE)
         had_gold_apple = font.render('Gold Apple: ' + str(self.had_gold_apple_cnt), True, const.WHITE)
         had_snake_poop = font.render('Poop: ' + str(self.had_snake_poop_cnt), True, const.WHITE)
         had_frog = font.render('Frog: ' + str(self.had_frog_cnt), True, const.WHITE)
         had_cicada = font.render('Cicada: ' + str(self.had_cicada_cnt), True, const.WHITE)
         had_bird = font.render('Bird: ' + str(self.had_bird_cnt), True, const.WHITE)
+        note1 = font.render('Space: Pause', True, const.WHITE)
+        note2 = font.render('Esc: Exit', True, const.WHITE)
 
         self.surface.blit(life, (const.DIP_W - const.SIZE * 5.5, const.SIZE))
         self.surface.blit(had_red_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 2))
@@ -416,7 +420,8 @@ class Game:
         self.surface.blit(had_frog, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 7))
         self.surface.blit(had_cicada, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 8))
         self.surface.blit(had_bird, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 9))
-        #self.surface.blit(best_score, (const.SIZE / 2, const.DIP_H - const.SIZE * 2))
+        self.surface.blit(note1, (const.DIP_W - const.SIZE * 5.5, const.DIP_H - const.SIZE * 3))
+        self.surface.blit(note2, (const.DIP_W - const.SIZE * 5.5, const.DIP_H - const.SIZE * 2))
 
 
     #Game Over画面
@@ -469,12 +474,14 @@ class Game:
 
     def run(self):
         running = True
+        first_time = True
         pause = False
         cnt = 0
         while running:
 
-                if cnt == 0:
+                if first_time:
                     self.render_start()
+                    first_time = False
                     pause = True
                     for event in pygame.event.get():
                         if event.type == KEYDOWN:

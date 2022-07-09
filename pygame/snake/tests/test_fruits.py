@@ -22,7 +22,6 @@ class FruitsTestCase(unittest.TestCase):
     def test_make1(self):
         bad_apples = [[100, 50]]
         sut.fruits = [[100, 100]]
-        print(sut.fruits)
         sut.make(bad_apples)
         self.assertEqual(sut.is_alive, True)
 

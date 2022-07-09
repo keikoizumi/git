@@ -28,7 +28,6 @@ class Life:
     def remove(self):
         if len(self.life) > 0:
             del self.life[-1]
-            print(self.life)
         self.draw()
 
     def death_check(self):
