@@ -12,7 +12,12 @@ class Utils:
         if (    (x1 < x2 + const.SIZE and y1 < y2 + const.SIZE)
             and (x2 < x1 + const.SIZE and y1 < y2 + const.SIZE)
             and (x1 < x2 + const.SIZE and y2 < y1 + const.SIZE)
-            and (x2 < x1 + const.SIZE and y2 < y1 + const.SIZE)):
+            and (x2 < x1 + const.SIZE and y2 < y1 + const.SIZE)
+            or  (x2 < x1 + const.SIZE and y2 < y1 + const.SIZE)
+            and (x1 < x2 + const.SIZE and y2 < y1 + const.SIZE)
+            and (x2 < x1 + const.SIZE and y1 < y2 + const.SIZE)
+            and (x1 < x2 + const.SIZE and y1 < y2 + const.SIZE)
+            ):
             return True
         else:
             return False
@@ -30,8 +35,8 @@ class Utils:
 
     # 新しいX座標、Y座標を作成する
     def make_new_x_y():
-        x = int(random.randint(const.SIZE, const.PLAY_DIP_W - const.SIZE))
-        y = int(random.randint(const.SIZE * 2, const.DIP_H - const.SIZE))
+        x = int(random.randint(const.SIZE * 2, const.PLAY_DIP_W - const.SIZE))
+        y = int(random.randint(const.SIZE * 5, const.DIP_H - const.SIZE))
         return x, y
 
     # 新しいconst.SIZEpx × const.SIZEpxと既存の

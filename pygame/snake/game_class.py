@@ -1,7 +1,5 @@
 #Standard module
-from ast import Pass
 import datetime
-from turtle import width
 import pygame
 import random
 import time
@@ -10,8 +8,8 @@ import traceback
 #external module
 import pygame
 from pygame.locals import *
-import win32gui
-from PIL import ImageGrab
+#import win32gui
+#from PIL import ImageGrab
 
 #Self-made module
 from app.utils_class import Utils
@@ -148,8 +146,15 @@ class Game:
         self.bird = Bird(self.surface)
         self.score = score_class.Score()
         self.life = life_class.Life(self.surface)
-        #取ったりんごの数を0にリセット
+        #プロパティを0にリセット
         self.had_apple_cnt = 0
+        self.had_bad_apple_cnt = 0
+        self.had_gold_apple_cnt = 0
+        self.had_snake_poop_cnt = 0
+        self.had_frog_cnt = 0
+        self.had_cicada_cnt = 0
+        self.had_bird_cnt = 0
+
     #fast move
     def fast_move(self):
         const.SPEED = const.FAST_SPEED
@@ -225,7 +230,7 @@ class Game:
             if self.m == 1:
                 #鳥を放出
                 if (len(self.bad_apple.fruits) > 15
-                    and self.snake.length % 10 == 0
+                    and self.snake.length % 7 == 0
                     and len(self.bird.creatures) <= 2):
                         self.bird.is_alive = True
                         self.bird.make(self.bad_apple.fruits)
@@ -233,7 +238,7 @@ class Game:
                 #カエルを放出
                 if (len(self.bad_apple.fruits) > 15
                     and self.snake.length % 7 == 0
-                    and len(self.frog.creatures) <= 3):
+                    and len(self.frog.creatures) <= 5):
                         self.frog.is_alive = True
                         self.frog.make(self.bad_apple.fruits)
             elif self.m == 3:
@@ -244,7 +249,7 @@ class Game:
                         self.cicada.is_alive = True
                         self.cicada.make(self.bad_apple.fruits)
             #金りんごを作る
-            if (self.snake.length % 10 == 0
+            if (self.snake.length % 7 == 0
                 and len(self.gold_apple.fruits) == 0
                 and len(self.bad_apple.fruits) > 10):
                 self.gold_apple.make(self.bad_apple.fruits)
@@ -422,6 +427,10 @@ class Game:
         self.surface.blit(note1, (const.DIP_W - const.SIZE * 5.5, const.DIP_H - const.SIZE * 3))
         self.surface.blit(note2, (const.DIP_W - const.SIZE * 5.5, const.DIP_H - const.SIZE * 2))
 
+        #スコアアイテム表示
+        score_items = pygame.image.load('resources/images/score_items.png')
+        self.surface.blit(score_items, (0, 0))
+
         #スコアの計算
         #赤りんご x 10
         #青りんご x -5
@@ -451,8 +460,8 @@ class Game:
 
     #Game Over画面
     def show_game_over(self):
-        st = pygame.image.load(const.GAME_OVER_IMG_PATH)
-        self.surface.blit(st, (0, 0))
+        #st = pygame.image.load(const.GAME_OVER_IMG_PATH)
+        #self.surface.blit(st, (0, 0))
         #スコアをファイルに書込む
         self.score.write(self.this_score)
         font = pygame.font.SysFont(const.G_OVER_FONT, const.G_OVER_FONT_SIZE)
@@ -520,6 +529,7 @@ class Game:
                         if event.type == KEYDOWN:
                             if event.key == K_RETURN:
                                 pause = False
+                                self.play_background_music()
                             if event.key == K_ESCAPE:
                                 running = False
                             if event.key == K_SPACE:
@@ -552,11 +562,11 @@ class Game:
                             self.play()
                     except Exception as e:
                         pause = True
-                        self.screen_shot()
-                        self.reset()
+                        #self.screen_shot()
                         const.SPEED = const.NORMAL_SPEED
                         print(traceback.format_exc())
                         self.show_game_over()
+                        self.reset()
 
 
                     time.sleep(const.SPEED)

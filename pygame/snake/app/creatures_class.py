@@ -258,7 +258,7 @@ class Snake(Creatures):
         self.directions = ['down', 'down']
         #初期位置
         self.x = [const.DIP_W / 2]
-        self.y = [const.DIP_H / 4 - const.SIZE / 2]
+        self.y = [const.DIP_H / 4 - const.SIZE / 4]
         self.get_gold_apple = False
         #速く動く
         self.fast_move = False
@@ -382,11 +382,11 @@ class Snake(Creatures):
                 for i in self.effect_af_gold_apple:
                     self.body_img = i
                     self.draw()
-                    pygame.display.flip()
+                    #pygame.display.flip()
                 cnt += 1
             self.get_gold_apple = False
             self.body_img = self.init_body_img
-            pygame.display.flip()
+            #pygame.display.flip()
 
     # 青りんごを食べた後のスキン
     def skin_effect_af_bad_apple(self):
@@ -420,7 +420,7 @@ class Snake(Creatures):
         #体を元の状態に戻す
         self.face_img = self.init_face_img
         self.body_img = self.init_body_img
-        pygame.display.flip()
+        #pygame.display.flip()
 
     def while_having_bad_apple(self):
         #顔色を変える
