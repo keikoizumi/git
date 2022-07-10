@@ -413,6 +413,7 @@ class Game:
         life  = font.render('Life: ', True, const.WHITE)
         had_red_apple = font.render('Red Apple: ' + str(self.had_apple_cnt), True, const.WHITE)
         snake_length  = font.render('Snake Length: ' + str(self.snake.length), True, const.WHITE)
+        snake_length_max  = font.render('(MAX Length): ' + str(self.max_length), True, const.WHITE)
         had_bad_apple = font.render('Bad Apple: ' + str(self.had_bad_apple_cnt), True, const.WHITE)
         had_gold_apple = font.render('Gold Apple: ' + str(self.had_gold_apple_cnt), True, const.WHITE)
         had_snake_poop = font.render('Poop: ' + str(self.had_snake_poop_cnt), True, const.WHITE)
@@ -426,12 +427,13 @@ class Game:
         self.surface.blit(had_red_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 2))
         #self.surface.blit(best_score, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 3))
         self.surface.blit(snake_length, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 3))
-        self.surface.blit(had_bad_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 4))
-        self.surface.blit(had_gold_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 5))
-        self.surface.blit(had_snake_poop, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 6))
-        self.surface.blit(had_frog, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 7))
-        self.surface.blit(had_cicada, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 8))
-        self.surface.blit(had_bird, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 9))
+        self.surface.blit(snake_length_max, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 4))
+        self.surface.blit(had_bad_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 5))
+        self.surface.blit(had_gold_apple, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 6))
+        self.surface.blit(had_snake_poop, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 7))
+        self.surface.blit(had_frog, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 8))
+        self.surface.blit(had_cicada, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 9))
+        self.surface.blit(had_bird, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 10))
         self.surface.blit(note1, (const.DIP_W - const.SIZE * 5.5, const.DIP_H - const.SIZE * 3))
         self.surface.blit(note2, (const.DIP_W - const.SIZE * 5.5, const.DIP_H - const.SIZE * 2))
 
@@ -446,9 +448,9 @@ class Game:
         #鳥 x 20
         #カエル x 10
         #セミ x 5
-        #ヘビの長さ x 10
+        #ヘビの長さ x 30
         self.this_score = self.had_apple_cnt * 10 \
-                + self.max_length * 10 \
+                + self.max_length * 30 \
                 + self.had_bad_apple_cnt * (-5) \
                 + self.had_gold_apple_cnt * 30 \
                 + self.had_snake_poop_cnt * (-10) \
@@ -463,8 +465,8 @@ class Game:
 
         score_str = font.render('Score: ' + str(self.this_score), True, color)
         best_score  = font.render('[ ' + const.G_YOUR_BEST + str(self.score.b_score) + ' ]', True, const.WHITE)
-        self.surface.blit(score_str, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 11))
-        self.surface.blit(best_score, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 12))
+        self.surface.blit(score_str, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 12))
+        self.surface.blit(best_score, (const.DIP_W - const.SIZE * 5.5, const.SIZE * 13))
 
     #Game Over画面
     def show_game_over(self):
