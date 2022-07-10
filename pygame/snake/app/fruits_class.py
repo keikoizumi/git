@@ -71,7 +71,7 @@ class Apple(Fruits):
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
         # x座標、yを配列で保持
-        self.fruits = [[const.DIP_W / 2, const.DIP_H / 4]]
+        self.fruits = [[int(const.DIP_W / 2), int(const.DIP_H / 4)]]
         # 果物が画面上に存在するか否か
         # 存在する場合はTrue
         self.is_alive = False
@@ -111,9 +111,14 @@ class Apple(Fruits):
                     #ぶつかったりんごを削除
                     del self.fruits[no]
             no += 1
-
+        print('赤りんご削除')
+        print(x2)
+        print(y2)
     def draw(self):
-        super().draw(self.fruits)
+        for i in self.fruits:
+            self.x = i[0]
+            self.y = i[1]
+            self.parent_screen.blit(self.image, (self.x, self.y))
 
 #青りんごクラス
 class BadApple(Fruits):
@@ -144,6 +149,7 @@ class BadApple(Fruits):
                 Utils.check(self.x, self.y, bad_apples)
                 # 果物のみ果物配列に追加
                 self.fruits.append([self.x, self.y])
+
     # 果物をランダムな位置に移動させる
     #def move(self, bad_apples):
     #    super().move(bad_apples)
@@ -159,8 +165,10 @@ class BadApple(Fruits):
                 else:
                     for i in range(0, number - 1, 1):
                         del self.fruits[i]
+                print('青りんご削除１')
+                print(self.fruits[i])
             except IndexError as e:
-                pass
+                print('Fruits Bad Apple IndexError')
         else:
             no = 0
             for i in self.fruits:
@@ -171,9 +179,14 @@ class BadApple(Fruits):
                         #ぶつかったBADりんごを削除
                         del self.fruits[no]
                 no += 1
-
+            print('青りんご削除２')
+            print(x2)
+            print(y2)
     def draw(self):
-        super().draw(self.fruits)
+        for i in self.fruits:
+            self.x = i[0]
+            self.y = i[1]
+            self.parent_screen.blit(self.image, (self.x, self.y))
 
 #金りんごクラス
 class GoldApple(Fruits):

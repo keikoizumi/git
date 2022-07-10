@@ -204,6 +204,10 @@ class Game:
         # 蛇がりんごを食べた！
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.apple.fruits):
+            print('赤りんご衝突')
+            print(self.apple.fruits)
+            print(self.snake.x[0])
+            print(self.snake.y[0])
             self.play_sound('ding')
             #食べた数をカウントアップ
             self.had_apple_cnt += 1
@@ -211,7 +215,7 @@ class Game:
             self.snake.increase_length()
             #アップの獲得数で青りんごの数を変える
             if self.had_apple_cnt < 10:
-                self.bad_apple.make(self.bad_apple.fruits)
+                self.bad_apple.make(self.bad_apple.fruits, 1)
             elif 10 <= self.had_apple_cnt and self.had_apple_cnt < 50:
                 self.bad_apple.make(self.bad_apple.fruits, 2)
             elif 50 <= self.had_apple_cnt and self.had_apple_cnt < 100:
@@ -225,34 +229,34 @@ class Game:
             #青りんごと重ならないように配置
             self.apple.remove(self.snake.x[0], self.snake.y[0])
             if len(self.apple.fruits) <= 1:
-                self.apple.make(self.bad_apple.fruits)
+                self.apple.make(self.bad_apple.fruits, 1)
             #生き物たち
             if self.m == 1:
                 #鳥を放出
-                if (len(self.bad_apple.fruits) > 15
-                    and self.snake.length % 7 == 0
+                if (len(self.bad_apple.fruits) > 10
+                    and self.had_apple_cnt % 5 == 0
                     and len(self.bird.creatures) <= 2):
                         self.bird.is_alive = True
-                        self.bird.make(self.bad_apple.fruits)
+                        self.bird.make(self.bad_apple.fruits, 1)
             elif self.m == 2:
                 #カエルを放出
-                if (len(self.bad_apple.fruits) > 15
-                    and self.snake.length % 7 == 0
+                if (len(self.bad_apple.fruits) > 10
+                    and self.had_apple_cnt % 4 == 0
                     and len(self.frog.creatures) <= 5):
                         self.frog.is_alive = True
-                        self.frog.make(self.bad_apple.fruits)
+                        self.frog.make(self.bad_apple.fruits, 1)
             elif self.m == 3:
                 #セミ放出
                 if (len(self.bad_apple.fruits) > 10
-                    and self.snake.length % 6 == 0
+                    and self.had_apple_cnt % 3 == 0
                     and len(self.cicada.creatures) <= 1):
                         self.cicada.is_alive = True
-                        self.cicada.make(self.bad_apple.fruits)
+                        self.cicada.make(self.bad_apple.fruits, 1)
             #金りんごを作る
-            if (self.snake.length % 7 == 0
+            if (self.had_apple_cnt % 4 == 0
                 and len(self.gold_apple.fruits) == 0
                 and len(self.bad_apple.fruits) > 10):
-                self.gold_apple.make(self.bad_apple.fruits)
+                self.gold_apple.make(self.bad_apple.fruits, 1)
         self.bird.draw()
         self.frog.draw()
         self.cicada.draw()
@@ -269,7 +273,7 @@ class Game:
             self.snake.get_gold_apple = True
             #うんこをする
             if len(self.snake_poop.creatures) <= 2:
-                self.snake_poop.make(self.apple.fruits)
+                self.snake_poop.make(self.apple.fruits, 1)
             else:
                 self.snake_poop.move(self.apple.fruits)
             #goldを食べたときのスキンエフェクト
@@ -280,10 +284,14 @@ class Game:
         # 蛇が腐ったりんごを食べた！
         if Utils.collision_check(int(self.snake.x[0]),
             int(self.snake.y[0]), self.bad_apple.fruits):
+            print('青りんご衝突')
+            print(self.bad_apple.fruits)
+            print(self.snake.x[0])
+            print(self.snake.y[0])
             #食べた数をカウントアップ
             self.had_bad_apple_cnt += 1
             #食べた青りんごを削除
-            self.bad_apple.remove(self.snake.x[0], self.snake.y[0])
+            self.bad_apple.remove(self.snake.x[0], self.snake.y[0], 1)
             self.play_sound('bad')
             self.snake.skin_effect_af_bad_apple()
             #体の数を減らす
@@ -565,6 +573,8 @@ class Game:
                         #self.screen_shot()
                         const.SPEED = const.NORMAL_SPEED
                         print(traceback.format_exc())
+                        self.life.remove()
+                        self.life.draw()
                         self.show_game_over()
                         self.reset()
 

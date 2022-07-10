@@ -45,9 +45,20 @@ class Utils:
     # 重ならないx、yを返却
     def check(x1, y1, target_list):
         for i in target_list:
-            x2 = i[0]
-            y2 = i[1]
+            # 判定範囲を狭くする
+            x2 = i[0] - 10
+            y2 = i[1] - 10
             # 重なりがある場合は再作成
-            while Utils.is_collision(x1, y1, x2, y2):
+            # 最大３回まで再作成
+            #while Utils.is_collision(x1, y1, x2, y2):
+            print('再作成0')
+            if Utils.is_collision(x1, y1, x2, y2):
                 x1 , y1 = Utils.make_new_x_y()
+                print('再作成１')
+                if Utils.is_collision(x1, y1, x2, y2):
+                    x1 , y1 = Utils.make_new_x_y()
+                    print('再作成２')
+                    if Utils.is_collision(x1, y1, x2, y2):
+                        x1 , y1 = Utils.make_new_x_y()
+                        print('再作成３')
         return x1 , y1
