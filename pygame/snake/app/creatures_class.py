@@ -207,7 +207,7 @@ class Poop(Creatures):
 
 #ヘビクラス
 class Snake(Creatures):
-    def __init__(self, parent_screen):
+    def __init__(self, parent_screen, x, y):
         self.parent_screen = parent_screen
         #スキンカラーの設定
         self.red_body_img = pygame.image.load(const.SNAKE_RED_IMG_PATH).convert()
@@ -257,8 +257,8 @@ class Snake(Creatures):
         #初期方向
         self.directions = ['down', 'down']
         #初期位置
-        self.x = [int(const.DIP_W / 2)]
-        self.y = [int(const.DIP_H / 4 - const.SIZE / 4)]
+        self.x = [int(x)]
+        self.y = [int(y)]
         self.get_gold_apple = False
         #速く動く
         self.fast_move = False

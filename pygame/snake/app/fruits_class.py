@@ -71,7 +71,10 @@ class Apple(Fruits):
     def __init__(self, parent_screen):
         self.parent_screen = parent_screen
         # x座標、yを配列で保持
-        self.fruits = [[int(const.DIP_W / 2), int(const.DIP_H / 4)]]
+        self.fruits = [
+            [int(const.DIP_W / 4), int(const.DIP_H / 4)]
+            ,[int(const.DIP_W / 2), int(const.DIP_H / 4)]
+        ]
         # 果物が画面上に存在するか否か
         # 存在する場合はTrue
         self.is_alive = False
