@@ -15,6 +15,10 @@ SCORE_FILE_PATH = os.path.join(PATH ,SCORE_FILE_DIR + '/' + SCORE_FILE_NAME)
 #caption
 CAPTION = 'Snake And Apple Game'
 
+#player name
+PLAYER1 = 'P1'
+PLAYER2 = 'P2'
+
 #apple snake size
 SIZE = 40
 
@@ -55,6 +59,7 @@ BIRD_IMG_PATH  = os.path.join(PATH, 'resources/images/bird.png')
 LIFE_IMG_PATH  = os.path.join(PATH, 'resources/images/life.png')
 START_IMG_PATH = os.path.join(PATH, 'resources/images/start.png')
 GAME_OVER_IMG_PATH = os.path.join(PATH, 'resources/images/game_over.png')
+SCORE_ITEMS_IMG_PATH = os.path.join(PATH, 'resources/images/score_items.png')
 
 #sound
 SOUND = True

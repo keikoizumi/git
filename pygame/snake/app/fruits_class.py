@@ -77,7 +77,7 @@ class Apple(Fruits):
         ]
         # 果物が画面上に存在するか否か
         # 存在する場合はTrue
-        self.is_alive = False
+        self.is_alive = True
         # 画像を読み込む
         self.image = pygame.image.load(const.APPLE_IMG_PATH).convert()
     # 果物を作成
@@ -114,14 +114,17 @@ class Apple(Fruits):
                     #ぶつかったりんごを削除
                     del self.fruits[no]
             no += 1
-        print('赤りんご削除')
-        print(x2)
-        print(y2)
+
     def draw(self):
         for i in self.fruits:
             self.x = i[0]
             self.y = i[1]
             self.parent_screen.blit(self.image, (self.x, self.y))
+
+    def make_init(self):
+        self.fruits.append([int(const.DIP_W / 4), int(const.DIP_H / 4)])
+        self.fruits.append([int(const.DIP_W / 2), int(const.DIP_H / 4)])
+        self.draw()
 
 #青りんごクラス
 class BadApple(Fruits):
@@ -168,8 +171,6 @@ class BadApple(Fruits):
                 else:
                     for i in range(0, number - 1, 1):
                         del self.fruits[i]
-                print('青りんご削除１')
-                print(self.fruits[i])
             except IndexError as e:
                 print('Fruits Bad Apple IndexError')
         else:
@@ -182,9 +183,7 @@ class BadApple(Fruits):
                         #ぶつかったBADりんごを削除
                         del self.fruits[no]
                 no += 1
-            print('青りんご削除２')
-            print(x2)
-            print(y2)
+
     def draw(self):
         for i in self.fruits:
             self.x = i[0]

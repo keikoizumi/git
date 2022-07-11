@@ -4,7 +4,7 @@ import app.const as const
 import pygame
 
 class Life:
-    def __init__(self, parent_screen):
+    def __init__(self, parent_screen, y):
         self.parent_screen = parent_screen
         self.life_image = pygame.image.load(const.LIFE_IMG_PATH).convert()
         self.life = [
@@ -12,6 +12,7 @@ class Life:
                     ,const.DIP_W - const.SIZE * 3
                     , const.DIP_W - const.SIZE * 2
         ]
+        self.y = y
         self.draw()
 
     def add(self):
@@ -38,4 +39,4 @@ class Life:
     def draw(self):
         for i in self.life:
                 self.x = i
-                self.parent_screen.blit(self.life_image, (self.x, const.SIZE))
+                self.parent_screen.blit(self.life_image, (self.x, self.y))

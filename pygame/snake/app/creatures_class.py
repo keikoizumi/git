@@ -1,13 +1,12 @@
 #Standard module
-from ctypes.wintypes import SIZE
 import datetime
 import random
-import time
 
 #external module
 import pygame
 
 #Self-made module
+import app.life_class as life
 import app.const as const
 from app.utils_class import Utils
 
@@ -207,34 +206,55 @@ class Poop(Creatures):
 
 #ヘビクラス
 class Snake(Creatures):
-    def __init__(self, parent_screen, x, y):
+    # x,y は初期位置 （赤りんごの位置を考慮）
+    # はじめは必ず赤りんごを食べなければヘビの体がレンダリングされないため
+    def __init__(self, parent_screen, name, x, y):
         self.parent_screen = parent_screen
+        self.__name = name
         #スキンカラーの設定
-        self.red_body_img = pygame.image.load(const.SNAKE_RED_IMG_PATH).convert()
-        self.red_face_img = pygame.image.load(const.SNAKE_RED_FACE_IMG_PATH).convert()
-        self.red_bad_face_img = pygame.image.load(const.SNAKE_RED_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
-        self.red_eating_face_img = pygame.image.load(const.SNAKE_RED_EATING_FACE_IMG_PATH).convert()
-        self.green_body_img = pygame.image.load(const.SNAKE_GREEN_IMG_PATH).convert()
-        self.green_face_img = pygame.image.load(const.SNAKE_GREEN_FACE_IMG_PATH).convert()
-        self.green_bad_face_img = pygame.image.load(const.SNAKE_GREEN_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
-        self.green_eating_face_img = pygame.image.load(const.SNAKE_GREEN_EATING_FACE_IMG_PATH).convert()
-        self.yellow_body_img = pygame.image.load(const.SNAKE_YELLOW_IMG_PATH).convert()
-        self.yellow_face_img = pygame.image.load(const.SNAKE_YELLOW_FACE_IMG_PATH).convert()
-        self.yellow_bad_face_img = pygame.image.load(const.SNAKE_YELLOW_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
-        self.yellow_eating_face_img = pygame.image.load(const.SNAKE_YELLOW_EATING_FACE_IMG_PATH).convert()
-        self.blue_body_img = pygame.image.load(const.SNAKE_BLUE_IMG_PATH).convert()
-        self.blue_bad_face_img = pygame.image.load(const.SNAKE_BLUE_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
-
-        self.color = random.randint(1, 3)
+        self.__red_body_img = pygame.image.load(const.SNAKE_RED_IMG_PATH).convert()
+        self.__red_face_img = pygame.image.load(const.SNAKE_RED_FACE_IMG_PATH).convert()
+        self.__red_bad_face_img = pygame.image.load(const.SNAKE_RED_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+        self.__red_eating_face_img = pygame.image.load(const.SNAKE_RED_EATING_FACE_IMG_PATH).convert()
+        self.__green_body_img = pygame.image.load(const.SNAKE_GREEN_IMG_PATH).convert()
+        self.__green_face_img = pygame.image.load(const.SNAKE_GREEN_FACE_IMG_PATH).convert()
+        self.__green_bad_face_img = pygame.image.load(const.SNAKE_GREEN_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+        self.__green_eating_face_img = pygame.image.load(const.SNAKE_GREEN_EATING_FACE_IMG_PATH).convert()
+        self.__yellow_body_img = pygame.image.load(const.SNAKE_YELLOW_IMG_PATH).convert()
+        self.__yellow_face_img = pygame.image.load(const.SNAKE_YELLOW_FACE_IMG_PATH).convert()
+        self.__yellow_bad_face_img = pygame.image.load(const.SNAKE_YELLOW_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+        self.__yellow_eating_face_img = pygame.image.load(const.SNAKE_YELLOW_EATING_FACE_IMG_PATH).convert()
+        self.__blue_body_img = pygame.image.load(const.SNAKE_BLUE_IMG_PATH).convert()
+        self.__blue_bad_face_img = pygame.image.load(const.SNAKE_BLUE_HAD_BAD_APPLE_FACE_IMG_PATH).convert()
+        #初期方向
+        self.directions = [
+                            'down'
+                            ,'down'
+        ]
+        #初期位置
+        self.x = []
+        self.x.append(x)
+        self.y = []
+        self.y.append(y)
+        # ライフインスタンスの生成
+        # プレイヤーによってライフの表示位置を変える（life_y）
+        if self.__name == const.PLAYER1:
+            self.color = 1
+            life_y = const.SIZE
+            self.life = life.Life(self.parent_screen, life_y)
+        elif self.__name == const.PLAYER2:
+            self.color = 3
+            life_y = const.DIP_H / 2
+            self.life = life.Life(self.parent_screen, life_y)
         if self.color == 1:
-            self.face_img = self.red_face_img
-            self.body_img = self.red_body_img
+            self.face_img = self.__red_face_img
+            self.body_img = self.__red_body_img
         elif self.color == 2:
-            self.face_img = self.green_face_img
-            self.body_img = self.green_body_img
+            self.face_img = self.__green_face_img
+            self.body_img = self.__green_body_img
         elif self.color == 3:
-            self.face_img = self.yellow_face_img
-            self.body_img = self.yellow_body_img
+            self.face_img = self.__yellow_face_img
+            self.body_img = self.__yellow_body_img
         self.face_img = pygame.transform.rotate(self.face_img, 180)
         #最初のお顔を保存
         self.init_face_img = self.face_img
@@ -243,22 +263,15 @@ class Snake(Creatures):
         #青りんごを食べたあとのスキンエフェクト
         self.effect_af_bad_apple = [
                                     self.init_body_img
-                                    ,self.blue_body_img
-                                    ]
+                                    ,self.__blue_body_img
+        ]
         #金りんごを食べたあとのスキンエフェクト
         self.effect_af_gold_apple = [
                                     self.init_body_img
-                                    ,self.red_body_img
-                                    ,self.green_body_img
-                                    ,self.yellow_body_img
-                                    ]
-        #時間（７日前）
-        self.d = datetime.datetime.now() + datetime.timedelta(days=-7)
-        #初期方向
-        self.directions = ['down', 'down']
-        #初期位置
-        self.x = [int(x)]
-        self.y = [int(y)]
+                                    ,self.__red_body_img
+                                    ,self.__green_body_img
+                                    ,self.__yellow_body_img
+        ]
         self.get_gold_apple = False
         #速く動く
         self.fast_move = False
@@ -266,10 +279,29 @@ class Snake(Creatures):
         self.out = False
         #初期長
         self.length = 1
-        #speed はノーマル
-        self.panic = False
-        self.panic_cnt = 0
+        #今回のスコア
+        self.__this_score = 0
+        #取得した体(MAX)
+        self.max_length = 1
+        #食べたりんごの数
+        self.had_apple_cnt = 0
+        #食べた青りんごの数
+        self.had_bad_apple_cnt = 0
+        #食べた金りんごの数
+        self.had_gold_apple_cnt = 0
+        #食べたうんこの数
+        self.had_snake_poop_cnt = 0
+        #食べたカエルの数
+        self.had_frog_cnt = 0
+        #食べたセミの数
+        self.had_cicada_cnt = 0
+        #食べた鳥の数
+        self.had_bird_cnt = 0
+
         self.draw()
+    #名前の取得
+    def get_name(self):
+        return self.__name
 
     # ヘビを移動させる
     def move_left(self):
@@ -392,11 +424,11 @@ class Snake(Creatures):
     def skin_effect_af_bad_apple(self):
         #bad face 表示
         if self.color == 1:
-            self.face_img = self.red_bad_face_img
+            self.face_img = self.__red_bad_face_img
         elif self.color == 2:
-            self.face_img = self.green_bad_face_img
+            self.face_img = self.__green_bad_face_img
         elif self.color == 3:
-            self.face_img = self.yellow_bad_face_img
+            self.face_img = self.__yellow_bad_face_img
         #顔の向き
         if self.directions[1] == 'up':
             self.face_img = pygame.transform.rotate(self.face_img, 0)
@@ -413,7 +445,7 @@ class Snake(Creatures):
             for i in self.effect_af_bad_apple:
                     self.body_img = i
                     self.draw()
-                    pygame.display.flip()
+                    #pygame.display.flip()
             cnt += 1
         self.get_gold_apple = False
 
@@ -425,7 +457,7 @@ class Snake(Creatures):
     def while_having_bad_apple(self):
         #顔色を変える
         #お顔を整える
-        self.face_img = self.blue_bad_face_img
+        self.face_img = self.__blue_bad_face_img
         if self.directions[1] == 'up':
             self.face_img = pygame.transform.rotate(self.face_img, 0)
         elif self.directions[1] == 'down':
@@ -455,11 +487,11 @@ class Snake(Creatures):
         #舌を出すフェクト
         if self.out:
             if self.color == 1:
-                self.face_img = self.red_eating_face_img
+                self.face_img = self.__red_eating_face_img
             elif self.color == 2:
-                self.face_img = self.green_eating_face_img
+                self.face_img = self.__green_eating_face_img
             elif self.color == 3:
-                self.face_img = self.yellow_eating_face_img
+                self.face_img = self.__yellow_eating_face_img
 
             if self.directions[1] == 'up':
                 self.face_img = pygame.transform.rotate(self.face_img, 0)
@@ -480,8 +512,22 @@ class Snake(Creatures):
             else:
                 self.face_img = pygame.transform.rotate(self.face_img, -90)
 
-    def speedup(self):
-        #秒間speed up
-        if self.panic == True:
-            self.d = datetime.datetime.now() + datetime.timedelta(seconds=const.PANIC_TIME_SEC)
+    def get_score(self):
+        #スコアの計算
+        #赤りんご x 10
+        #青りんご x -5
+        #金りんご x 30
+        #鳥 x 20
+        #カエル x 10
+        #セミ x 5
+        #ヘビの長さ x 30
+        self.__this_score = self.had_apple_cnt * 10 \
+                + self.max_length * 30 \
+                + self.had_bad_apple_cnt * (-5) \
+                + self.had_gold_apple_cnt * 30 \
+                + self.had_snake_poop_cnt * (-10) \
+                + self.had_frog_cnt * 10 \
+                + self.had_cicada_cnt * 5 \
+                + self.had_bird_cnt * 20
 
+        return self.__this_score
