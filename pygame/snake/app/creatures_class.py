@@ -521,13 +521,16 @@ class Snake(Creatures):
         #カエル x 10
         #セミ x 5
         #ヘビの長さ x 30
+        #うんこ x -50
+        #ハート x 100
         self.__this_score = self.had_apple_cnt * 10 \
                 + self.max_length * 30 \
                 + self.had_bad_apple_cnt * (-5) \
                 + self.had_gold_apple_cnt * 30 \
-                + self.had_snake_poop_cnt * (-10) \
+                + self.had_snake_poop_cnt * (-50) \
                 + self.had_frog_cnt * 10 \
                 + self.had_cicada_cnt * 5 \
-                + self.had_bird_cnt * 20
+                + self.had_bird_cnt * 20 \
+                + self.life.get_last_life() * 100
 
         return self.__this_score

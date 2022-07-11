@@ -13,6 +13,7 @@ class Life:
                     , const.DIP_W - const.SIZE * 2
         ]
         self.y = y
+        self.__last_life = const.MAX_LIFE
         self.draw()
 
     def add(self):
@@ -29,6 +30,7 @@ class Life:
     def remove(self):
         if len(self.life) > 0:
             del self.life[-1]
+            self.__last_life -= 1
         self.draw()
 
     def death_check(self):
@@ -40,3 +42,6 @@ class Life:
         for i in self.life:
                 self.x = i
                 self.parent_screen.blit(self.life_image, (self.x, self.y))
+
+    def get_last_life(self):
+        return self.__last_life

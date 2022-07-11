@@ -275,6 +275,8 @@ class Game:
                         self.snake.x.append(int(const.DIP_W / 2))
                     self.snake.y.append(int(const.DIP_H / 4 - const.SIZE / 4))
                     self.apple.make_init()
+                    self.bad_apple = BadApple(self.surface)
+                    self.snake_poop = Poop(self.surface)
             # 蛇がうんこを食べた！
             if Utils.collision_check(self.snake.x[0],
                 int(self.snake.y[0]), self.snake_poop.creatures):
@@ -305,7 +307,7 @@ class Game:
             # 蛇が鳥を食べた！
             if Utils.collision_check(int(self.snake.x[0]),
                 int(self.snake.y[0]), self.bird.creatures):
-                self.snake.had_bird_cnt += 1
+                self.snake.had_frog_cnt += 1
                 self.play_sound('gold')
                 #りんごを増やす
                 self.apple.make(self.bad_apple.fruits,3)
