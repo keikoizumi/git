@@ -50,10 +50,12 @@ class Utils:
             y2 = i[1] - 10
             # 重なりがある場合は再作成
             x1 , y1 = Utils.make_new_x_y()
-            check = True
-            while check:
-                if Utils.is_collision(x1, y1, x2, y2) is False:
-                    check = False
-                else:
-                    x1 , y1 = Utils.make_new_x_y()
+            if Utils.is_collision(x1, y1, x2, y2):
+                x1 , y1 = Utils.make_new_x_y()
+            #check = True
+            #while check:
+            #    if Utils.is_collision(x1, y1, x2, y2) is False:
+            #        check = False
+            #    else:
+            #        x1 , y1 = Utils.make_new_x_y()
         return x1, y1

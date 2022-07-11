@@ -75,11 +75,8 @@ GET_FROG_SOUND_PATH = os.path.join(PATH, 'resources/sounds/had_frog.mp3')
 
 #snake
 MAX_LIFE = 3
-NORMAL_SPEED = .15
-FAST_SPEED = .05
-PANIC_SPEED = .01
+NORMAL_SPEED = .08
 SPEED = NORMAL_SPEED
-PANIC_TIME_SEC = 2
 
 #game over display
 G_OVER_FONT_SIZE = 25
